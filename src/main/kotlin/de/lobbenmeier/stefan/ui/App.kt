@@ -1,16 +1,23 @@
 package de.lobbenmeier.stefan.ui
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
+import de.lobbenmeier.stefan.ytdlp.DownloadItem
 
 @Composable
 fun App() {
-    Scaffold (
-        topBar = { Header() },
-        bottomBar = { Footer() }
-    ) { DownloadList() }
+    val downloadQueue = remember { mutableStateListOf<DownloadItem>() }
+
+    Scaffold(topBar = {
+        Header(onDownload = {
+            downloadQueue.add(DownloadItem(it))
+        })
+    }, bottomBar = { Footer() }) { DownloadList(downloadQueue) }
 }
 
 @Composable

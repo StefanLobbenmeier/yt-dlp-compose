@@ -10,12 +10,9 @@ import androidx.compose.ui.unit.dp
 import de.lobbenmeier.stefan.ytdlp.DownloadItem
 
 @Composable
-fun DownloadList() {
-    val downloadList = List(20) {
-        DownloadItem()
-    }
+fun DownloadList(downloadQueue: List<DownloadItem>) {
     LazyColumn(modifier = Modifier.padding(8.0.dp).fillMaxSize()) {
-        downloadList.forEach {
+        downloadQueue.forEach {
             item { Text(it.url) }
         }
     }
