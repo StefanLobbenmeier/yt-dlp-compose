@@ -7,6 +7,6 @@ class YtDlpTest : FunSpec({
     test("download") {
         val ytDlp = YtDlp(YtDlpConfiguration(), YtDlpVersion())
 
-        ytDlp.download(YtDlpOptions())
+        ytDlp.download(DownloadItem())
     }
 })
