@@ -6,32 +6,33 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class YtDlp(private val configuration: YtDlpConfiguration, private val version: YtDlpVersion,) {
+class YtDlp(
+    private val configuration: YtDlpConfiguration,
+    private val version: YtDlpVersion,
+) {
 
     fun createDownloadItem(url: String): DownloadItem {
-        return DownloadItem(this, url).also {
-            it.gatherMetadata()
-        }
+        return DownloadItem(this, url).also { it.gatherMetadata() }
     }
 
     fun run(vararg options: String) {
-        CoroutineScope(Dispatchers.IO).launch {
-            runAsync(*options)
-        }
+        CoroutineScope(Dispatchers.IO).launch { runAsync(*options) }
     }
 
     suspend fun runAsync(vararg options: String): String {
         val command = arrayOf(version.ytDlpBinary, *options).joinToString(" ")
         println("Start process: $command")
 
-        val res = process(
-            version.ytDlpBinary, *options,
-            stdout = Redirect.CAPTURE,
-            stderr = Redirect.CAPTURE,
+        val res =
+            process(
+                version.ytDlpBinary,
+                *options,
+                stdout = Redirect.CAPTURE,
+                stderr = Redirect.CAPTURE,
 
-            // Allows to consume line by line without delay the provided output.
-            consumer = { line -> println("process $line") },
-        )
+                // Allows to consume line by line without delay the provided output.
+                consumer = { line -> println("process $line") },
+            )
 
         println("Script finished with result=${res.resultCode}")
         val output = res.output.joinToString("\n")

@@ -5,13 +5,13 @@ import io.kotest.engine.spec.tempdir
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 
-
 class GithubReleaseDownloaderTest : AnnotationSpec() {
     private var downloadDirectory = tempdir().toPath()
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun downloadRelease() = runTest {
-        GithubReleaseDownloader("yt-dlp", "yt-dlp", downloadDirectory).downloadRelease("yt-dlp_macos")
+        GithubReleaseDownloader("yt-dlp", "yt-dlp", downloadDirectory)
+            .downloadRelease("yt-dlp_macos")
     }
 }

@@ -19,8 +19,7 @@ fun Header(onDownload: (url: String) -> Unit) {
     TopAppBar(
         contentPadding = PaddingValues(20.dp),
         backgroundColor = MaterialTheme.colors.surface,
-
-        ) {
+    ) {
         OutlinedTextField(
             downloadUrl,
             singleLine = true,
@@ -28,23 +27,13 @@ fun Header(onDownload: (url: String) -> Unit) {
             placeholder = { Text("Enter a video URL") },
             modifier = Modifier.weight(1f),
             trailingIcon = {
-                IconButton(onClick = {
-                    onDownload(downloadUrl)
-                }) {
+                IconButton(onClick = { onDownload(downloadUrl) }) {
                     Icon(Icons.Default.Add, "Download")
                 }
-            }
-        )
+            })
 
         Spacer(Modifier.weight(0.05f))
 
-        IconButton(onClick = {
-
-        }) {
-            Icon(Icons.Default.Settings, "Settings")
-        }
+        IconButton(onClick = {}) { Icon(Icons.Default.Settings, "Settings") }
     }
-
-
-
 }

@@ -12,4 +12,3 @@ pluginManagement {
 }
 
 rootProject.name = "yt-dlp-compose"
-

@@ -9,24 +9,19 @@ import io.ktor.client.statement.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.util.cio.*
 import io.ktor.utils.io.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import java.io.File
 import java.nio.file.Path
-
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class GithubReleaseDownloader(
     private val owner: String,
     private val repo: String,
-    private val downloadDirectory : Path,
+    private val downloadDirectory: Path,
     private val githubApi: String = "https://api.github.com",
 ) {
     suspend fun downloadRelease(assetName: String): File {
-        val httpClient = HttpClient() {
-            install(ContentNegotiation) {
-                json(GithubJson)
-            }
-        }
+        val httpClient = HttpClient() { install(ContentNegotiation) { json(GithubJson) } }
 
         val githubRelease = getGithubRelease(httpClient)
         return downloadGithubReleaseToFile(githubRelease, assetName, httpClient)

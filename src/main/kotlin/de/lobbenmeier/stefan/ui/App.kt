@@ -12,11 +12,10 @@ import de.lobbenmeier.stefan.model.DownloadQueue
 fun App() {
     val downloadQueue = remember { DownloadQueue() }
 
-    Scaffold(topBar = {
-        Header(onDownload = {
-            downloadQueue.add(it)
-        })
-    }, bottomBar = { Footer() }) { DownloadList(downloadQueue) }
+    Scaffold(
+        topBar = { Header(onDownload = { downloadQueue.add(it) }) }, bottomBar = { Footer() }) {
+            DownloadList(downloadQueue)
+        }
 }
 
 @Composable

@@ -22,9 +22,7 @@ import io.kamel.image.lazyPainterResource
 @Composable
 fun DownloadList(downloadQueue: DownloadQueue) {
     LazyColumn(modifier = Modifier.padding(8.0.dp).fillMaxSize()) {
-        downloadQueue.items.forEach {
-            item { DownloadItemView(it) }
-        }
+        downloadQueue.items.forEach { item { DownloadItemView(it) } }
     }
 }
 
@@ -75,10 +73,8 @@ private fun Thumbnail(thumbnail: String?) {
 @Preview
 @Composable
 private fun DownloadItemPreview() {
-    val downloadItem = YtDlp(YtDlpConfiguration(), YtDlpVersion()).createDownloadItem(
-        "https://www.youtube.com/watch?v=JKjN5mmnSX0"
-    )
-    DownloadItemView(
-        downloadItem
-    )
+    val downloadItem =
+        YtDlp(YtDlpConfiguration(), YtDlpVersion())
+            .createDownloadItem("https://www.youtube.com/watch?v=JKjN5mmnSX0")
+    DownloadItemView(downloadItem)
 }

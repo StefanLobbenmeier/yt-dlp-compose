@@ -8,7 +8,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.serialization.decodeFromString
 
-class DownloadItem(val ytDlp: YtDlp, val url: String = "https://www.youtube.com/watch?v=CBB75zjxTR4") {
+class DownloadItem(
+    val ytDlp: YtDlp,
+    val url: String = "https://www.youtube.com/watch?v=CBB75zjxTR4"
+) {
 
     val metadata = MutableStateFlow<VideoMetadata?>(null)
 

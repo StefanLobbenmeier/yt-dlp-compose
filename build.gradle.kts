@@ -4,9 +4,11 @@ plugins {
     kotlin("jvm")
     id("org.jetbrains.compose")
     kotlin("plugin.serialization") version "1.8.0"
+    id("com.diffplug.spotless") version "6.17.0"
 }
 
 group = "com.example"
+
 version = "1.0-SNAPSHOT"
 
 repositories {
@@ -15,9 +17,7 @@ repositories {
     google()
 }
 
-kotlin {
-    jvmToolchain(17)
-}
+kotlin { jvmToolchain(17) }
 
 dependencies {
     val ktorVersion = "2.2.3"
@@ -37,19 +37,13 @@ dependencies {
     implementation("com.alialbaali.kamel:kamel-image:$kamelVersion")
     implementation("br.com.devsrsouza.compose.icons.jetbrains:feather:1.0.0")
 
-
     testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
-
 
     testImplementation("io.kotest:kotest-runner-junit5:$kotestVersion")
 }
 
-tasks {
-    test {
-        useJUnitPlatform()
-    }
-}
+tasks { test { useJUnitPlatform() } }
 
 compose.desktop {
     application {
@@ -60,4 +54,9 @@ compose.desktop {
             packageVersion = "1.0.0"
         }
     }
+}
+
+spotless {
+    kotlin { ktfmt().dropboxStyle() }
+    kotlinGradle { ktfmt().dropboxStyle() }
 }
