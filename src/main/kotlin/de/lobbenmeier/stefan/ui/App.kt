@@ -7,7 +7,6 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import de.lobbenmeier.stefan.model.DownloadQueue
-import de.lobbenmeier.stefan.ytdlp.DownloadItem
 
 @Composable
 fun App() {
@@ -15,7 +14,7 @@ fun App() {
 
     Scaffold(topBar = {
         Header(onDownload = {
-            downloadQueue.add(DownloadItem(it))
+            downloadQueue.add(it)
         })
     }, bottomBar = { Footer() }) { DownloadList(downloadQueue) }
 }
