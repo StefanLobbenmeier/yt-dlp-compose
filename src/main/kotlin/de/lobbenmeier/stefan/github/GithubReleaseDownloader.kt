@@ -9,6 +9,8 @@ import io.ktor.client.statement.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.util.cio.*
 import io.ktor.utils.io.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.nio.file.Path
 
@@ -43,11 +45,12 @@ class GithubReleaseDownloader(
         val targetFolder = downloadDirectory.resolve(owner).resolve(repo)
         targetFolder.toFile().mkdirs()
         val targetFile = targetFolder.resolve(version).toFile()
-        targetFile.createNewFile()
 
-        assetResponse.bodyAsChannel().copyTo(targetFile.writeChannel())
-
-        return targetFile
+        return withContext(Dispatchers.IO) {
+            targetFile.createNewFile()
+            assetResponse.bodyAsChannel().copyTo(targetFile.writeChannel())
+            return@withContext targetFile
+        }
     }
 
     private suspend fun getGithubRelease(httpClient: HttpClient): GithubRelease {
