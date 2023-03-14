@@ -2,6 +2,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class VideoMetadata(
-    val thumbnail: String?,
-    val webpageUrl: String?,
+    val thumbnail: String? = null,
+    val webpageUrl: String? = null,
 )

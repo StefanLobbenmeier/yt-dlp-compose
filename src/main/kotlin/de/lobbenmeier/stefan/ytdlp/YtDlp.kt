@@ -20,7 +20,7 @@ class YtDlp(private val configuration: YtDlpConfiguration, private val version: 
         }
     }
 
-    suspend fun runAsync(vararg options: String) {
+    suspend fun runAsync(vararg options: String): String {
         val command = arrayOf(version.ytDlpBinary, *options).joinToString(" ")
         println("Start process: $command")
 
@@ -34,6 +34,14 @@ class YtDlp(private val configuration: YtDlpConfiguration, private val version: 
         )
 
         println("Script finished with result=${res.resultCode}")
-        println("stdout+stderr:\n" + res.output.joinToString("\n"))
+        val output = res.output.joinToString("\n")
+        println("stdout+stderr:")
+        println(output)
+
+        if (res.resultCode != 0) {
+            throw Exception("yt-dlp indicated error in its response")
+        }
+
+        return output
     }
 }

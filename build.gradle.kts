@@ -23,6 +23,7 @@ dependencies {
     val ktorVersion = "2.2.3"
     val kotestVersion = "5.5.5"
     val kotlinProcessVersion = "1.4.1"
+    val kotlinxSerializationVersion = "1.5.0"
 
     implementation(compose.desktop.currentOs)
 
@@ -31,6 +32,7 @@ dependencies {
     implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
     implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
     implementation("com.github.pgreze:kotlin-process:$kotlinProcessVersion")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinxSerializationVersion")
 
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")

@@ -1,5 +1,6 @@
 package de.lobbenmeier.stefan.github
 
+import de.lobbenmeier.stefan.GithubJson
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.plugins.contentnegotiation.*
@@ -8,7 +9,6 @@ import io.ktor.client.statement.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.util.cio.*
 import io.ktor.utils.io.*
-import kotlinx.serialization.json.Json
 import java.io.File
 import java.nio.file.Path
 
@@ -22,9 +22,7 @@ class GithubReleaseDownloader(
     suspend fun downloadRelease(assetName: String): File {
         val httpClient = HttpClient() {
             install(ContentNegotiation) {
-                json(Json {
-                    ignoreUnknownKeys = true
-                })
+                json(GithubJson)
             }
         }
 
