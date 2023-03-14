@@ -24,6 +24,7 @@ dependencies {
     val kotestVersion = "5.5.5"
     val kotlinProcessVersion = "1.4.1"
     val kotlinxSerializationVersion = "1.5.0"
+    val kamelVersion = "0.4.0"
 
     implementation(compose.desktop.currentOs)
 
@@ -33,6 +34,8 @@ dependencies {
     implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
     implementation("com.github.pgreze:kotlin-process:$kotlinProcessVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinxSerializationVersion")
+    implementation("com.alialbaali.kamel:kamel-image:$kamelVersion")
+    implementation("br.com.devsrsouza.compose.icons.jetbrains:feather:1.0.0")
 
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
