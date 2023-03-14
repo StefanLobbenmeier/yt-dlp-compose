@@ -5,13 +5,13 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
+import de.lobbenmeier.stefan.model.DownloadQueue
 import de.lobbenmeier.stefan.ytdlp.DownloadItem
 
 @Composable
 fun App() {
-    val downloadQueue = remember { mutableStateListOf<DownloadItem>() }
+    val downloadQueue = remember { DownloadQueue() }
 
     Scaffold(topBar = {
         Header(onDownload = {
