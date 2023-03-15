@@ -9,6 +9,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.Download
@@ -19,6 +20,7 @@ import de.lobbenmeier.stefan.ytdlp.YtDlpConfiguration
 import de.lobbenmeier.stefan.ytdlp.YtDlpVersion
 import io.kamel.image.KamelImage
 import io.kamel.image.lazyPainterResource
+import kotlin.time.Duration.Companion.seconds
 
 @Composable
 fun DownloadList(downloadQueue: DownloadQueue) {
@@ -35,15 +37,22 @@ private fun DownloadItemView(downloadItem: DownloadItem) {
     Card {
         Row(Modifier.requiredHeight(135.dp)) {
             Thumbnail(thumbnail)
-            Column(Modifier.weight(1f)) {
+            Column(Modifier.weight(1f).padding(20.dp)) {
                 Text(metadata?.title ?: downloadItem.url)
                 Row {
                     Text("Video + Audio")
                     Text("Resolution")
                 }
-                Row {
-                    Text("Duration")
-                    Text("Size")
+                if (metadata == null) {
+                    Text("Downloading metadata...")
+                } else {
+                    Row {
+                        Row {
+                            Text("Duration: ", fontWeight = FontWeight.Bold)
+                            Text(durationString(metadata?.duration))
+                        }
+                        Text("Size")
+                    }
                 }
             }
             Divider(Modifier.fillMaxHeight().width(1.dp))
@@ -54,6 +63,14 @@ private fun DownloadItemView(downloadItem: DownloadItem) {
             }
         }
     }
+}
+
+private fun durationString(i: Int?): String {
+    if (i == null) {
+        return ""
+    }
+    val duration = i.seconds
+    return duration.toString()
 }
 
 @Composable
