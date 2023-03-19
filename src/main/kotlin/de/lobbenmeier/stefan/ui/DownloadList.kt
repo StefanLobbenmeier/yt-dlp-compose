@@ -39,10 +39,7 @@ private fun DownloadItemView(downloadItem: DownloadItem) {
             Thumbnail(thumbnail)
             Column(Modifier.weight(1f).padding(20.dp)) {
                 Text(metadata?.title ?: downloadItem.url)
-                Row {
-                    Text("Video + Audio")
-                    Text("Resolution")
-                }
+                FormatSelector(downloadItem)
                 if (metadata == null) {
                     Text("Downloading metadata...")
                 } else {
@@ -61,6 +58,19 @@ private fun DownloadItemView(downloadItem: DownloadItem) {
                     Icon(FeatherIcons.Download, "Download")
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun FormatSelector(downloadItem: DownloadItem) {
+    Row {
+        DropdownMenu(
+            listOf("Video + Audio", "Video only", "Audio only"), modifier = Modifier.weight(1f)) {
+                //        downloadItem.setAudioVideo()
+            }
+        DropdownMenu(listOf("Format1", "Format2"), modifier = Modifier.weight(1f)) {
+            //        downloadItem.setFormat()
         }
     }
 }
