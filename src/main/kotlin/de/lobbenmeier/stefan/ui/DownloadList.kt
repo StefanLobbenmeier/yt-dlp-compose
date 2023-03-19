@@ -51,11 +51,13 @@ private fun DownloadItemView(downloadItem: DownloadItem) {
                                 Text("Duration: ", fontWeight = FontWeight.Bold)
                                 Text(durationString(metadata?.duration))
                             }
-                            Text(
-                                "Size:",
-                                fontWeight = FontWeight.Bold,
-                                modifier = Modifier.weight(1f),
-                            )
+                            Row(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    "Size: ",
+                                    fontWeight = FontWeight.Bold,
+                                )
+                                Text("5MB")
+                            }
                         }
                     }
                 }
