@@ -11,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.em
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.Download
 import de.lobbenmeier.stefan.model.DownloadQueue
@@ -37,21 +38,27 @@ private fun DownloadItemView(downloadItem: DownloadItem) {
     Card {
         Row(Modifier.requiredHeight(135.dp)) {
             Thumbnail(thumbnail)
-            Column(Modifier.weight(1f).padding(20.dp)) {
-                Text(metadata?.title ?: downloadItem.url)
-                FormatSelector(downloadItem)
-                if (metadata == null) {
-                    Text("Downloading metadata...")
-                } else {
-                    Row {
+            Column(
+                Modifier.weight(1f).padding(20.dp, 15.dp).fillMaxHeight(),
+                verticalArrangement = Arrangement.SpaceBetween) {
+                    Text(metadata?.title ?: downloadItem.url, fontSize = 1.1.em)
+                    FormatSelector(downloadItem)
+                    if (metadata == null) {
+                        Text("Downloading metadata...")
+                    } else {
                         Row {
-                            Text("Duration: ", fontWeight = FontWeight.Bold)
-                            Text(durationString(metadata?.duration))
+                            Row(modifier = Modifier.weight(1f)) {
+                                Text("Duration: ", fontWeight = FontWeight.Bold)
+                                Text(durationString(metadata?.duration))
+                            }
+                            Text(
+                                "Size:",
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.weight(1f),
+                            )
                         }
-                        Text("Size")
                     }
                 }
-            }
             Divider(Modifier.fillMaxHeight().width(1.dp))
             Column {
                 IconButton(onClick = downloadItem::download) {
