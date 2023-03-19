@@ -1,6 +1,5 @@
 package de.lobbenmeier.stefan.ui
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
@@ -30,13 +29,11 @@ fun <T> DropdownMenu(
     Column(modifier = modifier) {
         Card(
             modifier =
-                Modifier.fillMaxWidth()
-                    .onGloballyPositioned { coordinates ->
-                        textFieldSize = coordinates.size.toSize()
-                    }
-                    .clickable { expanded = !expanded },
+                Modifier.fillMaxWidth().onGloballyPositioned { coordinates ->
+                    textFieldSize = coordinates.size.toSize()
+                },
         ) {
-            Row(Modifier.padding(8.dp)) {
+            DropdownMenuItem(onClick = { expanded = !expanded }) {
                 optionBuilder(selectedOption)
                 Spacer(Modifier.weight(1f))
                 Icon(icon, "Drop Down Icon", modifier = Modifier.size(16.dp))
