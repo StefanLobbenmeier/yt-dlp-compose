@@ -30,10 +30,10 @@ class DownloadItem(
     }
 
     fun selectFormat(format: Format) {
-        if (format.acodec != null) {
+        if (format.acodec != "none") {
             selectedAudioFormat.value = format
         }
-        if (format.vcodec != null) {
+        if (format.vcodec != "none") {
             selectedVideoFormat.value = format
         }
     }
