@@ -4,6 +4,7 @@ import de.lobbenmeier.stefan.YtDlpJson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlinx.serialization.decodeFromString
 
@@ -36,4 +37,16 @@ class DownloadItem(
             selectedVideoFormat.value = format
         }
     }
+
+    val fileSize =
+        selectedVideoFormat.combine(selectedAudioFormat) { video, audio ->
+            var acc = 0
+            if (video != null) {
+                acc += video.filesize ?: video.filesizeApprox ?: 0
+            }
+            if (audio != null && audio != video) {
+                acc += audio.filesize ?: audio.filesizeApprox ?: 0
+            }
+            acc
+        }
 }

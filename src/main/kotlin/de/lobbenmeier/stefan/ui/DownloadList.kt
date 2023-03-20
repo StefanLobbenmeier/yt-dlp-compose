@@ -49,11 +49,12 @@ private fun DownloadItemView(downloadItem: DownloadItem) {
                                 Text(durationString(metadata?.duration))
                             }
                             Row(modifier = Modifier.weight(1f)) {
+                                val fileSize by downloadItem.fileSize.collectAsState(0)
                                 Text(
                                     "Size: ",
                                     fontWeight = FontWeight.Bold,
                                 )
-                                Text("5MB")
+                                Text(fileSizeString(fileSize.toDouble()))
                             }
                         }
                     }
@@ -105,6 +106,14 @@ private fun durationString(i: Double?): String {
     val duration = i.seconds
     return duration.toString()
 }
+
+fun fileSizeString(bytes: Double) =
+    when {
+        bytes >= 1 shl 30 -> "%.1f GB".format(bytes / (1 shl 30))
+        bytes >= 1 shl 20 -> "%.1f MB".format(bytes / (1 shl 20))
+        bytes >= 1 shl 10 -> "%.0f kB".format(bytes / (1 shl 10))
+        else -> "$bytes bytes"
+    }
 
 @Composable
 private fun Thumbnail(thumbnail: String?) {
