@@ -1,3 +1,5 @@
+package de.lobbenmeier.stefan.ytdlp
+
 import kotlinx.serialization.Serializable
 
 @Serializable

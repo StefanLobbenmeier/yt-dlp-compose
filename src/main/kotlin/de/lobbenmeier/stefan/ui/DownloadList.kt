@@ -1,11 +1,12 @@
 package de.lobbenmeier.stefan.ui
 
-import VideoMetadata
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -14,10 +15,7 @@ import androidx.compose.ui.unit.em
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.Download
 import de.lobbenmeier.stefan.model.DownloadQueue
-import de.lobbenmeier.stefan.ytdlp.DownloadItem
-import de.lobbenmeier.stefan.ytdlp.YtDlp
-import de.lobbenmeier.stefan.ytdlp.YtDlpConfiguration
-import de.lobbenmeier.stefan.ytdlp.YtDlpVersion
+import de.lobbenmeier.stefan.ytdlp.*
 import io.kamel.image.KamelImage
 import io.kamel.image.lazyPainterResource
 import kotlin.time.Duration.Companion.seconds
@@ -76,21 +74,22 @@ private fun FormatSelector(downloadItem: DownloadItem, metadata: VideoMetadata?)
 
     if (formats != null) {
         val videoFormats = formats.filter { it.vcodec != "none" }
-
-        var selectedVideoOption by remember { mutableStateOf(videoFormats[0]) }
         val audioFormats = formats.filter { it.acodec != "none" }
-        var selectedAudioOption by remember { mutableStateOf(audioFormats[0]) }
+
+        val selectedVideoOption by downloadItem.selectedVideoFormat.collectAsState()
+        val selectedAudioOption by downloadItem.selectedAudioFormat.collectAsState()
+
         Row {
             DropdownMenu(
                 videoFormats,
                 selectedOption = selectedVideoOption,
-                selectionChanged = { selectedVideoOption = it },
+                selectionChanged = { downloadItem.selectFormat(it) },
                 modifier = Modifier.weight(1f),
                 optionBuilder = { Text("${it.height}p${it.fps} (${it.vcodec})") })
             DropdownMenu(
                 audioFormats,
                 selectedOption = selectedAudioOption,
-                selectionChanged = { selectedAudioOption = it },
+                selectionChanged = { downloadItem.selectFormat(it) },
                 modifier = Modifier.weight(1f),
                 optionBuilder = { Text("${it.formatNote} (${it.acodec})") })
         }

@@ -1,6 +1,5 @@
 package de.lobbenmeier.stefan.ytdlp
 
-import VideoMetadata
 import de.lobbenmeier.stefan.YtDlpJson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -13,6 +12,8 @@ class DownloadItem(
     val url: String = "https://www.youtube.com/watch?v=CBB75zjxTR4"
 ) {
 
+    val selectedVideoFormat = MutableStateFlow<Format?>(null)
+    val selectedAudioFormat = MutableStateFlow<Format?>(null)
     val metadata = MutableStateFlow<VideoMetadata?>(null)
 
     fun download() {
@@ -24,6 +25,15 @@ class DownloadItem(
             val metadataJson = ytDlp.runAsync("-J", "--flat-playlist", url)
 
             metadata.value = YtDlpJson.decodeFromString<VideoMetadata>(metadataJson)
+        }
+    }
+
+    fun selectFormat(format: Format) {
+        if (format.acodec != null) {
+            selectedAudioFormat.value = format
+        }
+        if (format.vcodec != null) {
+            selectedVideoFormat.value = format
         }
     }
 }

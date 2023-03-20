@@ -18,7 +18,7 @@ fun <T> DropdownMenu(
     options: List<T>,
     optionBuilder: @Composable (T) -> Unit = { Text(it.toString()) },
     modifier: Modifier = Modifier,
-    selectedOption: T,
+    selectedOption: T?,
     selectionChanged: (T) -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -34,7 +34,9 @@ fun <T> DropdownMenu(
                 },
         ) {
             DropdownMenuItem(onClick = { expanded = !expanded }) {
-                optionBuilder(selectedOption)
+                if (selectedOption != null) {
+                    optionBuilder(selectedOption)
+                }
                 Spacer(Modifier.weight(1f))
                 Icon(icon, "Drop Down Icon", modifier = Modifier.size(16.dp))
             }
