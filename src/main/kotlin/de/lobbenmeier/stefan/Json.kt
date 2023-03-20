@@ -8,6 +8,7 @@ val GithubJson = Json { ignoreUnknownKeys = true }
 
 @OptIn(ExperimentalSerializationApi::class)
 val YtDlpJson = Json {
+    explicitNulls = false
     ignoreUnknownKeys = true
     namingStrategy = JsonNamingStrategy.SnakeCase
 }

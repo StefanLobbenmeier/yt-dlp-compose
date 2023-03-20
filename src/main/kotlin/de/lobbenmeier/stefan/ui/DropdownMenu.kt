@@ -18,10 +18,10 @@ fun <T> DropdownMenu(
     options: List<T>,
     optionBuilder: @Composable (T) -> Unit = { Text(it.toString()) },
     modifier: Modifier = Modifier,
-    selectionChanged: (T) -> Unit
+    selectedOption: T,
+    selectionChanged: (T) -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
-    var selectedOption by remember { mutableStateOf(options[0]) }
     var textFieldSize by remember { mutableStateOf(Size.Zero) }
 
     val icon = if (expanded) FeatherIcons.ChevronUp else FeatherIcons.ChevronDown
@@ -46,7 +46,6 @@ fun <T> DropdownMenu(
                 options.forEach { option ->
                     DropdownMenuItem(
                         onClick = {
-                            selectedOption = option
                             expanded = !expanded
                             selectionChanged(option)
                         }) {

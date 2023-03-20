@@ -1,12 +1,11 @@
 package de.lobbenmeier.stefan.ui
 
+import VideoMetadata
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -42,7 +41,7 @@ private fun DownloadItemView(downloadItem: DownloadItem) {
                 Modifier.weight(1f).padding(20.dp, 15.dp).fillMaxHeight(),
                 verticalArrangement = Arrangement.SpaceBetween) {
                     Text(metadata?.title ?: downloadItem.url, fontSize = 1.1.em)
-                    FormatSelector(downloadItem)
+                    FormatSelector(downloadItem, metadata)
                     if (metadata == null) {
                         Text("Downloading metadata...")
                     } else {
@@ -72,19 +71,35 @@ private fun DownloadItemView(downloadItem: DownloadItem) {
 }
 
 @Composable
-private fun FormatSelector(downloadItem: DownloadItem) {
-    Row {
-        DropdownMenu(
-            listOf("Video + Audio", "Video only", "Audio only"), modifier = Modifier.weight(1f)) {
-                //        downloadItem.setAudioVideo()
-            }
-        DropdownMenu(listOf("Format1", "Format2"), modifier = Modifier.weight(1f)) {
-            //        downloadItem.setFormat()
+private fun FormatSelector(downloadItem: DownloadItem, metadata: VideoMetadata?) {
+    val formats = metadata?.formats?.asReversed()
+
+    if (formats != null) {
+        val videoFormats = formats.filter { it.vcodec != "none" }
+
+        var selectedVideoOption by remember { mutableStateOf(videoFormats[0]) }
+        val audioFormats = formats.filter { it.acodec != "none" }
+        var selectedAudioOption by remember { mutableStateOf(audioFormats[0]) }
+        Row {
+            DropdownMenu(
+                videoFormats,
+                selectedOption = selectedVideoOption,
+                selectionChanged = { selectedVideoOption = it },
+                modifier = Modifier.weight(1f),
+                optionBuilder = { Text("${it.height}p${it.fps} (${it.vcodec})") })
+            DropdownMenu(
+                audioFormats,
+                selectedOption = selectedAudioOption,
+                selectionChanged = { selectedAudioOption = it },
+                modifier = Modifier.weight(1f),
+                optionBuilder = { Text("${it.formatNote} (${it.acodec})") })
         }
+    } else {
+        LinearProgressIndicator(Modifier.fillMaxWidth())
     }
 }
 
-private fun durationString(i: Int?): String {
+private fun durationString(i: Double?): String {
     if (i == null) {
         return ""
     }
