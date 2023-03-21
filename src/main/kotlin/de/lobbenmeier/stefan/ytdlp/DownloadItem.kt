@@ -18,7 +18,18 @@ class DownloadItem(
     val metadata = MutableStateFlow<VideoMetadata?>(null)
 
     fun download() {
-        ytDlp.run(url)
+        ytDlp.run(*selectFormats(), url)
+    }
+
+    private fun selectFormats(): Array<String> {
+        val selectedFormats =
+            listOfNotNull(selectedVideoFormat.value?.formatId, selectedAudioFormat.value?.formatId)
+
+        if (selectedFormats.isEmpty()) {
+            return arrayOf()
+        }
+
+        return arrayOf("-f", selectedFormats.joinToString("+"))
     }
 
     fun gatherMetadata() {
