@@ -77,8 +77,8 @@ private fun FormatSelector(downloadItem: DownloadItem, metadata: VideoMetadata?)
         val videoFormats = formats.filter { it.vcodec != "none" }
         val audioFormats = formats.filter { it.acodec != "none" }
 
-        val selectedVideoOption by downloadItem.selectedVideoFormat.collectAsState()
-        val selectedAudioOption by downloadItem.selectedAudioFormat.collectAsState()
+        val selectedVideoOption by downloadItem.format.video.collectAsState()
+        val selectedAudioOption by downloadItem.format.audio.collectAsState(initial = null)
 
         Row {
             DropdownMenu(

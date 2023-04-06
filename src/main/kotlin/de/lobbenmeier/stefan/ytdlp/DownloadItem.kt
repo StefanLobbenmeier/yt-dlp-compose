@@ -5,6 +5,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.serialization.decodeFromString
 
@@ -13,17 +15,15 @@ class DownloadItem(
     val url: String = "https://www.youtube.com/watch?v=CBB75zjxTR4"
 ) {
 
-    val selectedVideoFormat = MutableStateFlow<Format?>(null)
-    val selectedAudioFormat = MutableStateFlow<Format?>(null)
     val metadata = MutableStateFlow<VideoMetadata?>(null)
+    val format = DownloadItemFormat()
 
     fun download() {
-        ytDlp.run(*selectFormats(), url)
+        CoroutineScope(Dispatchers.IO).launch { ytDlp.run(*selectFormats(), url) }
     }
 
-    private fun selectFormats(): Array<String> {
-        val selectedFormats =
-            listOfNotNull(selectedVideoFormat.value?.formatId, selectedAudioFormat.value?.formatId)
+    private suspend fun selectFormats(): Array<String> {
+        val selectedFormats = format.allSelectedFormats.firstOrNull() ?: listOf()
 
         if (selectedFormats.isEmpty()) {
             return arrayOf()
@@ -40,24 +40,40 @@ class DownloadItem(
         }
     }
 
-    fun selectFormat(format: Format) {
-        if (format.acodec != "none") {
-            selectedAudioFormat.value = format
+    fun selectFormat(ytDlpFormat: Format) {
+        format.selectFormat(ytDlpFormat)
+    }
+
+    val fileSize = format.size
+}
+
+class DownloadItemFormat {
+
+    private val selectedVideoFormat = MutableStateFlow<Format?>(null)
+    private val selectedAudioFormat = MutableStateFlow<Format?>(null)
+
+    val video
+        get() = selectedVideoFormat
+    val audio =
+        selectedVideoFormat.combine(selectedAudioFormat) { video, audio ->
+            if (video?.acodec != "none") video else audio
         }
-        if (format.vcodec != "none") {
-            selectedVideoFormat.value = format
+
+    fun selectFormat(ytDlpFormat: Format) {
+        if (ytDlpFormat.vcodec != "none") {
+            selectedVideoFormat.value = ytDlpFormat
+        } else if (ytDlpFormat.acodec != "none") {
+            selectedAudioFormat.value = ytDlpFormat
         }
     }
 
-    val fileSize =
-        selectedVideoFormat.combine(selectedAudioFormat) { video, audio ->
-            var acc = 0
-            if (video != null) {
-                acc += video.filesize ?: video.filesizeApprox ?: 0
-            }
-            if (audio != null && audio != video) {
-                acc += audio.filesize ?: audio.filesizeApprox ?: 0
-            }
-            acc
+    val allSelectedFormats =
+        video.combine(audio) { video, audio -> listOfNotNull(video, audio).distinct() }
+
+    val size =
+        allSelectedFormats.map { formats ->
+            formats
+                .map { format -> format.filesize ?: format.filesizeApprox ?: 0 }
+                .fold(0, Int::plus)
         }
 }
