@@ -74,6 +74,6 @@ class DownloadItemFormat {
         allSelectedFormats.map { formats ->
             formats
                 .map { format -> format.filesize ?: format.filesizeApprox ?: 0 }
-                .fold(0, Int::plus)
+                .fold(0, Long::plus)
         }
 }
