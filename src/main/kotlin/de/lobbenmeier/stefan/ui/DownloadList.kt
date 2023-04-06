@@ -92,7 +92,13 @@ private fun FormatSelector(downloadItem: DownloadItem, metadata: VideoMetadata?)
                 selectedOption = selectedAudioOption,
                 selectionChanged = { downloadItem.selectFormat(it) },
                 modifier = Modifier.weight(1f),
-                optionBuilder = { Text("${it.formatNote} (${it.acodec})") })
+                optionBuilder = {
+                    var text = "${it.formatNote}"
+                    if (it.acodec != null) {
+                        text += "(${it.acodec})"
+                    }
+                    Text(text)
+                })
         }
     } else {
         LinearProgressIndicator(Modifier.fillMaxWidth())
