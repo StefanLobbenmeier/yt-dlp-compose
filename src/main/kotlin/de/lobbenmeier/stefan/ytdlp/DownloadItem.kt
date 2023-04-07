@@ -5,7 +5,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.serialization.decodeFromString
@@ -24,20 +23,27 @@ class DownloadItem(
         private const val PROGRESS_TEMPLATE = "$PROGRESS_PREFIX%(progress)j"
     }
 
-    fun download() {
+    fun download(selectedVideoOption: Format?, selectedAudioOption: Format?) {
         CoroutineScope(Dispatchers.IO).launch {
-            ytDlp.runAsync(*selectFormats(), "--progress-template", PROGRESS_TEMPLATE, url) { log ->
-                if (log.startsWith(PROGRESS_PREFIX)) {
-                    val progressJson = log.removePrefix(PROGRESS_PREFIX)
-                    val progress = YtDlpJson.decodeFromString<DownloadProgress>(progressJson)
-                    downloadProgress.emit(progress)
+            ytDlp.runAsync(
+                *selectFormats(selectedVideoOption, selectedAudioOption),
+                "--progress-template",
+                PROGRESS_TEMPLATE,
+                url) { log ->
+                    if (log.startsWith(PROGRESS_PREFIX)) {
+                        val progressJson = log.removePrefix(PROGRESS_PREFIX)
+                        val progress = YtDlpJson.decodeFromString<DownloadProgress>(progressJson)
+                        downloadProgress.emit(progress)
+                    }
                 }
-            }
         }
     }
 
-    private suspend fun selectFormats(): Array<String> {
-        val selectedFormats = format.allSelectedFormats.firstOrNull() ?: listOf()
+    private fun selectFormats(
+        selectedVideoOption: Format?,
+        selectedAudioOption: Format?
+    ): Array<String> {
+        val selectedFormats = listOfNotNull(selectedVideoOption, selectedAudioOption)
 
         if (selectedFormats.isEmpty()) {
             return arrayOf()
@@ -81,8 +87,8 @@ class DownloadItemFormat {
         }
     }
 
-    val allSelectedFormats =
-        video.combine(audio) { video, audio -> listOfNotNull(video, audio).distinct() }
+    val allSelectedFormats
+        get() = video.combine(audio) { video, audio -> listOfNotNull(video, audio).distinct() }
 
     val size =
         allSelectedFormats.map { formats ->

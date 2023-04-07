@@ -7,6 +7,8 @@ class YtDlpTest :
         test("download") {
             val ytDlp = YtDlp(YtDlpConfiguration(), YtDlpVersion())
 
-            ytDlp.createDownloadItem("https://www.youtube.com/watch?v=CBB75zjxTR4").download()
+            ytDlp
+                .createDownloadItem("https://www.youtube.com/watch?v=CBB75zjxTR4")
+                .download(null, null)
         }
     })

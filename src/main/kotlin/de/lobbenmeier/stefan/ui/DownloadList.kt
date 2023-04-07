@@ -32,6 +32,9 @@ private fun DownloadItemView(downloadItem: DownloadItem) {
     val metadata by downloadItem.metadata.collectAsState()
     val thumbnail = metadata?.thumbnail
 
+    val selectedVideoOption by downloadItem.format.video.collectAsState()
+    val selectedAudioOption by downloadItem.format.audio.collectAsState(initial = null)
+
     Card {
         Row(Modifier.requiredHeight(135.dp)) {
             Thumbnail(thumbnail)
@@ -39,7 +42,7 @@ private fun DownloadItemView(downloadItem: DownloadItem) {
                 Modifier.weight(1f).padding(20.dp, 15.dp).fillMaxHeight(),
                 verticalArrangement = Arrangement.SpaceBetween) {
                     Text(metadata?.title ?: downloadItem.url, fontSize = 1.1.em)
-                    FormatSelector(downloadItem, metadata)
+                    FormatSelector(downloadItem, metadata, selectedVideoOption, selectedAudioOption)
                     if (metadata == null) {
                         Text("Downloading metadata...")
                     } else {
@@ -61,24 +64,27 @@ private fun DownloadItemView(downloadItem: DownloadItem) {
                 }
             Divider(Modifier.fillMaxHeight().width(1.dp))
             Column {
-                IconButton(onClick = downloadItem::download) {
-                    Icon(FeatherIcons.Download, "Download")
-                }
+                IconButton(
+                    onClick = { downloadItem.download(selectedVideoOption, selectedAudioOption) }) {
+                        Icon(FeatherIcons.Download, "Download")
+                    }
             }
         }
     }
 }
 
 @Composable
-private fun FormatSelector(downloadItem: DownloadItem, metadata: VideoMetadata?) {
+private fun FormatSelector(
+    downloadItem: DownloadItem,
+    metadata: VideoMetadata?,
+    selectedVideoOption: Format?,
+    selectedAudioOption: Format?
+) {
     val formats = metadata?.formats?.asReversed()
 
     if (formats != null) {
         val videoFormats = formats.filter { it.isVideo }
         val audioFormats = formats.filter { it.isAudioOnly }
-
-        val selectedVideoOption by downloadItem.format.video.collectAsState()
-        val selectedAudioOption by downloadItem.format.audio.collectAsState(initial = null)
 
         Row {
             DropdownMenu(
