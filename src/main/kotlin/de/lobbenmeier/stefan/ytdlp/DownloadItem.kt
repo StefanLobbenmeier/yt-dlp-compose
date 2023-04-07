@@ -56,13 +56,13 @@ class DownloadItemFormat {
         get() = selectedVideoFormat
     val audio =
         selectedVideoFormat.combine(selectedAudioFormat) { video, audio ->
-            if (video?.acodec != "none") video else audio
+            if (video.isAudio) video else audio
         }
 
     fun selectFormat(ytDlpFormat: Format) {
-        if (ytDlpFormat.vcodec != "none") {
+        if (ytDlpFormat.isVideo) {
             selectedVideoFormat.value = ytDlpFormat
-        } else if (ytDlpFormat.acodec != "none") {
+        } else if (ytDlpFormat.isAudio) {
             selectedAudioFormat.value = ytDlpFormat
         }
     }

@@ -16,7 +16,9 @@ data class Format(
     val formatId: String?,
     val filesize: Long?,
     val filesizeApprox: Long?,
+    val videoExt: String?,
     val vcodec: String?,
+    val audioExt: String?,
     val acodec: String?,
     val format: String?,
     val formatNote: String?,
@@ -25,3 +27,12 @@ data class Format(
     val height: Int?,
     val width: Int?,
 ) {}
+
+private val String?.isSet
+    get() = this != null && this != "none"
+val Format?.isAudio
+    get() = this?.audioExt.isSet
+val Format.isAudioOnly
+    get() = this.isAudio && !this.isVideo
+val Format.isVideo
+    get() = this.videoExt.isSet

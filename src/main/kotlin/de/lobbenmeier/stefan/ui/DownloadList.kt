@@ -74,8 +74,8 @@ private fun FormatSelector(downloadItem: DownloadItem, metadata: VideoMetadata?)
     val formats = metadata?.formats?.asReversed()
 
     if (formats != null) {
-        val videoFormats = formats.filter { it.vcodec != "none" }
-        val audioFormats = formats.filter { it.acodec != "none" }
+        val videoFormats = formats.filter { it.isVideo }
+        val audioFormats = formats.filter { it.isAudioOnly }
 
         val selectedVideoOption by downloadItem.format.video.collectAsState()
         val selectedAudioOption by downloadItem.format.audio.collectAsState(initial = null)
