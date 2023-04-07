@@ -16,10 +16,24 @@ class DownloadItem(
 ) {
 
     val metadata = MutableStateFlow<VideoMetadata?>(null)
+    val downloadProgress = MutableStateFlow<DownloadProgress?>(null)
     val format = DownloadItemFormat()
 
+    companion object {
+        private const val PROGRESS_PREFIX = "[download-progress]"
+        private const val PROGRESS_TEMPLATE = "$PROGRESS_PREFIX%(progress)j"
+    }
+
     fun download() {
-        CoroutineScope(Dispatchers.IO).launch { ytDlp.run(*selectFormats(), url) }
+        CoroutineScope(Dispatchers.IO).launch {
+            ytDlp.runAsync(*selectFormats(), "--progress-template", PROGRESS_TEMPLATE, url) { log ->
+                if (log.startsWith(PROGRESS_PREFIX)) {
+                    val progressJson = log.removePrefix(PROGRESS_PREFIX)
+                    val progress = YtDlpJson.decodeFromString<DownloadProgress>(progressJson)
+                    downloadProgress.emit(progress)
+                }
+            }
+        }
     }
 
     private suspend fun selectFormats(): Array<String> {
@@ -29,7 +43,7 @@ class DownloadItem(
             return arrayOf()
         }
 
-        return arrayOf("-f", selectedFormats.joinToString("+"))
+        return arrayOf("-f", selectedFormats.joinToString("+") { it.formatId })
     }
 
     fun gatherMetadata() {

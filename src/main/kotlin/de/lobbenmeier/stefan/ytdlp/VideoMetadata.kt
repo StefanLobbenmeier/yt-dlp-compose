@@ -13,7 +13,7 @@ data class VideoMetadata(
 
 @Serializable
 data class Format(
-    val formatId: String?,
+    val formatId: String,
     val filesize: Long?,
     val filesizeApprox: Long?,
     val videoExt: String?,

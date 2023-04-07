@@ -19,7 +19,10 @@ class YtDlp(
         CoroutineScope(Dispatchers.IO).launch { runAsync(*options) }
     }
 
-    suspend fun runAsync(vararg options: String): String {
+    suspend fun runAsync(
+        vararg options: String,
+        consumer: suspend (String) -> Unit = { line -> println("process $line") }
+    ): String {
         val command = arrayOf(version.ytDlpBinary, *options).joinToString(" ")
         println("Start process: $command")
 
@@ -31,7 +34,7 @@ class YtDlp(
                 stderr = Redirect.CAPTURE,
 
                 // Allows to consume line by line without delay the provided output.
-                consumer = { line -> println("process $line") },
+                consumer = consumer,
             )
 
         println("Script finished with result=${res.resultCode}")
