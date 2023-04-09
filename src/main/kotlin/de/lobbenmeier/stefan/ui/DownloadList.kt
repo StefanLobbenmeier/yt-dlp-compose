@@ -42,7 +42,9 @@ private fun DownloadItemView(downloadItem: DownloadItem) {
                 Modifier.weight(1f).padding(20.dp, 15.dp).fillMaxHeight(),
                 verticalArrangement = Arrangement.SpaceBetween) {
                     Text(metadata?.title ?: downloadItem.url, fontSize = 1.1.em)
-                    FormatSelector(downloadItem, metadata, selectedVideoOption, selectedAudioOption)
+
+                    FormatSelectorOrDownloadProgress(
+                        downloadItem, metadata, selectedVideoOption, selectedAudioOption)
                     if (metadata == null) {
                         Text("Downloading metadata...")
                     } else {
@@ -71,6 +73,21 @@ private fun DownloadItemView(downloadItem: DownloadItem) {
             }
         }
     }
+}
+
+@Composable
+private fun FormatSelectorOrDownloadProgress(
+    downloadItem: DownloadItem,
+    metadata: VideoMetadata?,
+    selectedVideoOption: Format?,
+    selectedAudioOption: Format?
+) {
+    val downloadProgress by downloadItem.downloadProgress.collectAsState(null)
+
+    val finalDownloadProgress = downloadProgress
+    if (finalDownloadProgress == null)
+        FormatSelector(downloadItem, metadata, selectedVideoOption, selectedAudioOption)
+    else DownloadProgressIndicator(finalDownloadProgress)
 }
 
 @Composable
@@ -109,6 +126,11 @@ private fun FormatSelector(
     } else {
         LinearProgressIndicator(Modifier.fillMaxWidth())
     }
+}
+
+@Composable
+fun DownloadProgressIndicator(downloadProgress: DownloadProgress) {
+    Text(downloadProgress.toString())
 }
 
 private fun durationString(i: Double?): String {
