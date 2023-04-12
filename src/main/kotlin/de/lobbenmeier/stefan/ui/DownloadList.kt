@@ -128,11 +128,6 @@ private fun FormatSelector(
     }
 }
 
-@Composable
-fun DownloadProgressIndicator(downloadProgress: DownloadProgress) {
-    Text(downloadProgress.toString())
-}
-
 private fun durationString(i: Double?): String {
     if (i == null) {
         return ""
