@@ -4,6 +4,7 @@ import com.github.pgreze.process.Redirect
 import com.github.pgreze.process.process
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.launch
 
 class YtDlp(
@@ -22,7 +23,7 @@ class YtDlp(
     suspend fun runAsync(
         vararg options: String,
         consumer: suspend (String) -> Unit = { line -> println("process $line") }
-    ): String {
+    ) {
         val command = arrayOf(version.ytDlpBinary, *options).joinToString(" ")
         println("Start process: $command")
 
@@ -30,11 +31,8 @@ class YtDlp(
             process(
                 version.ytDlpBinary,
                 *options,
-                stdout = Redirect.CAPTURE,
+                stdout = Redirect.Consume { consumer(it.last()) },
                 stderr = Redirect.CAPTURE,
-
-                // Allows to consume line by line without delay the provided output.
-                consumer = consumer,
             )
 
         println("Script finished with result=${res.resultCode}")
@@ -45,7 +43,5 @@ class YtDlp(
         if (res.resultCode != 0) {
             throw Exception("yt-dlp indicated error in its response")
         }
-
-        return output
     }
 }

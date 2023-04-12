@@ -54,9 +54,9 @@ class DownloadItem(
 
     fun gatherMetadata() {
         CoroutineScope(Dispatchers.IO).launch {
-            val metadataJson = ytDlp.runAsync("-J", "--flat-playlist", url)
-
-            metadata.value = YtDlpJson.decodeFromString<VideoMetadata>(metadataJson)
+            ytDlp.runAsync("-J", "--flat-playlist", url) { metadataJson ->
+                metadata.value = YtDlpJson.decodeFromString<VideoMetadata>(metadataJson)
+            }
         }
     }
 
