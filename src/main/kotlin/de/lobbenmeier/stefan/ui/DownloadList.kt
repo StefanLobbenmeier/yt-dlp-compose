@@ -23,14 +23,14 @@ import kotlin.time.Duration.Companion.seconds
 @Composable
 fun DownloadList(downloadQueue: DownloadQueue) {
     LazyColumn(modifier = Modifier.padding(8.0.dp).fillMaxSize()) {
-        downloadQueue.items.forEach { item { DownloadItemView(it) } }
+        downloadQueue.items.asReversed().forEach { item { DownloadItemView(it) } }
     }
 }
 
 @Composable
 private fun DownloadItemView(downloadItem: DownloadItem) {
     val metadata by downloadItem.metadata.collectAsState()
-    val thumbnail = metadata?.thumbnail
+    val thumbnail = metadata?.thumbnailWithFallBack
 
     val selectedVideoOption by downloadItem.format.video.collectAsState()
     val selectedAudioOption by downloadItem.format.audio.collectAsState(initial = null)

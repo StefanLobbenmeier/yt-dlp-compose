@@ -7,9 +7,13 @@ data class VideoMetadata(
     val duration: Double?,
     val formats: List<Format>?,
     val thumbnail: String?,
+    val thumbnails: List<Thumbnail>?,
     val title: String?,
     val webpageUrl: String?,
 ) {}
+
+val VideoMetadata.thumbnailWithFallBack
+    get() = thumbnail ?: thumbnails?.lastOrNull()?.url
 
 @Serializable
 data class Format(
@@ -36,3 +40,12 @@ val Format.isAudioOnly
     get() = this.isAudio && !this.isVideo
 val Format.isVideo
     get() = this.videoExt.isSet
+
+@Serializable
+data class Thumbnail(
+    val height: Int?,
+    val id: String?,
+    val resolution: String?,
+    val url: String?,
+    val width: Int?
+)
