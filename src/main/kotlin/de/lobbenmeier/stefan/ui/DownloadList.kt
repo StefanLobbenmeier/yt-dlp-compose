@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.em
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.Download
 import compose.icons.feathericons.Folder
+import compose.icons.feathericons.Play
 import de.lobbenmeier.stefan.model.DownloadQueue
 import de.lobbenmeier.stefan.ytdlp.*
 import io.kamel.image.KamelImage
@@ -73,6 +74,7 @@ private fun DownloadItemView(downloadItem: DownloadItem) {
                         Icon(FeatherIcons.Download, "Download")
                     }
                 OpenFileButton(downloadItem)
+                BrowseFileButton(downloadItem)
             }
         }
     }
@@ -194,7 +196,28 @@ private fun OpenFileButton(downloadItem: DownloadItem) {
                 }
             }
         }) {
-            Icon(FeatherIcons.Folder, "Open File")
+            Icon(FeatherIcons.Play, "Open File")
+        }
+}
+
+@Composable
+private fun BrowseFileButton(downloadItem: DownloadItem) {
+    val file by downloadItem.targetFile.collectAsState()
+    val finalFile = file
+
+    IconButton(
+        enabled = finalFile != null,
+        onClick = {
+            if (finalFile != null) {
+                if (finalFile.exists()) {
+                    Desktop.getDesktop().browseFileDirectory(finalFile.absoluteFile)
+                } else {
+                    TODO(
+                        "what to do when the file is not found or yt-dlp gave us the wrong name for some reason")
+                }
+            }
+        }) {
+            Icon(FeatherIcons.Folder, "Show file in folder")
         }
 }
 
