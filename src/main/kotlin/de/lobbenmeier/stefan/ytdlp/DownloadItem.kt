@@ -38,7 +38,6 @@ class DownloadItem(
                             val progressJson = log.removePrefix(PROGRESS_PREFIX)
                             val progress =
                                 YtDlpJson.decodeFromString<YtDlpDownloadProgress>(progressJson)
-                            println(progress)
                             downloadProgress.emit(progress)
                         } else {
                             println(log)
