@@ -4,7 +4,6 @@ import com.github.pgreze.process.Redirect
 import com.github.pgreze.process.process
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.launch
 
 class YtDlp(
@@ -31,7 +30,7 @@ class YtDlp(
             process(
                 version.ytDlpBinary,
                 *options,
-                stdout = Redirect.Consume { consumer(it.last()) },
+                stdout = Redirect.Consume { it.collect(consumer) },
                 stderr = Redirect.CAPTURE,
             )
 
