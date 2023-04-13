@@ -37,7 +37,7 @@ class DownloadItem(
                         if (log.startsWith(PROGRESS_PREFIX)) {
                             val progressJson = log.removePrefix(PROGRESS_PREFIX)
                             val progress =
-                                YtDlpJson.decodeFromString<DownloadProgress>(progressJson)
+                                YtDlpJson.decodeFromString<YtDlpDownloadProgress>(progressJson)
                             downloadProgress.emit(progress)
                         }
                     }
@@ -51,6 +51,7 @@ class DownloadItem(
                         targetFile.emit(File(log))
                     }
             } catch (e: Exception) {
+                e.printStackTrace()
                 downloadProgress.emit(DownloadFailed(e))
             }
         }
