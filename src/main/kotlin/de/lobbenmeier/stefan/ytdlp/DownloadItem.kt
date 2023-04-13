@@ -25,17 +25,24 @@ class DownloadItem(
 
     fun download(selectedVideoOption: Format?, selectedAudioOption: Format?) {
         CoroutineScope(Dispatchers.IO).launch {
-            ytDlp.runAsync(
-                *selectFormats(selectedVideoOption, selectedAudioOption),
-                "--progress-template",
-                PROGRESS_TEMPLATE,
-                url) { log ->
-                    if (log.startsWith(PROGRESS_PREFIX)) {
-                        val progressJson = log.removePrefix(PROGRESS_PREFIX)
-                        val progress = YtDlpJson.decodeFromString<DownloadProgress>(progressJson)
-                        downloadProgress.emit(progress)
+            downloadProgress.emit(DownloadStarted)
+            try {
+                ytDlp.runAsync(
+                    *selectFormats(selectedVideoOption, selectedAudioOption),
+                    "--progress-template",
+                    PROGRESS_TEMPLATE,
+                    url) { log ->
+                        if (log.startsWith(PROGRESS_PREFIX)) {
+                            val progressJson = log.removePrefix(PROGRESS_PREFIX)
+                            val progress =
+                                YtDlpJson.decodeFromString<DownloadProgress>(progressJson)
+                            downloadProgress.emit(progress)
+                        }
                     }
-                }
+                downloadProgress.emit(DownloadCompleted)
+            } catch (e: Exception) {
+                downloadProgress.emit(DownloadFailed(e))
+            }
         }
     }
 
