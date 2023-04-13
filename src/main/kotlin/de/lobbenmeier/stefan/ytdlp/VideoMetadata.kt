@@ -37,9 +37,44 @@ private val String?.isSet
 val Format?.isAudio
     get() = this?.audioExt.isSet
 val Format.isAudioOnly
-    get() = this.isAudio && !this.isVideo
-val Format.isVideo
-    get() = this.videoExt.isSet
+    get() = isAudio && !isVideo
+val Format.isVideo: Boolean
+    get() {
+        return videoExt.isSet
+    }
+
+val Format.videoDescription: String
+    get() {
+        var moreDetails = ""
+        if (height != null) {
+            moreDetails += "${height}p"
+
+            if (fps != null) {
+                moreDetails += fps.toInt()
+            }
+        }
+
+        if (vcodec != null) {
+            if (moreDetails != "") moreDetails += " "
+            moreDetails += "${vcodec}"
+        }
+
+        if (moreDetails != "") {
+            moreDetails = "($moreDetails)"
+        }
+
+        return listOfNotNull(formatNote, moreDetails).joinToString(" ")
+    }
+
+val Format.audioDescription: String
+    get() {
+        var text = formatNote ?: ""
+        if (isVideo) text = "included in Video"
+        if (acodec != null) {
+            text += "(${acodec})"
+        }
+        return text
+    }
 
 @Serializable
 data class Thumbnail(

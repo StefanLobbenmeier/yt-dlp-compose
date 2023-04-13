@@ -161,19 +161,13 @@ private fun FormatSelector(
                 selectedOption = selectedVideoOption,
                 selectionChanged = { downloadItem.selectFormat(it) },
                 modifier = Modifier.weight(1f),
-                optionBuilder = { Text("${it.height}p${it.fps} (${it.vcodec})") })
+                optionBuilder = { Text(it.videoDescription) })
             DropdownMenu(
                 audioFormats,
                 selectedOption = selectedAudioOption,
                 selectionChanged = { downloadItem.selectFormat(it) },
                 modifier = Modifier.weight(1f),
-                optionBuilder = {
-                    var text = "${it.formatNote}"
-                    if (it.acodec != null) {
-                        text += "(${it.acodec})"
-                    }
-                    Text(text)
-                })
+                optionBuilder = { Text(it.audioDescription) })
         }
     } else {
         LinearProgressIndicator(Modifier.fillMaxWidth())
