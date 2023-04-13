@@ -14,10 +14,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.Download
+import compose.icons.feathericons.Folder
 import de.lobbenmeier.stefan.model.DownloadQueue
 import de.lobbenmeier.stefan.ytdlp.*
 import io.kamel.image.KamelImage
 import io.kamel.image.lazyPainterResource
+import java.awt.Desktop
 import kotlin.time.Duration.Companion.seconds
 
 @Composable
@@ -70,6 +72,7 @@ private fun DownloadItemView(downloadItem: DownloadItem) {
                     onClick = { downloadItem.download(selectedVideoOption, selectedAudioOption) }) {
                         Icon(FeatherIcons.Download, "Download")
                     }
+                OpenFileButton(downloadItem)
             }
         }
     }
@@ -171,6 +174,27 @@ private fun ProgressIndicator(modifier: Modifier, progress: Float? = null) {
             } else {
                 CircularProgressIndicator(progress)
             }
+        }
+}
+
+@Composable
+private fun OpenFileButton(downloadItem: DownloadItem) {
+    val file by downloadItem.targetFile.collectAsState()
+    val finalFile = file
+
+    IconButton(
+        enabled = finalFile != null,
+        onClick = {
+            if (finalFile != null) {
+                if (finalFile.exists()) {
+                    Desktop.getDesktop().open(finalFile)
+                } else {
+                    TODO(
+                        "what to do when the file is not found or yt-dlp gave us the wrong name for some reason")
+                }
+            }
+        }) {
+            Icon(FeatherIcons.Folder, "Open File")
         }
 }
 

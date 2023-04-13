@@ -1,6 +1,7 @@
 package de.lobbenmeier.stefan.ytdlp
 
 import de.lobbenmeier.stefan.YtDlpJson
+import java.io.File
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,6 +17,7 @@ class DownloadItem(
 
     val metadata = MutableStateFlow<VideoMetadata?>(null)
     val downloadProgress = MutableStateFlow<DownloadProgress?>(null)
+    val targetFile = MutableStateFlow<File?>(null)
     val format = DownloadItemFormat()
 
     companion object {
@@ -40,6 +42,14 @@ class DownloadItem(
                         }
                     }
                 downloadProgress.emit(DownloadCompleted)
+
+                ytDlp.runAsync(
+                    *selectFormats(selectedVideoOption, selectedAudioOption),
+                    "--print",
+                    "filename",
+                    url) { log ->
+                        targetFile.emit(File(log))
+                    }
             } catch (e: Exception) {
                 downloadProgress.emit(DownloadFailed(e))
             }
