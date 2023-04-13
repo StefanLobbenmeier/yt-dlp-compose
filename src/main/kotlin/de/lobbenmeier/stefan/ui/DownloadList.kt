@@ -48,24 +48,7 @@ private fun DownloadItemView(downloadItem: DownloadItem) {
 
                     FormatSelectorOrDownloadProgress(
                         downloadItem, metadata, selectedVideoOption, selectedAudioOption)
-                    if (metadata == null) {
-                        Text("Downloading metadata...")
-                    } else {
-                        Row {
-                            Row(modifier = Modifier.weight(1f)) {
-                                Text("Duration: ", fontWeight = FontWeight.Bold)
-                                Text(durationString(metadata?.duration))
-                            }
-                            Row(modifier = Modifier.weight(1f)) {
-                                val fileSize by downloadItem.fileSize.collectAsState(0)
-                                Text(
-                                    "Size: ",
-                                    fontWeight = FontWeight.Bold,
-                                )
-                                Text(fileSizeString(fileSize.toDouble()))
-                            }
-                        }
-                    }
+                    InformationRow(metadata, downloadItem)
                 }
             Divider(Modifier.fillMaxHeight().width(1.dp))
             Column {
@@ -76,6 +59,70 @@ private fun DownloadItemView(downloadItem: DownloadItem) {
                 OpenFileButton(downloadItem)
                 BrowseFileButton(downloadItem)
             }
+        }
+    }
+}
+
+@Composable
+private fun InformationRow(metadata: VideoMetadata?, downloadItem: DownloadItem) {
+    if (metadata == null) {
+        return Text("Downloading metadata...")
+    }
+
+    val downloadProgress by downloadItem.downloadProgress.collectAsState()
+    val finalDownloadProgress = downloadProgress
+
+    if (finalDownloadProgress == null) {
+        VideoInformation(metadata, downloadItem)
+    } else {
+        DownloadInformation(finalDownloadProgress)
+    }
+}
+
+@Composable
+private fun VideoInformation(metadata: VideoMetadata, downloadItem: DownloadItem) {
+    Row {
+        Row(modifier = Modifier.weight(1f)) {
+            Text("Duration: ", fontWeight = FontWeight.Bold)
+            Text(durationString(metadata.duration))
+        }
+        Row(modifier = Modifier.weight(1f)) {
+            val fileSize by downloadItem.fileSize.collectAsState(0)
+            Text(
+                "Size: ",
+                fontWeight = FontWeight.Bold,
+            )
+            Text(fileSizeString(fileSize.toDouble()))
+        }
+    }
+}
+
+@Composable
+private fun DownloadInformation(downloadProgress: DownloadProgress) {
+    when (downloadProgress) {
+        is YtDlpDownloadProgress ->
+            Row {
+                Row(modifier = Modifier.weight(1f)) {
+                    Text("ETA: ", fontWeight = FontWeight.Bold)
+                    Text(durationString(downloadProgress.eta))
+                }
+                Row(modifier = Modifier.weight(1f)) {
+                    Text(
+                        "Speed: ",
+                        fontWeight = FontWeight.Bold,
+                    )
+                    val speed = downloadProgress.speed?.toDouble() ?: 0.0
+                    Text(fileSizeString(speed) + "/s")
+                }
+            }
+        is DownloadStarted -> {
+            Text("Starting Download...")
+        }
+        is DownloadCompleted -> {
+            Text("Completed Download.")
+        }
+        is DownloadFailed -> {
+            Text("Failed to download: " + downloadProgress.e)
         }
     }
 }
@@ -134,6 +181,14 @@ private fun FormatSelector(
 }
 
 private fun durationString(i: Double?): String {
+    if (i == null) {
+        return ""
+    }
+    val duration = i.seconds
+    return duration.toString()
+}
+
+private fun durationString(i: Int?): String {
     if (i == null) {
         return ""
     }
