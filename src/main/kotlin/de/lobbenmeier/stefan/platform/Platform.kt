@@ -13,7 +13,7 @@ enum class YtDlpNames(val filename: String) {
     windows("yt-dlp")
 }
 
-enum class FfmpegPlatforms(val filename: String) {
+enum class FfmpegPlatforms(val platformName: String) {
     linux32("linux-32"),
     linux64("linux-64"),
     linuxArm64("linux-arm64"),
