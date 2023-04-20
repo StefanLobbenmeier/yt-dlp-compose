@@ -11,7 +11,7 @@ import androidx.compose.ui.unit.dp
 import de.lobbenmeier.stefan.ytdlp.*
 
 @Composable
-fun DownloadProgressIndicator(downloadProgress: DownloadProgress) {
+fun DownloadProgressIndicator(downloadProgress: VideoDownloadProgress) {
     if (downloadProgress is DownloadFailed) {
         return LinearProgressIndicator(
             progress = downloadProgress.progress,

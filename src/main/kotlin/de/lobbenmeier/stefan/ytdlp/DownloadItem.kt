@@ -16,7 +16,7 @@ class DownloadItem(
 ) {
 
     val metadata = MutableStateFlow<VideoMetadata?>(null)
-    val downloadProgress = MutableStateFlow<DownloadProgress?>(null)
+    val downloadProgress = MutableStateFlow<VideoDownloadProgress?>(null)
     val targetFile = MutableStateFlow<File?>(null)
     val format = DownloadItemFormat()
 

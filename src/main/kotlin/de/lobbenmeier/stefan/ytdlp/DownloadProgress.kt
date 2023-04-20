@@ -2,11 +2,16 @@ package de.lobbenmeier.stefan.ytdlp
 
 import kotlinx.serialization.Serializable
 
-sealed interface DownloadProgress {
+interface DownloadProgress {
     val progress: Float
 }
 
-sealed class CustomDownloadProgress(override val progress: Float) : DownloadProgress
+sealed interface VideoDownloadProgress : DownloadProgress
+
+sealed interface UpdateDownloadProgress : DownloadProgress
+
+sealed class CustomDownloadProgress(override val progress: Float) :
+    VideoDownloadProgress, UpdateDownloadProgress
 
 object DownloadStarted : CustomDownloadProgress(0f)
 
@@ -26,7 +31,7 @@ data class YtDlpDownloadProgress(
     val speed: Float? = null,
     val elapsed: Float? = null,
     val ctxId: String? = null,
-) : DownloadProgress {
+) : VideoDownloadProgress {
     override val progress: Float
         get() {
             if (downloadedBytes == null) return 0f

@@ -98,7 +98,7 @@ private fun VideoInformation(metadata: VideoMetadata, downloadItem: DownloadItem
 }
 
 @Composable
-private fun DownloadInformation(downloadProgress: DownloadProgress) {
+private fun DownloadInformation(downloadProgress: VideoDownloadProgress) {
     when (downloadProgress) {
         is YtDlpDownloadProgress ->
             Row {
