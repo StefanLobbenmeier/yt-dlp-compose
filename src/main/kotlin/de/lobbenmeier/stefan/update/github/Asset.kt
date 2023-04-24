@@ -1,4 +1,4 @@
-package de.lobbenmeier.stefan.github
+package de.lobbenmeier.stefan.update.github
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

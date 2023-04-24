@@ -1,4 +1,4 @@
-package de.lobbenmeier.stefan.github
+package de.lobbenmeier.stefan.update.github
 
 import io.kotest.core.spec.style.AnnotationSpec
 import io.kotest.engine.spec.tempdir

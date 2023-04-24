@@ -1,25 +1,22 @@
-package de.lobbenmeier.stefan.ffmpeg
+package de.lobbenmeier.stefan.update.ffmpeg
 
 import de.lobbenmeier.stefan.GithubJson
 import de.lobbenmeier.stefan.platform.Platform
+import de.lobbenmeier.stefan.update.UpdateProcess
+import de.lobbenmeier.stefan.update.downloadFileWithProgress
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.serialization.kotlinx.json.*
-import io.ktor.util.cio.*
-import io.ktor.utils.io.*
-import java.io.File
 import java.nio.file.Path
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 class FfmpegReleaseDownloader(
     val downloadDirectory: Path,
     val ffBinariesUrl: String = "https://ffbinaries.com/api/v1/version/latest"
 ) {
-    suspend fun downloadRelease(platform: Platform): File {
+    suspend fun downloadRelease(platform: Platform): List<UpdateProcess> {
         val httpClient = HttpClient() { install(ContentNegotiation) { json(GithubJson) } }
 
         val ffmpegRelease = getFfmpegRelease(httpClient)
@@ -30,23 +27,17 @@ class FfmpegReleaseDownloader(
         ffmpegRelease: FfmpegRelease,
         platform: Platform,
         httpClient: HttpClient
-    ): File {
+    ): List<UpdateProcess> {
         val version = ffmpegRelease.version
         val ffmpegUrl =
             ffmpegRelease.bin[platform.ffmpegPlatform.platformName]
                 ?: throw Exception("Platform $platform is not supported by ffmpeg")
 
-        val ffmpeg = httpClient.get(ffmpegUrl.ffmpeg)
+        val targetFolder = downloadDirectory.resolve("ffbinaries").resolve(version).toFile()
 
-        val targetFolder = downloadDirectory.resolve("ffbinaries")
-        targetFolder.toFile().mkdirs()
-        val targetFile = targetFolder.resolve(version).toFile()
-
-        return withContext(Dispatchers.IO) {
-            targetFile.createNewFile()
-            ffmpeg.bodyAsChannel().copyTo(targetFile.writeChannel())
-            return@withContext targetFile
-        }
+        return listOf(
+            httpClient.downloadFileWithProgress(ffmpegUrl.ffmpeg, targetFolder.resolve("ffmpeg")),
+            httpClient.downloadFileWithProgress(ffmpegUrl.ffprobe, targetFolder.resolve("ffprobe")))
     }
 
     private suspend fun getFfmpegRelease(httpClient: HttpClient): FfmpegRelease {

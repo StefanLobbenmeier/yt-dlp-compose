@@ -1,4 +1,4 @@
-package de.lobbenmeier.stefan.ffmpeg
+package de.lobbenmeier.stefan.update.ffmpeg
 
 data class FfmpegRelease(
     val bin: Map<String, FfmpegUrls>,

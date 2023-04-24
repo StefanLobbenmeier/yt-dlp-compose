@@ -1,4 +1,4 @@
-package de.lobbenmeier.stefan.github
+package de.lobbenmeier.stefan.update.github
 
 import de.lobbenmeier.stefan.GithubJson
 import io.ktor.client.*
