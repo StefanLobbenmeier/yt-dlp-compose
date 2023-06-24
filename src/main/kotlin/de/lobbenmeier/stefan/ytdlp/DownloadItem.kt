@@ -94,6 +94,7 @@ class DownloadItemFormat {
 
     val video
         get() = selectedVideoFormat
+
     val audio =
         selectedVideoFormat.combine(selectedAudioFormat) { video, audio ->
             if (video.isAudio) video else audio

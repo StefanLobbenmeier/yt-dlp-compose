@@ -37,6 +37,8 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinxSerializationVersion")
     implementation("com.alialbaali.kamel:kamel-image:$kamelVersion")
     implementation("br.com.devsrsouza.compose.icons.jetbrains:feather:1.0.0")
+    implementation("io.github.oshai:kotlin-logging-jvm:4.0.0")
+    implementation("org.slf4j:slf4j-simple:2.0.3")
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.9.3")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.1")
