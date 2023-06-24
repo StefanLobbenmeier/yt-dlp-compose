@@ -3,7 +3,7 @@ import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 plugins {
     kotlin("jvm")
     id("org.jetbrains.compose")
-    kotlin("plugin.serialization") version "1.8.22"
+    kotlin("plugin.serialization") version "1.8.21"
     id("com.diffplug.spotless") version "6.19.0"
 }
 
@@ -45,13 +45,16 @@ dependencies {
 
 tasks { test { useJUnitPlatform() } }
 
-compose.desktop {
-    application {
-        mainClass = "MainKt"
-        nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "yt-dlp-compose"
-            packageVersion = "1.0.0"
+compose {
+    kotlinCompilerPlugin.set("androidx.compose.compiler:compiler:1.4.7")
+    desktop {
+        application {
+            mainClass = "MainKt"
+            nativeDistributions {
+                targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
+                packageName = "yt-dlp-compose"
+                packageVersion = "1.0.0"
+            }
         }
     }
 }
