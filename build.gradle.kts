@@ -1,9 +1,10 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 
 plugins {
-    kotlin("jvm")
+    val kotlinVersion = "1.8.21"
+    kotlin("jvm") version kotlinVersion
     id("org.jetbrains.compose")
-    kotlin("plugin.serialization") version "1.8.21"
+    kotlin("plugin.serialization") version kotlinVersion
     id("com.diffplug.spotless") version "6.19.0"
 }
 
