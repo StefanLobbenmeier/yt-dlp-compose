@@ -3,8 +3,8 @@ import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 plugins {
     kotlin("jvm")
     id("org.jetbrains.compose")
-    kotlin("plugin.serialization") version "1.8.0"
-    id("com.diffplug.spotless") version "6.17.0"
+    kotlin("plugin.serialization") version "1.8.22"
+    id("com.diffplug.spotless") version "6.19.0"
 }
 
 group = "com.example"
@@ -20,8 +20,8 @@ repositories {
 kotlin { jvmToolchain(17) }
 
 dependencies {
-    val ktorVersion = "2.2.3"
-    val kotestVersion = "5.5.5"
+    val ktorVersion = "2.3.1"
+    val kotestVersion = "5.6.2"
     val kotlinProcessVersion = "1.4.1"
     val kotlinxSerializationVersion = "1.5.1"
     val kamelVersion = "0.4.1"
@@ -37,8 +37,8 @@ dependencies {
     implementation("com.alialbaali.kamel:kamel-image:$kamelVersion")
     implementation("br.com.devsrsouza.compose.icons.jetbrains:feather:1.0.0")
 
-    testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.9.3")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.1")
 
     testImplementation("io.kotest:kotest-runner-junit5:$kotestVersion")
 }
