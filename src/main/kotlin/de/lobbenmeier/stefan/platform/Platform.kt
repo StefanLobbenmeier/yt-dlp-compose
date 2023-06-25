@@ -10,7 +10,7 @@ enum class YtDlpNames(val filename: String) {
     python("yt-dlp"),
     osxLegacy("yt-dlp_macos_legacy"),
     osx("yt-dlp_macos"),
-    windows("yt-dlp")
+    windows("yt-dlp.exe")
 }
 
 enum class FfmpegPlatforms(val platformName: String) {

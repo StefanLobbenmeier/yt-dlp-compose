@@ -28,7 +28,7 @@ suspend fun HttpClient.downloadFileWithProgress(url: String, targetFile: File): 
         get(url) {
             onDownload { bytesSentTotal, contentLength ->
                 val progress = bytesSentTotal.toFloat() / contentLength
-                logger.info { "Download progress $progress" }
+                logger.trace { "Download progress $progress" }
                 progressFlow.emit(CustomUpdateDownloadProgress(progress))
             }
         }

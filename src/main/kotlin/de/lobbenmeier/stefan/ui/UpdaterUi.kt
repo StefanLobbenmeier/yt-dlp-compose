@@ -9,11 +9,14 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import de.lobbenmeier.stefan.model.Binaries
 import de.lobbenmeier.stefan.platform.getPlatform
 import de.lobbenmeier.stefan.ytdlp.UpdateDownloadProgress
 
+@Composable fun FullscreenUpdater(binaries: Binaries) {}
+
 @Composable
-fun UpdaterScreen(updates: List<UpdateDownloadProgress>) {
+fun Updater(updates: List<UpdateDownloadProgress>) {
     val platform = getPlatform()
 
     Column {

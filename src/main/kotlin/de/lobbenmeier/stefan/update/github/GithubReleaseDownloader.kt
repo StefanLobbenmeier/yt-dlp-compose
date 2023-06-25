@@ -18,7 +18,7 @@ class GithubReleaseDownloader(
     private val githubApi: String = "https://api.github.com",
 ) {
     suspend fun downloadRelease(assetName: String): UpdateProcess {
-        val httpClient = HttpClient() { install(ContentNegotiation) { json(GithubJson) } }
+        val httpClient = HttpClient { install(ContentNegotiation) { json(GithubJson) } }
 
         val githubRelease = getGithubRelease(httpClient)
         return downloadGithubReleaseToFile(githubRelease, assetName, httpClient)
