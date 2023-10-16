@@ -37,6 +37,8 @@ suspend fun HttpClient.downloadFileWithProgress(url: String, targetFile: File): 
         targetFile.parentFile.mkdirs()
         targetFile.createNewFile()
         downloadFile.bodyAsChannel().copyTo(targetFile.writeChannel())
+
+        logger.info { "Completed download to $targetFile from $url" }
         progressFlow.emit(DownloadCompleted)
     }
 
