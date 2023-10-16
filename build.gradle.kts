@@ -49,7 +49,7 @@ dependencies {
 tasks { test { useJUnitPlatform() } }
 
 compose {
-    kotlinCompilerPlugin.set("androidx.compose.compiler:compiler:1.4.7")
+    kotlinCompilerPlugin.set("androidx.compose.compiler:compiler:1.5.3")
     desktop {
         application {
             mainClass = "MainKt"
