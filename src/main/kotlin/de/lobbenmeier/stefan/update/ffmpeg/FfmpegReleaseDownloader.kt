@@ -17,7 +17,7 @@ class FfmpegReleaseDownloader(
     val ffBinariesUrl: String = "https://ffbinaries.com/api/v1/version/latest"
 ) {
     suspend fun downloadRelease(platform: Platform): List<UpdateProcess> {
-        val httpClient = HttpClient() { install(ContentNegotiation) { json(GithubJson) } }
+        val httpClient = HttpClient { install(ContentNegotiation) { json(GithubJson) } }
 
         val ffmpegRelease = getFfmpegRelease(httpClient)
         return downloadFfmpegReleaseToFile(ffmpegRelease, platform, httpClient)
@@ -33,7 +33,8 @@ class FfmpegReleaseDownloader(
             ffmpegRelease.bin[platform.ffmpegPlatform.platformName]
                 ?: throw Exception("Platform $platform is not supported by ffmpeg")
 
-        val targetFolder = downloadDirectory.resolve("ffbinaries").resolve(version).toFile()
+        val targetFolder =
+            downloadDirectory.resolve("ffbinaries").resolve(version).toAbsolutePath().toFile()
 
         return listOf(
             httpClient.downloadFileWithProgress(ffmpegUrl.ffmpeg, targetFolder.resolve("ffmpeg")),

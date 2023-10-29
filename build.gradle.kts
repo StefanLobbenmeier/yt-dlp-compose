@@ -39,6 +39,7 @@ dependencies {
     implementation("br.com.devsrsouza.compose.icons.jetbrains:feather:1.0.0")
     implementation("io.github.oshai:kotlin-logging-jvm:5.1.0")
     implementation("org.slf4j:slf4j-simple:2.0.9")
+    implementation("dev.dirs:directories:26")
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")

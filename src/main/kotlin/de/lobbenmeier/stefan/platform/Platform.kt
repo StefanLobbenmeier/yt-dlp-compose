@@ -1,10 +1,21 @@
 package de.lobbenmeier.stefan.platform
 
+import dev.dirs.ProjectDirectories
+import java.nio.file.Path
+
+val Directories = ProjectDirectories.fromPath("yt-dlp-compose")
+
 data class Platform(
     val name: String,
     val ytDlpName: YtDlpNames,
     val ffmpegPlatform: FfmpegPlatforms,
-)
+) {
+    val binariesFolder = Path.of(Directories.dataDir).resolve("binaries")
+
+    val ytDlpBinary = binariesFolder.resolve(ytDlpName.filename).toFile()
+    val ffmpegBinary = binariesFolder.resolve("ffmpeg").toFile()
+    val ffprobeBinary = binariesFolder.resolve("ffprobe").toFile()
+}
 
 enum class YtDlpNames(val filename: String) {
     python("yt-dlp"),
