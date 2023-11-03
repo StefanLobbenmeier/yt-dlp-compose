@@ -1,7 +1,7 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 
 plugins {
-    val kotlinVersion = "1.9.10"
+    val kotlinVersion = "1.9.20"
     kotlin("jvm") version kotlinVersion
     id("org.jetbrains.compose")
     kotlin("plugin.serialization") version kotlinVersion
@@ -22,7 +22,7 @@ kotlin { jvmToolchain(17) }
 
 dependencies {
     val ktorVersion = "2.3.5"
-    val kotestVersion = "5.7.2"
+    val kotestVersion = "5.8.0"
     val kotlinProcessVersion = "1.4.1"
     val kotlinxSerializationVersion = "1.6.0"
     val kamelVersion = "0.4.1"
