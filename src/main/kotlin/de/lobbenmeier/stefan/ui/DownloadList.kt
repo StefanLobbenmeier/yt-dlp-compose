@@ -1,9 +1,24 @@
 package de.lobbenmeier.stefan.ui
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredHeight
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.*
+import androidx.compose.material.Card
+import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.Divider
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.LinearProgressIndicator
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -17,10 +32,26 @@ import compose.icons.feathericons.Download
 import compose.icons.feathericons.Folder
 import compose.icons.feathericons.Play
 import de.lobbenmeier.stefan.model.DownloadQueue
-import de.lobbenmeier.stefan.ytdlp.*
+import de.lobbenmeier.stefan.ytdlp.DownloadCompleted
+import de.lobbenmeier.stefan.ytdlp.DownloadFailed
+import de.lobbenmeier.stefan.ytdlp.DownloadItem
+import de.lobbenmeier.stefan.ytdlp.DownloadStarted
+import de.lobbenmeier.stefan.ytdlp.Format
+import de.lobbenmeier.stefan.ytdlp.VideoDownloadProgress
+import de.lobbenmeier.stefan.ytdlp.VideoMetadata
+import de.lobbenmeier.stefan.ytdlp.YtDlp
+import de.lobbenmeier.stefan.ytdlp.YtDlpConfiguration
+import de.lobbenmeier.stefan.ytdlp.YtDlpDownloadProgress
+import de.lobbenmeier.stefan.ytdlp.YtDlpVersion
+import de.lobbenmeier.stefan.ytdlp.audioDescription
+import de.lobbenmeier.stefan.ytdlp.isAudioOnly
+import de.lobbenmeier.stefan.ytdlp.isVideo
+import de.lobbenmeier.stefan.ytdlp.thumbnailWithFallBack
+import de.lobbenmeier.stefan.ytdlp.videoDescription
 import io.kamel.image.KamelImage
 import io.kamel.image.lazyPainterResource
 import java.awt.Desktop
+import kotlin.math.roundToInt
 import kotlin.time.Duration.Companion.seconds
 
 @Composable
@@ -175,11 +206,7 @@ private fun FormatSelector(
 }
 
 private fun durationString(i: Double?): String {
-    if (i == null) {
-        return ""
-    }
-    val duration = i.seconds
-    return duration.toString()
+    return durationString(i?.roundToInt())
 }
 
 private fun durationString(i: Int?): String {

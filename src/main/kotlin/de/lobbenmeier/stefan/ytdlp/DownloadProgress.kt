@@ -42,7 +42,7 @@ data class YtDlpDownloadProgress(
     val totalBytesEstimate: Float? = null,
     val tmpfilename: String? = null,
     val filename: String? = null,
-    val eta: Int? = null,
+    val eta: Double? = null,
     val speed: Float? = null,
     val elapsed: Float? = null,
     val ctxId: String? = null,
