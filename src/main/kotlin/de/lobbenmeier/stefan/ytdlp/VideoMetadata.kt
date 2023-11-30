@@ -68,7 +68,7 @@ val Format.videoDescription: String
 
 val Format.audioDescription: String
     get() {
-        var text = formatNote ?: ""
+        var text = format ?: ""
         if (isVideo) text = "included in Video"
         if (acodec != null) {
             text += "(${acodec})"
