@@ -37,8 +37,10 @@ class FfmpegReleaseDownloader(
             downloadDirectory.resolve("ffbinaries").resolve(version).toAbsolutePath().toFile()
 
         return listOf(
-            httpClient.downloadFileWithProgress(ffmpegUrl.ffmpeg, targetFolder.resolve("ffmpeg")),
-            httpClient.downloadFileWithProgress(ffmpegUrl.ffprobe, targetFolder.resolve("ffprobe")))
+            httpClient.downloadFileWithProgress(
+                ffmpegUrl.ffmpeg, targetFolder.resolve("ffmpeg"), unzipFile = true),
+            httpClient.downloadFileWithProgress(
+                ffmpegUrl.ffprobe, targetFolder.resolve("ffprobe"), unzipFile = true))
     }
 
     private suspend fun getFfmpegRelease(httpClient: HttpClient): FfmpegRelease {

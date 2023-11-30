@@ -11,16 +11,23 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.util.cio.*
 import io.ktor.utils.io.*
+import io.ktor.utils.io.jvm.javaio.*
 import java.io.File
+import java.io.InputStream
 import java.nio.file.Files
 import java.nio.file.attribute.PosixFilePermissions
+import java.util.zip.ZipInputStream
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.withContext
 
 private val logger = KotlinLogging.logger {}
 
-suspend fun HttpClient.downloadFileWithProgress(url: String, targetFile: File): UpdateProcess {
+suspend fun HttpClient.downloadFileWithProgress(
+    url: String,
+    targetFile: File,
+    unzipFile: Boolean = false
+): UpdateProcess {
     val progressFlow = MutableStateFlow<UpdateDownloadProgress>(DownloadStarted)
     val updateProcess = UpdateProcess(targetFile.name, progressFlow)
 
@@ -43,11 +50,23 @@ suspend fun HttpClient.downloadFileWithProgress(url: String, targetFile: File): 
         Files.deleteIfExists(targetFile.toPath())
         Files.createFile(targetFile.toPath(), permissions)
 
-        downloadFile.bodyAsChannel().copyTo(targetFile.writeChannel())
+        if (unzipFile) {
+            copyFirstEntryToFile(downloadFile.bodyAsChannel().toInputStream(), targetFile)
+        } else {
+            downloadFile.bodyAsChannel().copyTo(targetFile.writeChannel())
+        }
 
         logger.info { "Completed download to $targetFile from $url" }
         progressFlow.emit(DownloadCompleted)
     }
 
     return updateProcess
+}
+
+private suspend fun copyFirstEntryToFile(zipInputStream: InputStream, targetFile: File) {
+    ZipInputStream(zipInputStream).use {
+        if (it.nextEntry != null) {
+            it.copyTo(targetFile.writeChannel())
+        }
+    }
 }
