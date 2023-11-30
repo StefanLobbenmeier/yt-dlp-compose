@@ -11,6 +11,8 @@ data class Platform(
     val ffmpegPlatform: FfmpegPlatforms,
 ) {
     val binariesFolder = Path.of(Directories.dataDir).resolve("binaries")
+    val homeFolder = Path.of(System.getProperty("user.home"))
+    val downloadsFolder = homeFolder.resolve("Downloads")
 
     val ytDlpBinary = binariesFolder.resolve(ytDlpName.filename).toFile()
     val ffmpegBinary = binariesFolder.resolve("ffmpeg").toFile()

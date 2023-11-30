@@ -2,6 +2,7 @@ package de.lobbenmeier.stefan.ytdlp
 
 import com.github.pgreze.process.Redirect
 import com.github.pgreze.process.process
+import de.lobbenmeier.stefan.platform.getPlatform
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -32,6 +33,7 @@ class YtDlp(
                 *options,
                 stdout = Redirect.Consume { it.collect(consumer) },
                 stderr = Redirect.CAPTURE,
+                directory = getPlatform().downloadsFolder.toFile()
             )
 
         println("Script finished with result=${res.resultCode}")
