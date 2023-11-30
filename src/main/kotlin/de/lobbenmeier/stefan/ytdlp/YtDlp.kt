@@ -3,6 +3,7 @@ package de.lobbenmeier.stefan.ytdlp
 import com.github.pgreze.process.Redirect
 import com.github.pgreze.process.process
 import de.lobbenmeier.stefan.platform.getPlatform
+import kotlin.io.path.pathString
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -24,17 +25,26 @@ class YtDlp(
         vararg options: String,
         consumer: suspend (String) -> Unit = { line -> println("process $line") }
     ) {
-        val command = arrayOf(version.ytDlpBinary, *options).joinToString(" ")
+        val ytDlpBinary =
+            getPlatform()
+                .binariesFolder
+                .resolve("yt-dlp/yt-dlp/2023.11.16")
+                .toAbsolutePath()
+                .pathString
+        val ffmpegBinary =
+            getPlatform().binariesFolder.resolve("ffbinaries/4.4.1").toAbsolutePath().pathString
+        val command =
+            arrayOf(ytDlpBinary, "--ffmpeg-location", ffmpegBinary, "-v", *options)
+                .joinToString(" ")
         println("Start process: $command")
 
         val res =
             process(
-                version.ytDlpBinary,
+                ytDlpBinary,
                 *options,
                 stdout = Redirect.Consume { it.collect(consumer) },
                 stderr = Redirect.CAPTURE,
-                directory = getPlatform().downloadsFolder.toFile()
-            )
+                directory = getPlatform().downloadsFolder.toFile())
 
         println("Script finished with result=${res.resultCode}")
         val output = res.output.joinToString("\n")
