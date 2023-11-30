@@ -1,6 +1,7 @@
 package de.lobbenmeier.stefan.ytdlp
 
 import de.lobbenmeier.stefan.YtDlpJson
+import de.lobbenmeier.stefan.platform.getPlatform
 import java.io.File
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -50,7 +51,7 @@ class DownloadItem(
                     "--print",
                     "filename",
                     url) { log ->
-                        targetFile.emit(File(log))
+                        targetFile.emit(getPlatform().downloadsFolder.resolve(log).toFile())
                     }
             } catch (e: Exception) {
                 e.printStackTrace()
