@@ -8,7 +8,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import kotlinx.serialization.decodeFromString
 
 class DownloadItem(
     val ytDlp: YtDlp,
@@ -33,6 +32,7 @@ class DownloadItem(
                     *selectFormats(selectedVideoOption, selectedAudioOption),
                     "--progress-template",
                     PROGRESS_TEMPLATE,
+                    "--write-thumbnail",
                     url) { log ->
                         if (log.startsWith(PROGRESS_PREFIX)) {
                             val progressJson = log.removePrefix(PROGRESS_PREFIX)
