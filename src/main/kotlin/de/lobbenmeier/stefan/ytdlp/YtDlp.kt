@@ -32,16 +32,20 @@ class YtDlp(
                 .toAbsolutePath()
                 .pathString
         val ffmpegBinary =
-            getPlatform().binariesFolder.resolve("ffbinaries/4.4.1").toAbsolutePath().pathString
-        val command =
-            arrayOf(ytDlpBinary, "--ffmpeg-location", ffmpegBinary, "-v", *options)
-                .joinToString(" ")
+            getPlatform()
+                .binariesFolder
+                .resolve("ffbinaries/4.4.1/ffmpeg")
+                .toAbsolutePath()
+                .pathString
+        val fullOptions = arrayOf("--ffmpeg-location", ffmpegBinary, "-v", *options)
+
+        val command = arrayOf(ytDlpBinary, *fullOptions).joinToString(separator = " ") { "\"$it\"" }
         println("Start process: $command")
 
         val res =
             process(
                 ytDlpBinary,
-                *options,
+                *fullOptions,
                 stdout = Redirect.Consume { it.collect(consumer) },
                 stderr = Redirect.CAPTURE,
                 directory = getPlatform().downloadsFolder.toFile())
