@@ -1,10 +1,10 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 
 plugins {
-    val kotlinVersion = "1.9.20"
+    val kotlinVersion = "1.9.21"
     kotlin("jvm") version kotlinVersion
-    id("org.jetbrains.compose")
     kotlin("plugin.serialization") version kotlinVersion
+    id("org.jetbrains.compose") version "1.5.11"
     id("com.diffplug.spotless") version "6.23.2"
 }
 
@@ -50,7 +50,6 @@ dependencies {
 tasks { test { useJUnitPlatform() } }
 
 compose {
-    kotlinCompilerPlugin.set("androidx.compose.compiler:compiler:1.5.5")
     desktop {
         application {
             mainClass = "MainKt"
