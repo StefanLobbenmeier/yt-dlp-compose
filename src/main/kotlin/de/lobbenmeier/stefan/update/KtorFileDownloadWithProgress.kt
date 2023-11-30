@@ -12,6 +12,8 @@ import io.ktor.client.statement.*
 import io.ktor.util.cio.*
 import io.ktor.utils.io.*
 import java.io.File
+import java.nio.file.Files
+import java.nio.file.attribute.PosixFilePermissions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.withContext
@@ -35,7 +37,12 @@ suspend fun HttpClient.downloadFileWithProgress(url: String, targetFile: File): 
 
     withContext(Dispatchers.IO) {
         targetFile.parentFile.mkdirs()
-        targetFile.createNewFile()
+
+        val executable = PosixFilePermissions.fromString("rwxr-xr-x")
+        val permissions = PosixFilePermissions.asFileAttribute(executable)
+        Files.deleteIfExists(targetFile.toPath())
+        Files.createFile(targetFile.toPath(), permissions)
+
         downloadFile.bodyAsChannel().copyTo(targetFile.writeChannel())
 
         logger.info { "Completed download to $targetFile from $url" }
