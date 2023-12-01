@@ -18,6 +18,7 @@ import java.nio.file.Files
 import java.nio.file.attribute.PosixFilePermissions
 import java.util.zip.ZipInputStream
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.withContext
 
@@ -31,34 +32,40 @@ suspend fun HttpClient.downloadFileWithProgress(
     val progressFlow = MutableStateFlow<UpdateDownloadProgress>(DownloadStarted)
     val updateProcess = UpdateProcess(targetFile.name, progressFlow)
 
-    logger.info { "Starting download to $targetFile from $url" }
+    async {
+            withContext(Dispatchers.IO) {
+                logger.info { "Starting download to $targetFile from $url" }
 
-    val downloadFile =
-        get(url) {
-            onDownload { bytesSentTotal, contentLength ->
-                val progress = bytesSentTotal.toFloat() / contentLength
-                logger.trace { "Download progress $progress" }
-                progressFlow.emit(CustomUpdateDownloadProgress(progress))
+                val downloadFile =
+                    get(url) {
+                        onDownload { bytesSentTotal, contentLength ->
+                            val progress = bytesSentTotal.toFloat() / contentLength
+                            progressFlow.emit(CustomUpdateDownloadProgress(progress))
+                        }
+                    }
+
+                targetFile.parentFile.mkdirs()
+
+                val executable = PosixFilePermissions.fromString("rwxr-xr-x")
+                val permissions = PosixFilePermissions.asFileAttribute(executable)
+                Files.deleteIfExists(targetFile.toPath())
+                Files.createFile(targetFile.toPath(), permissions)
+
+                if (unzipFile) {
+                    copyFirstEntryToFile(downloadFile.bodyAsChannel().toInputStream(), targetFile)
+                } else {
+                    downloadFile.bodyAsChannel().copyTo(targetFile.writeChannel())
+                }
+
+                progressFlow.emit(DownloadCompleted)
             }
         }
-
-    withContext(Dispatchers.IO) {
-        targetFile.parentFile.mkdirs()
-
-        val executable = PosixFilePermissions.fromString("rwxr-xr-x")
-        val permissions = PosixFilePermissions.asFileAttribute(executable)
-        Files.deleteIfExists(targetFile.toPath())
-        Files.createFile(targetFile.toPath(), permissions)
-
-        if (unzipFile) {
-            copyFirstEntryToFile(downloadFile.bodyAsChannel().toInputStream(), targetFile)
-        } else {
-            downloadFile.bodyAsChannel().copyTo(targetFile.writeChannel())
+        .invokeOnCompletion {
+            when (it) {
+                null -> logger.info { "Completed download to $targetFile from $url" }
+                else -> logger.error(it) { "Failed to download" }
+            }
         }
-
-        logger.info { "Completed download to $targetFile from $url" }
-        progressFlow.emit(DownloadCompleted)
-    }
 
     return updateProcess
 }
