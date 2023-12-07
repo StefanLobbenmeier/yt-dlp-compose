@@ -5,7 +5,7 @@ plugins {
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.serialization") version kotlinVersion
     id("org.jetbrains.compose") version "1.5.11"
-    id("com.diffplug.spotless") version "6.23.2"
+    id("com.diffplug.spotless") version "6.23.3"
 }
 
 group = "com.example"
@@ -21,7 +21,7 @@ repositories {
 kotlin { jvmToolchain(17) }
 
 dependencies {
-    val ktorVersion = "2.3.6"
+    val ktorVersion = "2.3.7"
     val kotestVersion = "5.8.0"
     val kotlinProcessVersion = "1.4.1"
     val kotlinxSerializationVersion = "1.6.2"
