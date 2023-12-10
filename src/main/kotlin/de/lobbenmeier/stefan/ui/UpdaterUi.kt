@@ -17,7 +17,7 @@ import de.lobbenmeier.stefan.update.UpdateProcess
 
 @Composable
 fun Updater(updates: SnapshotStateList<UpdateProcess>) {
-    Row(Modifier.padding(4.dp).fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+    Row(Modifier.padding(4.dp).fillMaxWidth(), horizontalArrangement = Arrangement.SpaceAround) {
         updates.forEach { SmallDownloadProgress(it) }
     }
 }
