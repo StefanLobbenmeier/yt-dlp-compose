@@ -32,6 +32,12 @@ suspend fun HttpClient.downloadFileWithProgress(
     val progressFlow = MutableStateFlow<UpdateDownloadProgress>(DownloadStarted)
     val updateProcess = UpdateProcess(targetFile.name, progressFlow)
 
+    if (targetFile.exists()) {
+        logger.info { "Target file $targetFile has already been downloaded" }
+        progressFlow.emit(DownloadCompleted)
+        return updateProcess
+    }
+
     CoroutineScope(Dispatchers.IO)
         .async {
             logger.info { "Starting download to $targetFile from $url" }
