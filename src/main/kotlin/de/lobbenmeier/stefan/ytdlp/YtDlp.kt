@@ -34,7 +34,7 @@ class YtDlp(
         val ffmpegBinary =
             getPlatform()
                 .binariesFolder
-                .resolve("ffbinaries/4.4.1/ffmpeg")
+                .resolve("ffbinaries/6.1/ffmpeg")
                 .toAbsolutePath()
                 .pathString
         val fullOptions = arrayOf("--ffmpeg-location", ffmpegBinary, "-v", *options)

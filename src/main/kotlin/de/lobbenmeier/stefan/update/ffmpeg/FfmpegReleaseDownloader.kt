@@ -14,7 +14,7 @@ import java.nio.file.Path
 
 class FfmpegReleaseDownloader(
     val downloadDirectory: Path,
-    val ffBinariesUrl: String = "https://ffbinaries.com/api/v1/version/latest"
+    val ffBinariesUrl: String = "https://ffbinaries.com/api/v1/version/6.1"
 ) {
     suspend fun downloadRelease(platform: Platform): List<UpdateProcess> {
         val httpClient = HttpClient { install(ContentNegotiation) { json(GithubJson) } }
