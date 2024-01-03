@@ -32,10 +32,26 @@ suspend fun HttpClient.downloadFileWithProgress(
     val progressFlow = MutableStateFlow<UpdateDownloadProgress>(DownloadStarted)
     val updateProcess = UpdateProcess(targetFile.name, progressFlow)
 
+    downloadFile(
+        url,
+        targetFile,
+        unzipFile,
+        onProgress = { progressFlow.emit(it) },
+        onCompleted = { progressFlow.emit(it) })
+
+    return updateProcess
+}
+
+suspend fun HttpClient.downloadFile(
+    url: String,
+    targetFile: File,
+    unzipFile: Boolean = false,
+    onProgress: suspend (UpdateDownloadProgress) -> Unit,
+    onCompleted: suspend (UpdateDownloadProgress) -> Unit,
+) {
     if (targetFile.exists()) {
         logger.info { "Target file $targetFile has already been downloaded" }
-        progressFlow.emit(DownloadCompleted)
-        return updateProcess
+        return onCompleted(DownloadCompleted)
     }
 
     CoroutineScope(Dispatchers.IO)
@@ -46,7 +62,7 @@ suspend fun HttpClient.downloadFileWithProgress(
                 get(url) {
                     onDownload { bytesSentTotal, contentLength ->
                         val progress = bytesSentTotal.toFloat() / contentLength
-                        progressFlow.emit(CustomUpdateDownloadProgress(progress))
+                        onProgress(CustomUpdateDownloadProgress(progress))
                     }
                 }
 
@@ -63,7 +79,7 @@ suspend fun HttpClient.downloadFileWithProgress(
                 downloadFile.bodyAsChannel().copyTo(targetFile.writeChannel())
             }
 
-            progressFlow.emit(DownloadCompleted)
+            onCompleted(DownloadCompleted)
         }
         .invokeOnCompletion {
             when (it) {
@@ -71,8 +87,6 @@ suspend fun HttpClient.downloadFileWithProgress(
                 else -> logger.error(it) { "Failed to download" }
             }
         }
-
-    return updateProcess
 }
 
 private suspend fun copyFirstEntryToFile(zipInputStream: InputStream, targetFile: File) {
