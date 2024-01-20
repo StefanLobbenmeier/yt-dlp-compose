@@ -37,7 +37,14 @@ class YtDlp(
                 .resolve("ffbinaries/6.1/ffmpeg")
                 .toAbsolutePath()
                 .pathString
-        val fullOptions = arrayOf("--ffmpeg-location", ffmpegBinary, "-v", *options)
+        val fullOptions =
+            arrayOf(
+                "--ffmpeg-location",
+                ffmpegBinary,
+                "-v",
+                "--cookies-from-browser",
+                "firefox",
+                *options)
 
         val command = arrayOf(ytDlpBinary, *fullOptions).joinToString(separator = " ") { "\"$it\"" }
         println("Start process: $command")
