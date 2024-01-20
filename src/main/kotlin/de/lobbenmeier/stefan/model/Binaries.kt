@@ -7,6 +7,7 @@ import de.lobbenmeier.stefan.update.createYtDlpDownloader
 import de.lobbenmeier.stefan.update.ffmpeg.FfmpegReleaseDownloader
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 class Binaries {
@@ -21,6 +22,8 @@ class Binaries {
             val platform = getPlatform()
             downloads.add(ytDlpDownloader.downloadRelease(platform.ytDlpName.filename))
             downloads.addAll(ffmpegReleaseDownloader.downloadRelease(platform))
+
+            downloads.forEach { it.progress.onEach {} }
         }
     }
 }

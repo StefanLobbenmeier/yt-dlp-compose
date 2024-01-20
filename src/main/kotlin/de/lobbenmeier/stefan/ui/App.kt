@@ -11,8 +11,8 @@ import de.lobbenmeier.stefan.model.DownloadQueue
 
 @Composable
 fun App() {
-    val downloadQueue = remember { DownloadQueue() }
     val binaries = remember { Binaries() }
+    val downloadQueue = remember { DownloadQueue() }
 
     Column {
         Updater(binaries.downloads)

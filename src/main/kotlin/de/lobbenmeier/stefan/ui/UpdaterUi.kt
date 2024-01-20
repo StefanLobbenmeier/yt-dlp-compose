@@ -10,13 +10,12 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import de.lobbenmeier.stefan.update.UpdateProcess
 
 @Composable
-fun Updater(updates: SnapshotStateList<UpdateProcess>) {
+fun Updater(updates: List<UpdateProcess>) {
     Row(Modifier.padding(4.dp).fillMaxWidth(), horizontalArrangement = Arrangement.SpaceAround) {
         updates.forEach { SmallDownloadProgress(it) }
     }
