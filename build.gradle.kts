@@ -37,7 +37,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinxSerializationVersion")
     implementation("com.alialbaali.kamel:kamel-image:$kamelVersion")
     implementation("br.com.devsrsouza.compose.icons.jetbrains:feather:1.0.0")
-    implementation("io.github.oshai:kotlin-logging-jvm:5.1.1")
+    implementation("io.github.oshai:kotlin-logging-jvm:6.0.3")
     implementation("org.slf4j:slf4j-simple:2.0.9")
     implementation("dev.dirs:directories:26")
 
