@@ -1,11 +1,11 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 
 plugins {
-    val kotlinVersion = "1.9.21"
+    val kotlinVersion = "1.9.22"
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.serialization") version kotlinVersion
     id("org.jetbrains.compose") version "1.5.11"
-    id("com.diffplug.spotless") version "6.23.3"
+    id("com.diffplug.spotless") version "6.24.0"
 }
 
 group = "com.example"
@@ -38,7 +38,7 @@ dependencies {
     implementation("com.alialbaali.kamel:kamel-image:$kamelVersion")
     implementation("br.com.devsrsouza.compose.icons.jetbrains:feather:1.0.0")
     implementation("io.github.oshai:kotlin-logging-jvm:6.0.3")
-    implementation("org.slf4j:slf4j-simple:2.0.9")
+    implementation("org.slf4j:slf4j-simple:2.0.11")
     implementation("dev.dirs:directories:26")
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.10.1")
