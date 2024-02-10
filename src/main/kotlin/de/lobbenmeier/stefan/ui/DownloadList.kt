@@ -219,10 +219,10 @@ private fun durationString(i: Int?): String {
 
 fun fileSizeString(bytes: Double) =
     when {
-        bytes >= 1 shl 30 -> "%.1f GB".format(bytes / (1 shl 30))
-        bytes >= 1 shl 20 -> "%.1f MB".format(bytes / (1 shl 20))
-        bytes >= 1 shl 10 -> "%.0f kB".format(bytes / (1 shl 10))
-        else -> "$bytes bytes"
+        bytes >= 1 shl 30 -> "%.1f GiB".format(bytes / (1 shl 30))
+        bytes >= 1 shl 20 -> "%.1f MiB".format(bytes / (1 shl 20))
+        bytes >= 1 shl 10 -> "%.1f KiB".format(bytes / (1 shl 10))
+        else -> "$bytes B"
     }
 
 @Composable
