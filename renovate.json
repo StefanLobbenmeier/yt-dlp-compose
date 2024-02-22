@@ -4,5 +4,9 @@
     "config:base",
     "group:kotlinMonorepo"
   ],
-  "commitMessagePrefix": "REN - "
+  "commitMessagePrefix": "REN - ",
+  "automerge": true,
+  "automerge": true,
+  "rebaseWhen": "never",
+  "labels": ["dependencies"]
 }
