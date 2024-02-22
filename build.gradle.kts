@@ -41,7 +41,7 @@ dependencies {
     implementation("org.slf4j:slf4j-simple:2.0.11")
     implementation("dev.dirs:directories:26")
 
-    testImplementation("org.junit.jupiter:junit-jupiter:5.10.1")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
 
     testImplementation("io.kotest:kotest-runner-junit5:$kotestVersion")
