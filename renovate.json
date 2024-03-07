@@ -8,5 +8,6 @@
   "automerge": true,
   "automerge": true,
   "rebaseWhen": "never",
-  "labels": ["dependencies"]
+  "labels": ["dependencies"],
+  "enabledManagers": ["gradle", "gradle-wrapper", "github-actions"]
 }
