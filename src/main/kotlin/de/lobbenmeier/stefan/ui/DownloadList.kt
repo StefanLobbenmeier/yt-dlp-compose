@@ -12,13 +12,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.Card
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.Divider
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.LinearProgressIndicator
-import androidx.compose.material.Text
+import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Divider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -192,13 +192,13 @@ private fun FormatSelector(
                 selectedOption = selectedVideoOption,
                 selectionChanged = { downloadItem.selectFormat(it) },
                 modifier = Modifier.weight(1f),
-                optionBuilder = { Text(it.videoDescription) })
+                optionBuilder = { it.videoDescription })
             DropdownMenu(
                 audioFormats,
                 selectedOption = selectedAudioOption,
                 selectionChanged = { downloadItem.selectFormat(it) },
                 modifier = Modifier.weight(1f),
-                optionBuilder = { Text(it.audioDescription) })
+                optionBuilder = { it.audioDescription })
         }
     } else {
         LinearProgressIndicator(Modifier.fillMaxWidth())

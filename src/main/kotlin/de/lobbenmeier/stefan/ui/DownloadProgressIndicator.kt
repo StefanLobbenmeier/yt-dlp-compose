@@ -3,12 +3,16 @@ package de.lobbenmeier.stefan.ui
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.material.LinearProgressIndicator
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import de.lobbenmeier.stefan.ytdlp.*
+import de.lobbenmeier.stefan.ytdlp.DownloadCompleted
+import de.lobbenmeier.stefan.ytdlp.DownloadFailed
+import de.lobbenmeier.stefan.ytdlp.DownloadStarted
+import de.lobbenmeier.stefan.ytdlp.VideoDownloadProgress
+import de.lobbenmeier.stefan.ytdlp.YtDlpDownloadProgress
 
 @Composable
 fun DownloadProgressIndicator(downloadProgress: VideoDownloadProgress) {
