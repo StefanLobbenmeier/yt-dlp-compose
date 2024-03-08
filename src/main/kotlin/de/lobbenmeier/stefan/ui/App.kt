@@ -6,16 +6,18 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import de.lobbenmeier.stefan.model.Binaries
+import de.lobbenmeier.stefan.model.BinariesUpdater
 import de.lobbenmeier.stefan.model.DownloadQueue
+import de.lobbenmeier.stefan.ytdlp.YtDlp
 
 @Composable
 fun App() {
-    val binaries = remember { Binaries() }
+    val binariesUpdater = remember { BinariesUpdater() }
+    val ytDlp = remember { YtDlp() }
     val downloadQueue = remember { DownloadQueue() }
 
     Column {
-        Updater(binaries.downloads)
+        Updater(binariesUpdater.downloads)
 
         Scaffold(
             topBar = { Header(onDownload = { downloadQueue.add(it) }) }, bottomBar = { Footer() }) {

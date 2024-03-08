@@ -8,10 +8,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class YtDlp(
-    private val configuration: YtDlpConfiguration,
-    private val version: YtDlpVersion,
-) {
+class YtDlp() {
 
     fun createDownloadItem(url: String): DownloadItem {
         return DownloadItem(this, url).also { it.gatherMetadata() }
