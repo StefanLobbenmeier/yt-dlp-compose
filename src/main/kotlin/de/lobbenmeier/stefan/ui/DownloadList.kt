@@ -40,9 +40,7 @@ import de.lobbenmeier.stefan.ytdlp.Format
 import de.lobbenmeier.stefan.ytdlp.VideoDownloadProgress
 import de.lobbenmeier.stefan.ytdlp.VideoMetadata
 import de.lobbenmeier.stefan.ytdlp.YtDlp
-import de.lobbenmeier.stefan.ytdlp.YtDlpConfiguration
 import de.lobbenmeier.stefan.ytdlp.YtDlpDownloadProgress
-import de.lobbenmeier.stefan.ytdlp.YtDlpVersion
 import de.lobbenmeier.stefan.ytdlp.audioDescription
 import de.lobbenmeier.stefan.ytdlp.isAudioOnly
 import de.lobbenmeier.stefan.ytdlp.isVideo
@@ -300,8 +298,6 @@ private fun BrowseFileButton(downloadItem: DownloadItem) {
 @Preview
 @Composable
 private fun DownloadItemPreview() {
-    val downloadItem =
-        YtDlp(YtDlpConfiguration(), YtDlpVersion())
-            .createDownloadItem("https://www.youtube.com/watch?v=JKjN5mmnSX0")
+    val downloadItem = YtDlp().createDownloadItem("https://www.youtube.com/watch?v=JKjN5mmnSX0")
     DownloadItemView(downloadItem)
 }

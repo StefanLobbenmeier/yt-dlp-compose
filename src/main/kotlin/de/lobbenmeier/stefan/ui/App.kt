@@ -14,7 +14,7 @@ import de.lobbenmeier.stefan.ytdlp.YtDlp
 fun App() {
     val binariesUpdater = remember { BinariesUpdater() }
     val ytDlp = remember { YtDlp() }
-    val downloadQueue = remember { DownloadQueue() }
+    val downloadQueue = remember { DownloadQueue(ytDlp) }
 
     Column {
         Updater(binariesUpdater.downloads)
