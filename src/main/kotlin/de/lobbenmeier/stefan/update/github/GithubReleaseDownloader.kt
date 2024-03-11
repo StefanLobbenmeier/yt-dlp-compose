@@ -20,7 +20,7 @@ class GithubReleaseDownloader(
 ) {
     suspend fun downloadRelease(
         assetName: String,
-        onProgress: suspend (UpdateDownloadProgress) -> Unit,
+        onProgress: suspend (UpdateDownloadProgress) -> Unit = {},
     ): File {
         val httpClient = HttpClient { install(ContentNegotiation) { json(GithubJson) } }
 
