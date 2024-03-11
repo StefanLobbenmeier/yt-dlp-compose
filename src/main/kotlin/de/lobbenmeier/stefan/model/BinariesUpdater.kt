@@ -10,8 +10,8 @@ import de.lobbenmeier.stefan.ytdlp.DownloadStarted
 import de.lobbenmeier.stefan.ytdlp.UpdateDownloadProgress
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 class BinariesUpdater {
@@ -35,11 +35,24 @@ class BinariesUpdater {
             )
 
         CoroutineScope(Dispatchers.IO).launch {
-            ytDlpDownloader.downloadRelease(platform.ytDlpName.filename, withProgress(ytDlpProcess))
-            ffmpegReleaseDownloader.downloadRelease(
-                platform, withProgress(ffmpegProcess), withProgress(ffprobeProcess))
+            val ytDlpFuture = async {
+                ytDlpDownloader.downloadRelease(
+                    platform.ytDlpName.filename, withProgress(ytDlpProcess))
+            }
+            val ffmpegFuture = async {
+                ffmpegReleaseDownloader.downloadRelease(
+                    platform, withProgress(ffmpegProcess), withProgress(ffprobeProcess))
+            }
 
-            downloads.forEach { it.progress.onEach {} }
+            val ytDlp = ytDlpFuture.await()
+            val ffmpeg = ffmpegFuture.await()
+
+            binaries.value =
+                Binaries(
+                    ytDlp.toPath(),
+                    ffmpeg.first().toPath(),
+                    ffmpeg[1].toPath(),
+                )
         }
     }
 
