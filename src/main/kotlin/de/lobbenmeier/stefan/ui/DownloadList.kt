@@ -32,6 +32,7 @@ import compose.icons.feathericons.Download
 import compose.icons.feathericons.Folder
 import compose.icons.feathericons.Play
 import de.lobbenmeier.stefan.model.DownloadQueue
+import de.lobbenmeier.stefan.model.homeBrewBinaries
 import de.lobbenmeier.stefan.ytdlp.DownloadCompleted
 import de.lobbenmeier.stefan.ytdlp.DownloadFailed
 import de.lobbenmeier.stefan.ytdlp.DownloadItem
@@ -298,6 +299,8 @@ private fun BrowseFileButton(downloadItem: DownloadItem) {
 @Preview
 @Composable
 private fun DownloadItemPreview() {
-    val downloadItem = YtDlp().createDownloadItem("https://www.youtube.com/watch?v=JKjN5mmnSX0")
+
+    val downloadItem =
+        YtDlp(homeBrewBinaries).createDownloadItem("https://www.youtube.com/watch?v=JKjN5mmnSX0")
     DownloadItemView(downloadItem)
 }

@@ -2,13 +2,14 @@ package de.lobbenmeier.stefan.ytdlp
 
 import com.github.pgreze.process.Redirect
 import com.github.pgreze.process.process
+import de.lobbenmeier.stefan.model.Binaries
 import de.lobbenmeier.stefan.platform.getPlatform
 import kotlin.io.path.pathString
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class YtDlp {
+class YtDlp(val binaries: Binaries) {
 
     fun createDownloadItem(url: String): DownloadItem {
         return DownloadItem(this, url).also { it.gatherMetadata() }
@@ -22,18 +23,8 @@ class YtDlp {
         vararg options: String,
         consumer: suspend (String) -> Unit = { line -> println("process $line") }
     ) {
-        val ytDlpBinary =
-            getPlatform()
-                .binariesFolder
-                .resolve("yt-dlp/yt-dlp/2023.11.16")
-                .toAbsolutePath()
-                .pathString
-        val ffmpegBinary =
-            getPlatform()
-                .binariesFolder
-                .resolve("ffbinaries/6.1/ffmpeg")
-                .toAbsolutePath()
-                .pathString
+        val ytDlpBinary = binaries.ytDlp.pathString
+        val ffmpegBinary = binaries.ffmpeg.pathString
         val fullOptions =
             arrayOf(
                 "--ffmpeg-location",
