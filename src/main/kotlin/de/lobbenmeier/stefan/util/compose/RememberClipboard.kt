@@ -1,41 +1,44 @@
 package de.lobbenmeier.stefan.util.compose
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import io.github.oshai.kotlinlogging.KotlinLogging
 import java.awt.Toolkit
 import java.awt.datatransfer.Clipboard
 import java.awt.datatransfer.DataFlavor
-import java.awt.datatransfer.FlavorListener
+import kotlinx.coroutines.delay
 
-val systemClipboard: Clipboard = Toolkit.getDefaultToolkit().systemClipboard
+private val logger = KotlinLogging.logger {}
+private val systemClipboard: Clipboard = Toolkit.getDefaultToolkit().systemClipboard
 
-private val Clipboard.text: String
+private val Clipboard.text: String?
     get() {
-        return getData(DataFlavor.stringFlavor) as String
+        try {
+            return getData(DataFlavor.stringFlavor) as String
+        } catch (e: Exception) {
+            logger.warn(e) { "Failed to get clipboard" }
+            return null
+        }
     }
 
-// adapted from https://stackoverflow.com/a/73709923
 @Composable
 fun rememberClipboardText(): State<String?> {
     val text = remember { mutableStateOf(systemClipboard.text) }
-    onClipDataChanged { text.value = it }
+    listenToClipboard { text.value = it }
     return text
 }
 
 @Suppress("ComposableNaming")
 @Composable
-fun onClipDataChanged(onPrimaryClipChanged: (String) -> Unit) {
-    val clipboardListener = remember {
-        FlavorListener {
+fun listenToClipboard(onClipboardChanged: (String?) -> Unit) {
+    LaunchedEffect(Unit) {
+        while (true) {
             val clipboardText = systemClipboard.text
-            onPrimaryClipChanged(clipboardText)
+            onClipboardChanged(clipboardText)
+            delay(1000)
         }
-    }
-    DisposableEffect(systemClipboard) {
-        systemClipboard.addFlavorListener(clipboardListener)
-        onDispose { systemClipboard.removeFlavorListener(clipboardListener) }
     }
 }
