@@ -55,12 +55,7 @@ fun Header(onDownload: (url: String) -> Unit) {
                 }
             },
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-            keyboardActions =
-                KeyboardActions(
-                    onSearch = {
-                        onDownload(enteredDownloadUrl)
-                        enteredDownloadUrl = ""
-                    }),
+            keyboardActions = KeyboardActions(onSearch = { submitDownload() }),
         )
 
         Spacer(Modifier.weight(0.05f))
