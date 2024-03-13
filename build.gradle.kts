@@ -4,7 +4,7 @@ plugins {
     val kotlinVersion = "1.9.22"
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.serialization") version kotlinVersion
-    id("org.jetbrains.compose") version "1.6.0"
+    id("org.jetbrains.compose") version "1.6.1"
     id("com.diffplug.spotless") version "6.25.0"
 }
 
