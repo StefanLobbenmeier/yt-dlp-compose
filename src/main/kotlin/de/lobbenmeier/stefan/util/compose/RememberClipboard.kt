@@ -31,7 +31,6 @@ fun rememberClipboardText(): State<String?> {
     return text
 }
 
-@Suppress("ComposableNaming")
 @Composable
 fun listenToClipboard(onClipboardChanged: (String?) -> Unit) {
     LaunchedEffect(Unit) {
