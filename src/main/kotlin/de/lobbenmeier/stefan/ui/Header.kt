@@ -22,37 +22,44 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import de.lobbenmeier.stefan.util.compose.rememberClipboardText
 
 @Composable
 @Preview
 fun Header(onDownload: (url: String) -> Unit) {
-    var downloadUrl by remember { mutableStateOf("") }
+    var enteredDownloadUrl by remember { mutableStateOf("") }
+    val clipboardText = rememberClipboardText().value
+    val downloadUrl = getDownloadUrl(enteredDownloadUrl, clipboardText)
+    val downloadButtonEnabled = downloadUrl != null
+
+    val submitDownload = {
+        if (downloadUrl != null) {
+            onDownload(downloadUrl)
+            enteredDownloadUrl = ""
+        }
+    }
 
     TopAppBar(
         contentPadding = PaddingValues(20.dp),
         backgroundColor = MaterialTheme.colors.surface,
     ) {
         OutlinedTextField(
-            downloadUrl,
+            enteredDownloadUrl,
             singleLine = true,
-            onValueChange = { downloadUrl = it },
-            placeholder = { Text("Enter a video URL") },
+            onValueChange = { enteredDownloadUrl = it },
+            placeholder = { Text(clipboardText ?: "Enter a video URL") },
             modifier = Modifier.weight(1f),
             trailingIcon = {
-                IconButton(
-                    onClick = {
-                        onDownload(downloadUrl)
-                        downloadUrl = ""
-                    }) {
-                        Icon(Icons.Default.Add, "Download")
-                    }
+                IconButton(onClick = submitDownload, enabled = downloadButtonEnabled) {
+                    Icon(Icons.Default.Add, "Download")
+                }
             },
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
             keyboardActions =
                 KeyboardActions(
                     onSearch = {
-                        onDownload(downloadUrl)
-                        downloadUrl = ""
+                        onDownload(enteredDownloadUrl)
+                        enteredDownloadUrl = ""
                     }),
         )
 
@@ -60,4 +67,8 @@ fun Header(onDownload: (url: String) -> Unit) {
 
         IconButton(onClick = {}) { Icon(Icons.Default.Settings, "Settings") }
     }
+}
+
+fun getDownloadUrl(enteredDownloadUrl: String, clipboardText: String?): String? {
+    return enteredDownloadUrl.ifBlank { clipboardText }
 }
