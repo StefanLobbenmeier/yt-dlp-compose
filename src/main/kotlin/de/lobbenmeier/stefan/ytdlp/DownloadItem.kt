@@ -109,7 +109,7 @@ class DownloadItemFormat {
         }
     }
 
-    val allSelectedFormats
+    private val allSelectedFormats
         get() = video.combine(audio) { video, audio -> listOfNotNull(video, audio).distinct() }
 
     val size =
