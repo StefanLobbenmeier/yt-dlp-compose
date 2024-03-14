@@ -4,7 +4,7 @@ import androidx.compose.runtime.mutableStateListOf
 import de.lobbenmeier.stefan.ytdlp.DownloadItem
 import de.lobbenmeier.stefan.ytdlp.YtDlp
 
-class DownloadQueue(val ytDlp: YtDlp) {
+class DownloadQueue(private val ytDlp: YtDlp) {
 
     val items = mutableStateListOf<DownloadItem>()
 
@@ -15,5 +15,9 @@ class DownloadQueue(val ytDlp: YtDlp) {
     fun add(url: String) {
         val downloadItem = ytDlp.createDownloadItem(url)
         items.add(downloadItem)
+    }
+
+    fun remove(downloadItem: DownloadItem) {
+        items.remove(downloadItem)
     }
 }

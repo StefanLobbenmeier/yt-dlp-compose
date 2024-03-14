@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.Download
+import compose.icons.feathericons.XCircle
 import de.lobbenmeier.stefan.model.homeBrewBinaries
 import de.lobbenmeier.stefan.ytdlp.DownloadCompleted
 import de.lobbenmeier.stefan.ytdlp.DownloadFailed
@@ -43,7 +44,7 @@ import kotlin.math.roundToInt
 import kotlin.time.Duration.Companion.seconds
 
 @Composable
-fun DownloadItemView(downloadItem: DownloadItem) {
+fun DownloadItemView(downloadItem: DownloadItem, removeItem: (DownloadItem) -> Unit) {
     val metadata by downloadItem.metadata.collectAsState()
     val thumbnail = metadata?.thumbnailWithFallBack
 
@@ -69,8 +70,14 @@ fun DownloadItemView(downloadItem: DownloadItem) {
                         Icon(FeatherIcons.Download, "Download")
                     }
                 val file = downloadItem.targetFile.collectAsState().value
-                OpenFileButton(file)
-                BrowseFileButton(file)
+                if (file == null) {
+                    IconButton(onClick = { removeItem(downloadItem) }) {
+                        Icon(FeatherIcons.XCircle, "Delete")
+                    }
+                } else {
+                    OpenFileButton(file)
+                    BrowseFileButton(file)
+                }
             }
         }
     }
@@ -213,5 +220,5 @@ private fun DownloadItemPreview() {
 
     val downloadItem =
         YtDlp(homeBrewBinaries).createDownloadItem("https://www.youtube.com/watch?v=JKjN5mmnSX0")
-    DownloadItemView(downloadItem)
+    DownloadItemView(downloadItem) {}
 }
