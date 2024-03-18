@@ -13,10 +13,12 @@ data object UnknownSize : Size {
 }
 
 operator fun Size.plus(other: Size): Size {
-    if (this is ActualSize && other is ActualSize) {
-        return ActualSize(this.size + other.size)
+    return if (this is ActualSize && other is ActualSize) {
+        ActualSize(this.size + other.size)
+    } else if (this is UnknownSize && other is UnknownSize) {
+        UnknownSize
     } else {
-        return EstimatedSize(this.size + other.size)
+        EstimatedSize(this.size + other.size)
     }
 }
 
