@@ -30,6 +30,8 @@ class YtDlp(val binaries: Binaries) {
                 "--ffmpeg-location",
                 ffmpegBinary,
                 "-v",
+                "--compat-opt",
+                "manifest-filesize-approx",
                 "--cookies-from-browser",
                 "firefox",
                 *options)

@@ -11,17 +11,7 @@ data class VideoMetadata(
     val thumbnails: List<Thumbnail>?,
     val title: String?,
     val webpageUrl: String?,
-) {
-    init {
-        if (duration != null) {
-            formats?.forEach { format ->
-                if (format.tbr != null) {
-                    format.filesizeCalculated = (format.tbr * 1024 / 8 * duration).toLong()
-                }
-            }
-        }
-    }
-}
+)
 
 val VideoMetadata.thumbnailWithFallBack
     get() = thumbnail ?: thumbnails?.lastOrNull()?.url
@@ -31,7 +21,6 @@ data class Format(
     val formatId: String,
     val filesize: Long?,
     val filesizeApprox: Long?,
-    var filesizeCalculated: Long?,
     val tbr: Double?,
     val videoExt: String?,
     val vcodec: String?,
@@ -94,7 +83,6 @@ val Format.size
         when {
             this.filesize != null -> ActualSize(filesize)
             this.filesizeApprox != null -> EstimatedSize(filesizeApprox)
-            this.filesizeCalculated != null -> EstimatedSize(filesizeCalculated!!)
             else -> UnknownSize
         }
 
