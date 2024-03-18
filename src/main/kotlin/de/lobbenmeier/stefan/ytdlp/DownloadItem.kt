@@ -114,8 +114,6 @@ class DownloadItemFormat {
 
     val size =
         allSelectedFormats.map { formats ->
-            formats
-                .map { format -> format.filesize ?: format.filesizeApprox ?: 0 }
-                .fold(0, Long::plus)
+            formats.map { format -> format.size }.fold(ActualSize(0), Size::plus)
         }
 }
