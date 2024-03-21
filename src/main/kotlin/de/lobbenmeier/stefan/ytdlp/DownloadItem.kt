@@ -94,13 +94,12 @@ class DownloadItem(
                 val videoMetadata = YtDlpJson.decodeFromString<VideoMetadata>(metadataJson)
                 metadata.value = videoMetadata
                 videoMetadata.formats?.let { formats ->
+                    // set audio first, so we have a default option
+                    val audioFormat = formats.lastOrNull { it.isAudioOnly }
+                    audioFormat?.let { selectFormat(it) }
+
                     val videoFormat = formats.lastOrNull { it.isVideo }
                     videoFormat?.let { selectFormat(it) }
-
-                    if (!videoFormat.isAudio) {
-                        val audioFormat = formats.lastOrNull { it.isAudioOnly }
-                        audioFormat?.let { selectFormat(it) }
-                    }
                 }
             }
         }
@@ -118,6 +117,8 @@ class DownloadItemFormat {
     private val selectedVideoFormat = MutableStateFlow<Format?>(null)
     private val selectedAudioFormat = MutableStateFlow<Format?>(null)
 
+    private var defaultAudioFormat: Format? = null
+
     val video: StateFlow<Format?>
         get() = selectedVideoFormat
 
@@ -127,9 +128,19 @@ class DownloadItemFormat {
     fun selectFormat(ytDlpFormat: Format) {
         if (ytDlpFormat.isVideo) {
             selectedVideoFormat.value = ytDlpFormat
+
+            if (!ytDlpFormat.isAudio &&
+                selectedAudioFormat.value.isVideo &&
+                defaultAudioFormat != null) {
+                // reset the audio format to default again, to avoid having to download 2 videos
+                selectedAudioFormat.value = defaultAudioFormat
+            }
         }
         if (ytDlpFormat.isAudio) {
             selectedAudioFormat.value = ytDlpFormat
+
+            if (defaultAudioFormat == null && ytDlpFormat.isAudioOnly)
+                defaultAudioFormat = ytDlpFormat
         }
     }
 

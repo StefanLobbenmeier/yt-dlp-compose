@@ -38,11 +38,11 @@ private val String?.isSet
     get() = this != null && this != "none"
 val Format?.isAudio
     get() = this?.acodec.isSet
-val Format.isAudioOnly
+val Format?.isAudioOnly
     get() = isAudio && !isVideo
-val Format.isVideo: Boolean
+val Format?.isVideo: Boolean
     get() {
-        return vcodec.isSet
+        return this?.vcodec.isSet
     }
 
 val Format.videoDescription: String
