@@ -94,10 +94,12 @@ class DownloadItem(
                 metadata.value = videoMetadata
                 videoMetadata.formats?.let { formats ->
                     val videoFormat = formats.lastOrNull { it.isVideo }
-                    val audioFormat = formats.lastOrNull { it.isAudio }
-
-                    audioFormat?.let { selectFormat(it) }
                     videoFormat?.let { selectFormat(it) }
+
+                    if (!videoFormat.isAudio) {
+                        val audioFormat = formats.lastOrNull { it.isAudioOnly }
+                        audioFormat?.let { selectFormat(it) }
+                    }
                 }
             }
         }
