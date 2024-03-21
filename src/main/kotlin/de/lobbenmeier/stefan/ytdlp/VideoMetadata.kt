@@ -58,7 +58,7 @@ val Format.videoDescription: String
 
         if (vcodec != null) {
             if (moreDetails != "") moreDetails += " "
-            moreDetails += "${vcodec}"
+            moreDetails += vcodec
         }
 
         if (moreDetails != "") {
@@ -70,12 +70,9 @@ val Format.videoDescription: String
 
 val Format.audioDescription: String
     get() {
-        var text = format ?: ""
-        if (isVideo) text = "included in Video $text"
-        if (acodec != null) {
-            text += "(${acodec})"
-        }
-        return text
+        return listOfNotNull(
+                if (isVideo) "from video" else format ?: formatNote, acodec?.let { "($acodec)" })
+            .joinToString(" ")
     }
 
 val Format.size
