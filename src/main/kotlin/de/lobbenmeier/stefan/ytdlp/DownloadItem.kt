@@ -7,6 +7,7 @@ import java.io.File
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -117,13 +118,11 @@ class DownloadItemFormat {
     private val selectedVideoFormat = MutableStateFlow<Format?>(null)
     private val selectedAudioFormat = MutableStateFlow<Format?>(null)
 
-    val video
+    val video: StateFlow<Format?>
         get() = selectedVideoFormat
 
-    val audio =
-        selectedVideoFormat.combine(selectedAudioFormat) { video, audio ->
-            if (video.isAudio) video else audio
-        }
+    val audio: StateFlow<Format?>
+        get() = selectedAudioFormat
 
     fun selectFormat(ytDlpFormat: Format) {
         if (ytDlpFormat.isVideo) {
