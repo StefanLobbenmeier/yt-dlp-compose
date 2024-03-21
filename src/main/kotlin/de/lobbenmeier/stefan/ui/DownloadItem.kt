@@ -37,6 +37,7 @@ import de.lobbenmeier.stefan.ytdlp.YtDlp
 import de.lobbenmeier.stefan.ytdlp.YtDlpDownloadProgress
 import de.lobbenmeier.stefan.ytdlp.audioDescription
 import de.lobbenmeier.stefan.ytdlp.fileSizeString
+import de.lobbenmeier.stefan.ytdlp.isAudio
 import de.lobbenmeier.stefan.ytdlp.isAudioOnly
 import de.lobbenmeier.stefan.ytdlp.isVideo
 import de.lobbenmeier.stefan.ytdlp.thumbnailWithFallBack
@@ -174,7 +175,10 @@ private fun FormatSelector(
 
     if (formats != null) {
         val videoFormats = formats.filter { it.isVideo }
-        val audioFormats = formats.filter { it.isAudioOnly }
+        val audioFormats =
+            formats.filter {
+                it.isAudioOnly || (selectedVideoOption.isAudio && it == selectedVideoOption)
+            }
 
         Row {
             DropdownMenu(
