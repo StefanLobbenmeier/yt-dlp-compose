@@ -37,12 +37,12 @@ data class Format(
 private val String?.isSet
     get() = this != null && this != "none"
 val Format?.isAudio
-    get() = this?.audioExt.isSet
+    get() = this?.acodec.isSet
 val Format.isAudioOnly
     get() = isAudio && !isVideo
 val Format.isVideo: Boolean
     get() {
-        return videoExt.isSet
+        return vcodec.isSet
     }
 
 val Format.videoDescription: String

@@ -126,7 +126,8 @@ class DownloadItemFormat {
     fun selectFormat(ytDlpFormat: Format) {
         if (ytDlpFormat.isVideo) {
             selectedVideoFormat.value = ytDlpFormat
-        } else if (ytDlpFormat.isAudio) {
+        }
+        if (ytDlpFormat.isAudio) {
             selectedAudioFormat.value = ytDlpFormat
         }
     }
