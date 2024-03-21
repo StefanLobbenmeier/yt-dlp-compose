@@ -2,6 +2,7 @@ package de.lobbenmeier.stefan.ytdlp
 
 import de.lobbenmeier.stefan.YtDlpJson
 import de.lobbenmeier.stefan.platform.getPlatform
+import io.github.oshai.kotlinlogging.KotlinLogging
 import java.io.File
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -15,6 +16,7 @@ class DownloadItem(
     val url: String = "https://www.youtube.com/watch?v=CBB75zjxTR4"
 ) {
 
+    val logger = KotlinLogging.logger {}
     val metadata = MutableStateFlow<VideoMetadata?>(null)
     val downloadProgress = MutableStateFlow<VideoDownloadProgress?>(null)
     val targetFile = MutableStateFlow<File?>(null)
@@ -53,12 +55,11 @@ class DownloadItem(
                             }
                             log.startsWith(VIDOE_METADATA_JSON_PREFIX) -> {
                                 val videoMedataJson = log.removePrefix(VIDOE_METADATA_JSON_PREFIX)
-                                System.err.println(videoMedataJson)
                                 videoMetadata =
                                     YtDlpJson.decodeFromString<VideoMetadata>(videoMedataJson)
                             }
                             else -> {
-                                println(log)
+                                logger.info { log }
                             }
                         }
                     }

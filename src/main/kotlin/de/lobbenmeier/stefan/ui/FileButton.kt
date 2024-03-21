@@ -6,8 +6,11 @@ import androidx.compose.runtime.Composable
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.Folder
 import compose.icons.feathericons.Play
+import io.github.oshai.kotlinlogging.KotlinLogging
 import java.awt.Desktop
 import java.io.File
+
+val logger = KotlinLogging.logger {}
 
 @Composable
 fun OpenFileButton(file: File?) {
@@ -19,8 +22,7 @@ fun OpenFileButton(file: File?) {
                 if (file.exists()) {
                     Desktop.getDesktop().open(file)
                 } else {
-                    TODO(
-                        "what to do when the file is not found or yt-dlp gave us the wrong name for some reason")
+                    logger.error { "Could not find file $file" }
                 }
             }
         }) {
@@ -38,8 +40,7 @@ fun BrowseFileButton(file: File?) {
                 if (file.exists()) {
                     Desktop.getDesktop().browseFileDirectory(file.absoluteFile)
                 } else {
-                    TODO(
-                        "what to do when the file is not found or yt-dlp gave us the wrong name for some reason")
+                    logger.error { "Could not find file $file" }
                 }
             }
         }) {
