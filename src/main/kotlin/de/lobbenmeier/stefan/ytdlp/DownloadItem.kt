@@ -79,7 +79,7 @@ class DownloadItem(
         selectedVideoOption: Format?,
         selectedAudioOption: Format?
     ): Array<String> {
-        val selectedFormats = listOfNotNull(selectedVideoOption, selectedAudioOption)
+        val selectedFormats = listOfNotNull(selectedVideoOption, selectedAudioOption).distinct()
 
         if (selectedFormats.isEmpty()) {
             return arrayOf()
