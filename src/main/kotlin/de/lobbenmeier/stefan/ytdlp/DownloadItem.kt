@@ -23,36 +23,49 @@ class DownloadItem(
     companion object {
         private const val PROGRESS_PREFIX = "[download-progress]"
         private const val PROGRESS_TEMPLATE = "$PROGRESS_PREFIX%(progress)j"
+        private const val VIDOE_METADATA_JSON_PREFIX = "[video-metadata-json]"
     }
 
     fun download(selectedVideoOption: Format?, selectedAudioOption: Format?) {
         CoroutineScope(Dispatchers.IO).launch {
             downloadProgress.emit(DownloadStarted)
+            targetFile.emit(null)
+            var videoMetadata: VideoMetadata? = null
             try {
                 ytDlp.runAsync(
+                    // Print the whole object again so we get the filename
+                    "--print",
+                    "$VIDOE_METADATA_JSON_PREFIX%()j",
+                    // Required because of the print
+                    "--no-simulate",
+                    "--no-quiet",
                     *selectFormats(selectedVideoOption, selectedAudioOption),
                     "--progress-template",
                     PROGRESS_TEMPLATE,
                     "--write-thumbnail",
                     url) { log ->
-                        if (log.startsWith(PROGRESS_PREFIX)) {
-                            val progressJson = log.removePrefix(PROGRESS_PREFIX)
-                            val progress =
-                                YtDlpJson.decodeFromString<YtDlpDownloadProgress>(progressJson)
-                            downloadProgress.emit(progress)
-                        } else {
-                            println(log)
+                        when {
+                            log.startsWith(PROGRESS_PREFIX) -> {
+                                val progressJson = log.removePrefix(PROGRESS_PREFIX)
+                                val progress =
+                                    YtDlpJson.decodeFromString<YtDlpDownloadProgress>(progressJson)
+                                downloadProgress.emit(progress)
+                            }
+                            log.startsWith(VIDOE_METADATA_JSON_PREFIX) -> {
+                                val videoMedataJson = log.removePrefix(VIDOE_METADATA_JSON_PREFIX)
+                                System.err.println(videoMedataJson)
+                                videoMetadata =
+                                    YtDlpJson.decodeFromString<VideoMetadata>(videoMedataJson)
+                            }
+                            else -> {
+                                println(log)
+                            }
                         }
                     }
                 downloadProgress.emit(DownloadCompleted)
-
-                ytDlp.runAsync(
-                    *selectFormats(selectedVideoOption, selectedAudioOption),
-                    "--print",
-                    "filename",
-                    url) { log ->
-                        targetFile.emit(getPlatform().downloadsFolder.resolve(log).toFile())
-                    }
+                videoMetadata?.filename?.let {
+                    targetFile.emit(getPlatform().downloadsFolder.resolve(it).toFile())
+                }
             } catch (e: Exception) {
                 e.printStackTrace()
                 downloadProgress.emit(DownloadFailed(e))

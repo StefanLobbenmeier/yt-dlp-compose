@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class VideoMetadata(
     val duration: Double?,
-    val fileName: String?,
+    val filename: String?,
     val formats: List<Format>?,
     val thumbnail: String?,
     val thumbnails: List<Thumbnail>?,
