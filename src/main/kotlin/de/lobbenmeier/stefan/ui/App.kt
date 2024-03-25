@@ -7,10 +7,13 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
-import de.lobbenmeier.stefan.model.Binaries
-import de.lobbenmeier.stefan.model.BinariesUpdater
-import de.lobbenmeier.stefan.model.DownloadQueue
-import de.lobbenmeier.stefan.ytdlp.YtDlp
+import de.lobbenmeier.stefan.downloadlist.business.YtDlp
+import de.lobbenmeier.stefan.downloadlist.model.DownloadQueue
+import de.lobbenmeier.stefan.downloadlist.ui.DownloadList
+import de.lobbenmeier.stefan.downloadlist.ui.Header
+import de.lobbenmeier.stefan.downloadlist.ui.Updater
+import de.lobbenmeier.stefan.updater.business.BinariesUpdater
+import de.lobbenmeier.stefan.updater.model.Binaries
 
 @Composable
 fun App() {

@@ -1,9 +1,9 @@
 package de.lobbenmeier.stefan.update.ffmpeg
 
-import de.lobbenmeier.stefan.GithubJson
-import de.lobbenmeier.stefan.platform.Platform
-import de.lobbenmeier.stefan.update.downloadFile
-import de.lobbenmeier.stefan.ytdlp.UpdateDownloadProgress
+import de.lobbenmeier.stefan.common.business.GithubJson
+import de.lobbenmeier.stefan.downloadlist.business.UpdateDownloadProgress
+import de.lobbenmeier.stefan.updater.business.Platform
+import de.lobbenmeier.stefan.updater.business.downloadFile
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.plugins.contentnegotiation.*
