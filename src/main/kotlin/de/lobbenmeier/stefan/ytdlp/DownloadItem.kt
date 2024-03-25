@@ -93,13 +93,19 @@ class DownloadItem(
             ytDlp.runAsync("-J", "--flat-playlist", url) { metadataJson ->
                 val videoMetadata = YtDlpJson.decodeFromString<VideoMetadata>(metadataJson)
                 metadata.value = videoMetadata
-                videoMetadata.formats?.let { formats ->
-                    // set audio first, so we have a default option
-                    val audioFormat = formats.lastOrNull { it.isAudioOnly }
-                    audioFormat?.let { selectFormat(it) }
 
-                    val videoFormat = formats.lastOrNull { it.isVideo }
-                    videoFormat?.let { selectFormat(it) }
+                val requestedFormats = videoMetadata.requestedFormats
+                if (requestedFormats != null) {
+                    requestedFormats.forEach(::selectFormat)
+                } else {
+                    videoMetadata.formats?.let { formats ->
+                        // set audio first, so we have a default option
+                        val audioFormat = formats.lastOrNull { it.isAudioOnly }
+                        audioFormat?.let { selectFormat(it) }
+
+                        val videoFormat = formats.lastOrNull { it.isVideo }
+                        videoFormat?.let { selectFormat(it) }
+                    }
                 }
             }
         }

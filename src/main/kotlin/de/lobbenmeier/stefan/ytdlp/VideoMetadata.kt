@@ -7,6 +7,7 @@ data class VideoMetadata(
     val duration: Double?,
     val filename: String?,
     val formats: List<Format>?,
+    val requestedFormats: List<Format>?,
     val thumbnail: String?,
     val thumbnails: List<Thumbnail>?,
     val title: String?,
