@@ -1,34 +1,34 @@
 package de.lobbenmeier.stefan.settings.business
 
 data class Settings(
-    val app: AppSettings,
-    val ytDlp: YtDlpSettings,
+    var app: AppSettings,
+    var ytDlp: YtDlpSettings,
 ) {
     data class AppSettings(
-        val maxConcurrentJobs: Int = 4,
-        //        val appearance: Theme,
+        var maxConcurrentJobs: Int = 4,
+        //        var appearance: Theme,
     )
 
     data class YtDlpSettings(
         // Network
-        val proxy: String?,
-        val limitRate: Int?,
+        var proxy: String?,
+        var limitRate: Int?,
 
         // Output
-        val mergeOutputFormat: String?,
-        val remuxFormat: String?,
-        val recodeFormat: String?,
+        var mergeOutputFormat: String?,
+        var remuxFormat: String?,
+        var recodeFormat: String?,
 
         // embed
-        val embedSubtitles: Boolean?,
-        val embedMetadata: Boolean?,
-        val embedThumbnail: Boolean?,
-        val embedChapters: Boolean?,
+        var embedSubtitles: Boolean?,
+        var embedMetadata: Boolean?,
+        var embedThumbnail: Boolean?,
+        var embedChapters: Boolean?,
 
         // files
-        val filenameTemplate: String?,
-        val saveMetadataToJsonFile: Boolean?,
-        val saveThumbnailToFile: Boolean?,
-        val keepUnmergedFiles: Boolean?,
+        var filenameTemplate: String?,
+        var saveMetadataToJsonFile: Boolean?,
+        var saveThumbnailToFile: Boolean?,
+        var keepUnmergedFiles: Boolean?,
     )
 }
