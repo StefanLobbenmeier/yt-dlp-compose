@@ -4,7 +4,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import de.lobbenmeier.stefan.downloadlist.business.DownloadStarted
 import de.lobbenmeier.stefan.downloadlist.business.UpdateDownloadProgress
-import de.lobbenmeier.stefan.update.ffmpeg.FfmpegReleaseDownloader
+import de.lobbenmeier.stefan.updater.business.ffmpeg.FfmpegReleaseDownloader
 import de.lobbenmeier.stefan.updater.model.Binaries
 import de.lobbenmeier.stefan.updater.model.UpdateProcess
 import kotlinx.coroutines.CoroutineScope

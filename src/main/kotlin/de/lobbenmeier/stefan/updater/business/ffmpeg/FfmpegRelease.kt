@@ -1,4 +1,4 @@
-package de.lobbenmeier.stefan.update.ffmpeg
+package de.lobbenmeier.stefan.updater.business.ffmpeg
 
 import kotlinx.serialization.Serializable
 

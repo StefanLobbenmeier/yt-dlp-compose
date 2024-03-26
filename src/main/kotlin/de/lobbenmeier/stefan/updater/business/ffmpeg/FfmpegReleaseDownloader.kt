@@ -1,4 +1,4 @@
-package de.lobbenmeier.stefan.update.ffmpeg
+package de.lobbenmeier.stefan.updater.business.ffmpeg
 
 import de.lobbenmeier.stefan.common.business.GithubJson
 import de.lobbenmeier.stefan.downloadlist.business.UpdateDownloadProgress
