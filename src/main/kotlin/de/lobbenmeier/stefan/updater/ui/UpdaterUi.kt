@@ -1,4 +1,4 @@
-package de.lobbenmeier.stefan.downloadlist.ui
+package de.lobbenmeier.stefan.updater.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row

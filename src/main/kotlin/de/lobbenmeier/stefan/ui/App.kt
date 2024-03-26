@@ -11,9 +11,9 @@ import de.lobbenmeier.stefan.downloadlist.business.YtDlp
 import de.lobbenmeier.stefan.downloadlist.model.DownloadQueue
 import de.lobbenmeier.stefan.downloadlist.ui.DownloadList
 import de.lobbenmeier.stefan.downloadlist.ui.Header
-import de.lobbenmeier.stefan.downloadlist.ui.Updater
 import de.lobbenmeier.stefan.updater.business.BinariesUpdater
 import de.lobbenmeier.stefan.updater.model.Binaries
+import de.lobbenmeier.stefan.updater.ui.Updater
 
 @Composable
 fun App() {
