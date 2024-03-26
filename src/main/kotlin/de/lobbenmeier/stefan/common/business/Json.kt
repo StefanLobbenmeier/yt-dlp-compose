@@ -12,3 +12,9 @@ val YtDlpJson = Json {
     ignoreUnknownKeys = true
     namingStrategy = JsonNamingStrategy.SnakeCase
 }
+
+@OptIn(ExperimentalSerializationApi::class)
+val SettingsJson = Json {
+    explicitNulls = false
+    ignoreUnknownKeys = true
+}

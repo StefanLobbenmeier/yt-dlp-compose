@@ -10,6 +10,7 @@ data class Platform(
     val ytDlpName: YtDlpNames,
     val ffmpegPlatform: FfmpegPlatforms,
 ) {
+    val settingsFile = Path.of(Directories.configDir).resolve("settings.json")
     val binariesFolder = Path.of(Directories.dataDir).resolve("binaries")
     val homeFolder = Path.of(System.getProperty("user.home"))
     val downloadsFolder = homeFolder.resolve("Downloads")

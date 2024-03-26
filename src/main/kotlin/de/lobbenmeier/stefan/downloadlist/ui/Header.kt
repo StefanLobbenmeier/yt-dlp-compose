@@ -26,7 +26,7 @@ import de.lobbenmeier.stefan.common.ui.rememberClipboardText
 
 @Composable
 @Preview
-fun Header(onDownload: (url: String) -> Unit) {
+fun Header(onDownload: (url: String) -> Unit, onSettingsButtonClicked: () -> Unit) {
     var enteredDownloadUrl by remember { mutableStateOf("") }
     val clipboardText = rememberClipboardText().value
     val downloadUrl = getDownloadUrl(enteredDownloadUrl, clipboardText)
@@ -60,7 +60,7 @@ fun Header(onDownload: (url: String) -> Unit) {
 
         Spacer(Modifier.weight(0.05f))
 
-        IconButton(onClick = {}) { Icon(Icons.Default.Settings, "Settings") }
+        IconButton(onClick = onSettingsButtonClicked) { Icon(Icons.Default.Settings, "Settings") }
     }
 }
 

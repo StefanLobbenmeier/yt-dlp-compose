@@ -6,37 +6,58 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import de.lobbenmeier.stefan.downloadlist.business.YtDlp
 import de.lobbenmeier.stefan.downloadlist.model.DownloadQueue
 import de.lobbenmeier.stefan.downloadlist.ui.DownloadList
 import de.lobbenmeier.stefan.downloadlist.ui.Header
+import de.lobbenmeier.stefan.settings.business.Settings
+import de.lobbenmeier.stefan.settings.business.loadSettings
+import de.lobbenmeier.stefan.settings.ui.SettingsUI
 import de.lobbenmeier.stefan.updater.business.BinariesUpdater
 import de.lobbenmeier.stefan.updater.model.Binaries
 import de.lobbenmeier.stefan.updater.ui.Updater
 
 @Composable
 fun App() {
+    var settings by mutableStateOf(loadSettings())
     val binariesUpdater = remember { BinariesUpdater() }
     val binaries = binariesUpdater.binaries.collectAsState().value
 
     if (binaries == null) {
         Updater(binariesUpdater.downloads)
     } else {
-        MainView(binaries)
+        MainView(settings, { settings = it }, binaries)
     }
 }
 
 @Composable
-private fun MainView(binaries: Binaries) {
+private fun MainView(settings: Settings, updateSettings: (Settings) -> Unit, binaries: Binaries) {
     val ytDlp = remember { YtDlp(binaries) }
     val downloadQueue = remember { DownloadQueue(ytDlp) }
 
-    Column {
-        Scaffold(
-            topBar = { Header(onDownload = { downloadQueue.add(it) }) }, bottomBar = { Footer() }) {
-                DownloadList(downloadQueue)
-            }
+    var settingsOpen by remember { mutableStateOf(false) }
+
+    if (settingsOpen) {
+        SettingsUI(settings, updateSettings)
+    } else {
+        Column {
+            Scaffold(
+                topBar = {
+                    Header(
+                        onDownload = { downloadQueue.add(it) },
+                        onSettingsButtonClicked = {
+                            settingsOpen = true
+                            print(settingsOpen)
+                        })
+                },
+                bottomBar = { Footer() }) {
+                    DownloadList(downloadQueue)
+                }
+        }
     }
 }
 

@@ -1,14 +1,19 @@
 package de.lobbenmeier.stefan.settings.business
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class Settings(
     var app: AppSettings,
     var ytDlp: YtDlpSettings,
 ) {
+    @Serializable
     data class AppSettings(
         var maxConcurrentJobs: Int = 4,
         //        var appearance: Theme,
     )
 
+    @Serializable
     data class YtDlpSettings(
         // Network
         var proxy: String?,
