@@ -17,7 +17,11 @@ private val systemClipboard: Clipboard = Toolkit.getDefaultToolkit().systemClipb
 private val Clipboard.text: String?
     get() {
         try {
-            return getData(DataFlavor.stringFlavor) as String
+            return if (isDataFlavorAvailable(DataFlavor.stringFlavor)) {
+                getData(DataFlavor.stringFlavor) as String
+            } else {
+                null
+            }
         } catch (e: Exception) {
             logger.warn(e) { "Failed to get clipboard" }
             return null
