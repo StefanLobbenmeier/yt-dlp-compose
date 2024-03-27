@@ -4,36 +4,28 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Settings(
-    var app: AppSettings,
-    var ytDlp: YtDlpSettings,
-) {
-    @Serializable
-    data class AppSettings(
-        var maxConcurrentJobs: Int = 4,
-        //        var appearance: Theme,
-    )
+    // App Settings
+    val maxConcurrentJobs: Int = 4,
+    //        val appearance: Theme,
 
-    @Serializable
-    data class YtDlpSettings(
-        // Network
-        var proxy: String?,
-        var limitRate: Int?,
+    // Network
+    val proxy: String?,
+    val limitRate: Int?,
 
-        // Output
-        var mergeOutputFormat: String?,
-        var remuxFormat: String?,
-        var recodeFormat: String?,
+    // Output
+    val mergeOutputFormat: String?,
+    val remuxFormat: String?,
+    val recodeFormat: String?,
 
-        // embed
-        var embedSubtitles: Boolean?,
-        var embedMetadata: Boolean?,
-        var embedThumbnail: Boolean?,
-        var embedChapters: Boolean?,
+    // embed
+    val embedSubtitles: Boolean?,
+    val embedMetadata: Boolean?,
+    val embedThumbnail: Boolean?,
+    val embedChapters: Boolean?,
 
-        // files
-        var filenameTemplate: String?,
-        var saveMetadataToJsonFile: Boolean?,
-        var saveThumbnailToFile: Boolean?,
-        var keepUnmergedFiles: Boolean?,
-    )
-}
+    // files
+    val filenameTemplate: String?,
+    val saveMetadataToJsonFile: Boolean?,
+    val saveThumbnailToFile: Boolean?,
+    val keepUnmergedFiles: Boolean?,
+)

@@ -23,7 +23,7 @@ import de.lobbenmeier.stefan.updater.ui.Updater
 
 @Composable
 fun App() {
-    var settings by mutableStateOf(loadSettings())
+    var settings by remember { mutableStateOf(loadSettings()) }
     val binariesUpdater = remember { BinariesUpdater() }
     val binaries = binariesUpdater.binaries.collectAsState().value
 
@@ -42,7 +42,13 @@ private fun MainView(settings: Settings, updateSettings: (Settings) -> Unit, bin
     var settingsOpen by remember { mutableStateOf(false) }
 
     if (settingsOpen) {
-        SettingsUI(settings, updateSettings, cancel = { settingsOpen = false })
+        SettingsUI(
+            settings,
+            {
+                settingsOpen = false
+                updateSettings(it)
+            },
+            cancel = { settingsOpen = false })
     } else {
         Column {
             Scaffold(

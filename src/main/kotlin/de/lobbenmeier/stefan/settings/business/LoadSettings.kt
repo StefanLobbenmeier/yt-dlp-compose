@@ -15,5 +15,4 @@ fun loadSettings(): Settings {
     return createEmptySettings()
 }
 
-private fun createEmptySettings(): Settings =
-    SettingsJson.decodeFromString("""{"app":  {}, "ytDlp":  {}}""")
+private fun createEmptySettings(): Settings = SettingsJson.decodeFromString("""{}""")
