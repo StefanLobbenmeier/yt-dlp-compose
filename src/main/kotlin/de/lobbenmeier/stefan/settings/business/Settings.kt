@@ -10,7 +10,7 @@ data class Settings(
 
     // Network
     val proxy: String?,
-    val limitRate: Int?,
+    val rateLimit: Int?,
 
     // Output
     val mergeOutputFormat: String?,
