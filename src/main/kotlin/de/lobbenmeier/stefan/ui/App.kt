@@ -42,17 +42,14 @@ private fun MainView(settings: Settings, updateSettings: (Settings) -> Unit, bin
     var settingsOpen by remember { mutableStateOf(false) }
 
     if (settingsOpen) {
-        SettingsUI(settings, updateSettings)
+        SettingsUI(settings, updateSettings, cancel = { settingsOpen = false })
     } else {
         Column {
             Scaffold(
                 topBar = {
                     Header(
                         onDownload = { downloadQueue.add(it) },
-                        onSettingsButtonClicked = {
-                            settingsOpen = true
-                            print(settingsOpen)
-                        })
+                        onSettingsButtonClicked = { settingsOpen = true })
                 },
                 bottomBar = { Footer() }) {
                     DownloadList(downloadQueue)
