@@ -37,8 +37,8 @@ fun SettingsUI(settings: Settings, save: (Settings) -> Unit, cancel: () -> Unit)
 
     Box(Modifier.fillMaxSize().padding(32.dp), contentAlignment = Alignment.Center) {
         Column(
-            modifier = Modifier.verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(32.dp)
+            modifier = Modifier.verticalScroll(rememberScrollState()).width(320.dp),
+            verticalArrangement = Arrangement.spacedBy(32.dp),
         ) {
             Section("Performance") {
                 NumberInput(
@@ -143,7 +143,9 @@ fun SettingsUI(settings: Settings, save: (Settings) -> Unit, cancel: () -> Unit)
                 )
             }
 
-            Row(horizontalArrangement = Arrangement.End) {
+            Row {
+                Spacer(Modifier.weight(1f, true))
+
                 Button(onClick = cancel) { Text("Cancel") }
 
                 Spacer(Modifier.width(16.dp))
