@@ -91,6 +91,33 @@ fun SettingsUI(settings: Settings, save: (Settings) -> Unit, cancel: () -> Unit)
                     onValueChange = { mutableSettings = mutableSettings.copy(embedThumbnail = it) })
             }
 
+            Section("Files") {
+                TextInput(
+                    "Filename template",
+                    mutableSettings.filenameTemplate,
+                    onValueChange = {
+                        mutableSettings = mutableSettings.copy(filenameTemplate = it)
+                    })
+                BooleanInput(
+                    "Save thumbnail to separate image file",
+                    mutableSettings.saveThumbnailToFile,
+                    onValueChange = {
+                        mutableSettings = mutableSettings.copy(saveThumbnailToFile = it)
+                    })
+                BooleanInput(
+                    "Save metadata to separate JSON file",
+                    mutableSettings.saveMetadataToJsonFile,
+                    onValueChange = {
+                        mutableSettings = mutableSettings.copy(saveMetadataToJsonFile = it)
+                    })
+                BooleanInput(
+                    "Keep unmerged files",
+                    mutableSettings.keepUnmergedFiles,
+                    onValueChange = {
+                        mutableSettings = mutableSettings.copy(keepUnmergedFiles = it)
+                    })
+            }
+
             Row(horizontalArrangement = Arrangement.End) {
                 Button(onClick = cancel) { Text("Cancel") }
 
