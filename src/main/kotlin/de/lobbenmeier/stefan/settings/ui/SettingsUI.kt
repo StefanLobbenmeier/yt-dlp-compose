@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
+import androidx.compose.material.Checkbox
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
@@ -62,9 +63,32 @@ fun SettingsUI(settings: Settings, save: (Settings) -> Unit, cancel: () -> Unit)
                     mutableSettings.remuxFormat,
                     onValueChange = { mutableSettings = mutableSettings.copy(remuxFormat = it) })
                 TextInput(
-                    "Merge Output Format (Slowest)",
+                    "Recode Output Format (Slowest)",
                     mutableSettings.recodeFormat,
                     onValueChange = { mutableSettings = mutableSettings.copy(recodeFormat = it) })
+                TextInput(
+                    "Audio Only Downloads Format",
+                    mutableSettings.audioFormat,
+                    onValueChange = { mutableSettings = mutableSettings.copy(audioFormat = it) })
+            }
+
+            Section("Embeddings") {
+                BooleanInput(
+                    "Embed Chapters",
+                    mutableSettings.embedChapters,
+                    onValueChange = { mutableSettings = mutableSettings.copy(embedChapters = it) })
+                BooleanInput(
+                    "Embed metadata",
+                    mutableSettings.embedMetadata,
+                    onValueChange = { mutableSettings = mutableSettings.copy(embedMetadata = it) })
+                BooleanInput(
+                    "Embed subtitles",
+                    mutableSettings.embedSubtitles,
+                    onValueChange = { mutableSettings = mutableSettings.copy(embedSubtitles = it) })
+                BooleanInput(
+                    "Embed thumbnail",
+                    mutableSettings.embedThumbnail,
+                    onValueChange = { mutableSettings = mutableSettings.copy(embedThumbnail = it) })
             }
 
             Row(horizontalArrangement = Arrangement.End) {
@@ -97,4 +121,12 @@ private fun NumberInput(description: String, value: Int?, onValueChange: (Int) -
 private fun TextInput(description: String, value: String?, onValueChange: (String) -> Unit) {
     OutlinedTextField(
         value ?: "", label = { Text(description) }, onValueChange = { it.let(onValueChange) })
+}
+
+@Composable
+private fun BooleanInput(description: String, value: Boolean?, onValueChange: (Boolean) -> Unit) {
+    Row {
+        Checkbox(value == true, onValueChange)
+        Text(description)
+    }
 }

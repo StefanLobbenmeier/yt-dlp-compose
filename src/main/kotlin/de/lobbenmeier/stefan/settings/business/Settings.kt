@@ -16,6 +16,7 @@ data class Settings(
     val mergeOutputFormat: String?,
     val remuxFormat: String?,
     val recodeFormat: String?,
+    val audioFormat: String?,
 
     // embed
     val embedSubtitles: Boolean?,
