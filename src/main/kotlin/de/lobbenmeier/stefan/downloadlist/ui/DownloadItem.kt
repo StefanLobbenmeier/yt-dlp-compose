@@ -41,6 +41,7 @@ import de.lobbenmeier.stefan.downloadlist.business.isAudioOnly
 import de.lobbenmeier.stefan.downloadlist.business.isVideo
 import de.lobbenmeier.stefan.downloadlist.business.thumbnailWithFallBack
 import de.lobbenmeier.stefan.downloadlist.business.videoDescription
+import de.lobbenmeier.stefan.settings.business.createEmptySettings
 import de.lobbenmeier.stefan.updater.model.homeBrewBinaries
 import kotlin.math.roundToInt
 import kotlin.time.Duration.Companion.seconds
@@ -224,7 +225,7 @@ private fun durationString(i: Int?): String {
 private fun DownloadItemPreview() {
 
     val downloadItem =
-        YtDlp(homeBrewBinaries, arrayOf())
+        YtDlp(homeBrewBinaries, createEmptySettings())
             .createDownloadItem("https://www.youtube.com/watch?v=JKjN5mmnSX0")
     DownloadItemView(downloadItem) {}
 }

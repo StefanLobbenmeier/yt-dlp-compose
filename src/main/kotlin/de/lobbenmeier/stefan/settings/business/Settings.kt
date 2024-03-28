@@ -5,12 +5,12 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Settings(
     // App Settings
-    val maxConcurrentJobs: Int?,
+    val maxConcurrentJobs: UInt?,
     //        val appearance: Theme,
 
     // Network
     val proxy: String?,
-    val rateLimit: Int?,
+    val rateLimit: UInt?,
 
     // Output
     val mergeOutputFormat: String?,

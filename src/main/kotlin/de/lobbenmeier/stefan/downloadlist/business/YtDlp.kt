@@ -2,14 +2,19 @@ package de.lobbenmeier.stefan.downloadlist.business
 
 import com.github.pgreze.process.Redirect
 import com.github.pgreze.process.process
+import de.lobbenmeier.stefan.settings.business.Settings
 import de.lobbenmeier.stefan.updater.business.getPlatform
 import de.lobbenmeier.stefan.updater.model.Binaries
 import kotlin.io.path.pathString
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withPermit
 
-class YtDlp(private val binaries: Binaries, private val settings: Array<String>) {
+class YtDlp(private val binaries: Binaries, private val settings: Settings) {
+
+    private val semaphore = Semaphore(settings.rateLimit ?: 100)
 
     fun createDownloadItem(url: String): DownloadItem {
         return DownloadItem(this, url).also { it.gatherMetadata() }
@@ -34,21 +39,24 @@ class YtDlp(private val binaries: Binaries, private val settings: Array<String>)
                 "manifest-filesize-approx",
                 "--cookies-from-browser",
                 "firefox",
-                *settings,
+                *settings.toYtDlpConfiguration(),
                 *options,
             )
 
         val command = arrayOf(ytDlpBinary, *fullOptions).joinToString(separator = " ") { "\"$it\"" }
-        println("Start process: $command")
 
         val res =
-            process(
-                ytDlpBinary,
-                *fullOptions,
-                stdout = Redirect.Consume { it.collect(consumer) },
-                stderr = Redirect.CAPTURE,
-                directory = getPlatform().downloadsFolder.toFile()
-            )
+            semaphore.withPermit {
+                println("Start process: $command")
+
+                process(
+                    ytDlpBinary,
+                    *fullOptions,
+                    stdout = Redirect.Consume { it.collect(consumer) },
+                    stderr = Redirect.CAPTURE,
+                    directory = getPlatform().downloadsFolder.toFile()
+                )
+            }
 
         println("Script finished with result=${res.resultCode}")
         val output = res.output.joinToString("\n")

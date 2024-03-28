@@ -165,11 +165,11 @@ private fun Section(sectionTitle: String, content: @Composable (ColumnScope.() -
 }
 
 @Composable
-private fun NumberInput(description: String, value: Int?, onValueChange: (Int?) -> Unit) {
+private fun NumberInput(description: String, value: UInt?, onValueChange: (UInt?) -> Unit) {
     TextInput(
         description,
         value?.toString() ?: "",
-        onValueChange = { onValueChange(it?.toIntOrNull()) }
+        onValueChange = { onValueChange(it?.toUIntOrNull()) }
     )
 }
 

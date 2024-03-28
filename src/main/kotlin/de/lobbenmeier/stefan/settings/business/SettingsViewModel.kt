@@ -36,6 +36,4 @@ class SettingsViewModel {
 
         _settings.value = settings
     }
-
-    private fun createEmptySettings(): Settings = SettingsJson.decodeFromString("""{}""")
 }
