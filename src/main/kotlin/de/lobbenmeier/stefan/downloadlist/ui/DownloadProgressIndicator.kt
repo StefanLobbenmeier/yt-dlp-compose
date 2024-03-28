@@ -20,10 +20,13 @@ fun DownloadProgressIndicator(downloadProgress: VideoDownloadProgress) {
         return LinearProgressIndicator(
             progress = downloadProgress.progress,
             modifier = Modifier.height(20.dp).fillMaxWidth(),
-            color = Color.Red)
+            color = Color.Red
+        )
     }
     LinearProgressIndicator(
-        progress = downloadProgress.progress, modifier = Modifier.height(20.dp).fillMaxWidth())
+        progress = downloadProgress.progress,
+        modifier = Modifier.height(20.dp).fillMaxWidth()
+    )
 }
 
 @Composable
@@ -39,7 +42,8 @@ fun DownloadProgressIndicatorPreview50() {
         YtDlpDownloadProgress(
             downloadedBytes = 100,
             totalBytes = 200,
-        ))
+        )
+    )
 }
 
 @Composable

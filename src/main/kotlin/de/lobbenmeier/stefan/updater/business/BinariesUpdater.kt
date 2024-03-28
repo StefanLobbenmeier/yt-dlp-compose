@@ -36,11 +36,16 @@ class BinariesUpdater {
         CoroutineScope(Dispatchers.IO).launch {
             val ytDlpFuture = async {
                 ytDlpDownloader.downloadRelease(
-                    platform.ytDlpName.filename, withProgress(ytDlpProcess))
+                    platform.ytDlpName.filename,
+                    withProgress(ytDlpProcess)
+                )
             }
             val ffmpegFuture = async {
                 ffmpegReleaseDownloader.downloadRelease(
-                    platform, withProgress(ffmpegProcess), withProgress(ffprobeProcess))
+                    platform,
+                    withProgress(ffmpegProcess),
+                    withProgress(ffprobeProcess)
+                )
             }
 
             val ytDlp = ytDlpFuture.await()

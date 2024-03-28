@@ -14,6 +14,7 @@ fun DownloadList(downloadQueue: DownloadQueue) {
     LazyColumn(modifier = Modifier.padding(8.0.dp).fillMaxSize()) {
         items(
             downloadQueue.items.asReversed(),
-            itemContent = { DownloadItemView(it, removeItem = downloadQueue::remove) })
+            itemContent = { DownloadItemView(it, removeItem = downloadQueue::remove) }
+        )
     }
 }

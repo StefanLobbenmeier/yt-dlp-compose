@@ -34,7 +34,8 @@ class YtDlp(val binaries: Binaries) {
                 "manifest-filesize-approx",
                 "--cookies-from-browser",
                 "firefox",
-                *options)
+                *options
+            )
 
         val command = arrayOf(ytDlpBinary, *fullOptions).joinToString(separator = " ") { "\"$it\"" }
         println("Start process: $command")
@@ -45,7 +46,8 @@ class YtDlp(val binaries: Binaries) {
                 *fullOptions,
                 stdout = Redirect.Consume { it.collect(consumer) },
                 stderr = Redirect.CAPTURE,
-                directory = getPlatform().downloadsFolder.toFile())
+                directory = getPlatform().downloadsFolder.toFile()
+            )
 
         println("Script finished with result=${res.resultCode}")
         val output = res.output.joinToString("\n")

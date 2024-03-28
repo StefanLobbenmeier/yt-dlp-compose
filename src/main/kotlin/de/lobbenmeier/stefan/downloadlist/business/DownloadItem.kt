@@ -46,24 +46,25 @@ class DownloadItem(
                     "--progress-template",
                     PROGRESS_TEMPLATE,
                     "--write-thumbnail",
-                    url) { log ->
-                        when {
-                            log.startsWith(PROGRESS_PREFIX) -> {
-                                val progressJson = log.removePrefix(PROGRESS_PREFIX)
-                                val progress =
-                                    YtDlpJson.decodeFromString<YtDlpDownloadProgress>(progressJson)
-                                downloadProgress.emit(progress)
-                            }
-                            log.startsWith(VIDOE_METADATA_JSON_PREFIX) -> {
-                                val videoMedataJson = log.removePrefix(VIDOE_METADATA_JSON_PREFIX)
-                                videoMetadata =
-                                    YtDlpJson.decodeFromString<VideoMetadata>(videoMedataJson)
-                            }
-                            else -> {
-                                logger.info { log }
-                            }
+                    url
+                ) { log ->
+                    when {
+                        log.startsWith(PROGRESS_PREFIX) -> {
+                            val progressJson = log.removePrefix(PROGRESS_PREFIX)
+                            val progress =
+                                YtDlpJson.decodeFromString<YtDlpDownloadProgress>(progressJson)
+                            downloadProgress.emit(progress)
+                        }
+                        log.startsWith(VIDOE_METADATA_JSON_PREFIX) -> {
+                            val videoMedataJson = log.removePrefix(VIDOE_METADATA_JSON_PREFIX)
+                            videoMetadata =
+                                YtDlpJson.decodeFromString<VideoMetadata>(videoMedataJson)
+                        }
+                        else -> {
+                            logger.info { log }
                         }
                     }
+                }
                 downloadProgress.emit(DownloadCompleted)
                 videoMetadata?.filename?.let {
                     targetFile.emit(getPlatform().downloadsFolder.resolve(it).toFile())
@@ -135,9 +136,11 @@ class DownloadItemFormat {
         if (ytDlpFormat.isVideo) {
             selectedVideoFormat.value = ytDlpFormat
 
-            if (!ytDlpFormat.isAudio &&
-                selectedAudioFormat.value.isVideo &&
-                defaultAudioFormat != null) {
+            if (
+                !ytDlpFormat.isAudio &&
+                    selectedAudioFormat.value.isVideo &&
+                    defaultAudioFormat != null
+            ) {
                 // reset the audio format to default again, to avoid having to download 2 videos
                 selectedAudioFormat.value = defaultAudioFormat
             }

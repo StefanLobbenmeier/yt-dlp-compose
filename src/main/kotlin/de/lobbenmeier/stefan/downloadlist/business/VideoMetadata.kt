@@ -72,7 +72,9 @@ val Format.videoDescription: String
 val Format.audioDescription: String
     get() {
         return listOfNotNull(
-                if (isVideo) "from video" else format ?: formatNote, acodec?.let { "($acodec)" })
+                if (isVideo) "from video" else format ?: formatNote,
+                acodec?.let { "($acodec)" }
+            )
             .joinToString(" ")
     }
 

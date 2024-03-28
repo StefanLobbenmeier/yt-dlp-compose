@@ -25,9 +25,10 @@ fun OpenFileButton(file: File?) {
                     logger.error { "Could not find file $file" }
                 }
             }
-        }) {
-            Icon(FeatherIcons.Play, "Open File")
         }
+    ) {
+        Icon(FeatherIcons.Play, "Open File")
+    }
 }
 
 @Composable
@@ -43,7 +44,8 @@ fun BrowseFileButton(file: File?) {
                     logger.error { "Could not find file $file" }
                 }
             }
-        }) {
-            Icon(FeatherIcons.Folder, "Show file in folder")
         }
+    ) {
+        Icon(FeatherIcons.Folder, "Show file in folder")
+    }
 }

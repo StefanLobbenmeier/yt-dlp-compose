@@ -48,18 +48,21 @@ private fun MainView(settings: Settings, updateSettings: (Settings) -> Unit, bin
                 settingsOpen = false
                 updateSettings(it)
             },
-            cancel = { settingsOpen = false })
+            cancel = { settingsOpen = false }
+        )
     } else {
         Column {
             Scaffold(
                 topBar = {
                     Header(
                         onDownload = { downloadQueue.add(it) },
-                        onSettingsButtonClicked = { settingsOpen = true })
+                        onSettingsButtonClicked = { settingsOpen = true }
+                    )
                 },
-                bottomBar = { Footer() }) {
-                    DownloadList(downloadQueue)
-                }
+                bottomBar = { Footer() }
+            ) {
+                DownloadList(downloadQueue)
+            }
         }
     }
 }

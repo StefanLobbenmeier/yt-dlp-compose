@@ -58,19 +58,25 @@ fun DownloadItemView(downloadItem: DownloadItem, removeItem: (DownloadItem) -> U
             Thumbnail(thumbnail)
             Column(
                 Modifier.weight(1f).padding(20.dp, 15.dp).fillMaxHeight(),
-                verticalArrangement = Arrangement.SpaceBetween) {
-                    Text(metadata?.title ?: downloadItem.url, fontSize = 1.1.em)
+                verticalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(metadata?.title ?: downloadItem.url, fontSize = 1.1.em)
 
-                    FormatSelectorOrDownloadProgress(
-                        downloadItem, metadata, selectedVideoOption, selectedAudioOption)
-                    InformationRow(metadata, downloadItem)
-                }
+                FormatSelectorOrDownloadProgress(
+                    downloadItem,
+                    metadata,
+                    selectedVideoOption,
+                    selectedAudioOption
+                )
+                InformationRow(metadata, downloadItem)
+            }
             Divider(Modifier.fillMaxHeight().width(1.dp))
             Column {
                 IconButton(
-                    onClick = { downloadItem.download(selectedVideoOption, selectedAudioOption) }) {
-                        Icon(FeatherIcons.Download, "Download")
-                    }
+                    onClick = { downloadItem.download(selectedVideoOption, selectedAudioOption) }
+                ) {
+                    Icon(FeatherIcons.Download, "Download")
+                }
                 val file = downloadItem.targetFile.collectAsState().value
                 if (file == null) {
                     IconButton(onClick = { removeItem(downloadItem) }) {
@@ -186,13 +192,15 @@ private fun FormatSelector(
                 selectedOption = selectedVideoOption,
                 selectionChanged = { downloadItem.selectFormat(it) },
                 modifier = Modifier.weight(1f),
-                optionBuilder = { Text(it.videoDescription) })
+                optionBuilder = { Text(it.videoDescription) }
+            )
             DropdownMenu(
                 audioFormats,
                 selectedOption = selectedAudioOption,
                 selectionChanged = { downloadItem.selectFormat(it) },
                 modifier = Modifier.weight(1f),
-                optionBuilder = { Text(it.audioDescription) })
+                optionBuilder = { Text(it.audioDescription) }
+            )
         }
     } else {
         LinearProgressIndicator(Modifier.fillMaxWidth())

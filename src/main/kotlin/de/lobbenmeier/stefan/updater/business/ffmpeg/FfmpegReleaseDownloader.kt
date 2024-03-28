@@ -26,7 +26,12 @@ class FfmpegReleaseDownloader(
 
         val ffmpegRelease = getFfmpegRelease(httpClient)
         return downloadFfmpegReleaseToFile(
-            ffmpegRelease, platform, httpClient, onFfmpegProgress, onFfprobeProgress)
+            ffmpegRelease,
+            platform,
+            httpClient,
+            onFfmpegProgress,
+            onFfprobeProgress
+        )
     }
 
     private suspend fun downloadFfmpegReleaseToFile(
@@ -49,12 +54,14 @@ class FfmpegReleaseDownloader(
                 ffmpegUrl.ffmpeg,
                 targetFolder.resolve("ffmpeg"),
                 unzipFile = true,
-                onProgress = onFfmpegProgress),
+                onProgress = onFfmpegProgress
+            ),
             httpClient.downloadFile(
                 ffmpegUrl.ffprobe,
                 targetFolder.resolve("ffprobe"),
                 unzipFile = true,
-                onProgress = onFfprobeProgress),
+                onProgress = onFfprobeProgress
+            ),
         )
     }
 

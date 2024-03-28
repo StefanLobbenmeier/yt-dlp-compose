@@ -63,6 +63,6 @@ compose {
 }
 
 spotless {
-    kotlin { ktfmt().dropboxStyle() }
-    kotlinGradle { ktfmt().dropboxStyle() }
+    kotlin { ktfmt().kotlinlangStyle() }
+    kotlinGradle { ktfmt().kotlinlangStyle() }
 }

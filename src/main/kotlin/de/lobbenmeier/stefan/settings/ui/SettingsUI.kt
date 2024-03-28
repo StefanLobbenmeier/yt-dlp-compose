@@ -34,116 +34,118 @@ fun SettingsUI(settings: Settings, save: (Settings) -> Unit, cancel: () -> Unit)
     Box(Modifier.fillMaxSize().padding(32.dp), contentAlignment = Alignment.Center) {
         Column(
             modifier = Modifier.verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(32.dp)) {
-                Section("Performance") {
-                    NumberInput(
-                        "Max Concurrent Jobs",
-                        mutableSettings.maxConcurrentJobs,
-                        onValueChange = {
-                            mutableSettings = mutableSettings.copy(maxConcurrentJobs = it)
-                        })
-                }
-
-                Section("Network") {
-                    TextInput(
-                        "Proxy",
-                        mutableSettings.proxy,
-                        onValueChange = { mutableSettings = mutableSettings.copy(proxy = it) })
-                    NumberInput(
-                        "Rate limit per video in KB/s",
-                        mutableSettings.rateLimit,
-                        onValueChange = { mutableSettings = mutableSettings.copy(rateLimit = it) })
-                }
-
-                Section("Output") {
-                    TextInput(
-                        "Merge Output Format (Fast)",
-                        mutableSettings.mergeOutputFormat,
-                        onValueChange = {
-                            mutableSettings = mutableSettings.copy(mergeOutputFormat = it)
-                        })
-                    TextInput(
-                        "Remux Output Format (Slower)",
-                        mutableSettings.remuxFormat,
-                        onValueChange = {
-                            mutableSettings = mutableSettings.copy(remuxFormat = it)
-                        })
-                    TextInput(
-                        "Recode Output Format (Slowest)",
-                        mutableSettings.recodeFormat,
-                        onValueChange = {
-                            mutableSettings = mutableSettings.copy(recodeFormat = it)
-                        })
-                    TextInput(
-                        "Audio Only Downloads Format",
-                        mutableSettings.audioFormat,
-                        onValueChange = {
-                            mutableSettings = mutableSettings.copy(audioFormat = it)
-                        })
-                }
-
-                Section("Embeddings") {
-                    BooleanInput(
-                        "Embed Chapters",
-                        mutableSettings.embedChapters,
-                        onValueChange = {
-                            mutableSettings = mutableSettings.copy(embedChapters = it)
-                        })
-                    BooleanInput(
-                        "Embed metadata",
-                        mutableSettings.embedMetadata,
-                        onValueChange = {
-                            mutableSettings = mutableSettings.copy(embedMetadata = it)
-                        })
-                    BooleanInput(
-                        "Embed subtitles",
-                        mutableSettings.embedSubtitles,
-                        onValueChange = {
-                            mutableSettings = mutableSettings.copy(embedSubtitles = it)
-                        })
-                    BooleanInput(
-                        "Embed thumbnail",
-                        mutableSettings.embedThumbnail,
-                        onValueChange = {
-                            mutableSettings = mutableSettings.copy(embedThumbnail = it)
-                        })
-                }
-
-                Section("Files") {
-                    TextInput(
-                        "Filename template",
-                        mutableSettings.filenameTemplate,
-                        onValueChange = {
-                            mutableSettings = mutableSettings.copy(filenameTemplate = it)
-                        })
-                    BooleanInput(
-                        "Save thumbnail to separate image file",
-                        mutableSettings.saveThumbnailToFile,
-                        onValueChange = {
-                            mutableSettings = mutableSettings.copy(saveThumbnailToFile = it)
-                        })
-                    BooleanInput(
-                        "Save metadata to separate JSON file",
-                        mutableSettings.saveMetadataToJsonFile,
-                        onValueChange = {
-                            mutableSettings = mutableSettings.copy(saveMetadataToJsonFile = it)
-                        })
-                    BooleanInput(
-                        "Keep unmerged files",
-                        mutableSettings.keepUnmergedFiles,
-                        onValueChange = {
-                            mutableSettings = mutableSettings.copy(keepUnmergedFiles = it)
-                        })
-                }
-
-                Row(horizontalArrangement = Arrangement.End) {
-                    Button(onClick = cancel) { Text("Cancel") }
-
-                    Spacer(Modifier.width(16.dp))
-
-                    Button(onClick = { save(mutableSettings) }) { Text("Apply") }
-                }
+            verticalArrangement = Arrangement.spacedBy(32.dp)
+        ) {
+            Section("Performance") {
+                NumberInput(
+                    "Max Concurrent Jobs",
+                    mutableSettings.maxConcurrentJobs,
+                    onValueChange = {
+                        mutableSettings = mutableSettings.copy(maxConcurrentJobs = it)
+                    }
+                )
             }
+
+            Section("Network") {
+                TextInput(
+                    "Proxy",
+                    mutableSettings.proxy,
+                    onValueChange = { mutableSettings = mutableSettings.copy(proxy = it) }
+                )
+                NumberInput(
+                    "Rate limit per video in KB/s",
+                    mutableSettings.rateLimit,
+                    onValueChange = { mutableSettings = mutableSettings.copy(rateLimit = it) }
+                )
+            }
+
+            Section("Output") {
+                TextInput(
+                    "Merge Output Format (Fast)",
+                    mutableSettings.mergeOutputFormat,
+                    onValueChange = {
+                        mutableSettings = mutableSettings.copy(mergeOutputFormat = it)
+                    }
+                )
+                TextInput(
+                    "Remux Output Format (Slower)",
+                    mutableSettings.remuxFormat,
+                    onValueChange = { mutableSettings = mutableSettings.copy(remuxFormat = it) }
+                )
+                TextInput(
+                    "Recode Output Format (Slowest)",
+                    mutableSettings.recodeFormat,
+                    onValueChange = { mutableSettings = mutableSettings.copy(recodeFormat = it) }
+                )
+                TextInput(
+                    "Audio Only Downloads Format",
+                    mutableSettings.audioFormat,
+                    onValueChange = { mutableSettings = mutableSettings.copy(audioFormat = it) }
+                )
+            }
+
+            Section("Embeddings") {
+                BooleanInput(
+                    "Embed Chapters",
+                    mutableSettings.embedChapters,
+                    onValueChange = { mutableSettings = mutableSettings.copy(embedChapters = it) }
+                )
+                BooleanInput(
+                    "Embed metadata",
+                    mutableSettings.embedMetadata,
+                    onValueChange = { mutableSettings = mutableSettings.copy(embedMetadata = it) }
+                )
+                BooleanInput(
+                    "Embed subtitles",
+                    mutableSettings.embedSubtitles,
+                    onValueChange = { mutableSettings = mutableSettings.copy(embedSubtitles = it) }
+                )
+                BooleanInput(
+                    "Embed thumbnail",
+                    mutableSettings.embedThumbnail,
+                    onValueChange = { mutableSettings = mutableSettings.copy(embedThumbnail = it) }
+                )
+            }
+
+            Section("Files") {
+                TextInput(
+                    "Filename template",
+                    mutableSettings.filenameTemplate,
+                    onValueChange = {
+                        mutableSettings = mutableSettings.copy(filenameTemplate = it)
+                    }
+                )
+                BooleanInput(
+                    "Save thumbnail to separate image file",
+                    mutableSettings.saveThumbnailToFile,
+                    onValueChange = {
+                        mutableSettings = mutableSettings.copy(saveThumbnailToFile = it)
+                    }
+                )
+                BooleanInput(
+                    "Save metadata to separate JSON file",
+                    mutableSettings.saveMetadataToJsonFile,
+                    onValueChange = {
+                        mutableSettings = mutableSettings.copy(saveMetadataToJsonFile = it)
+                    }
+                )
+                BooleanInput(
+                    "Keep unmerged files",
+                    mutableSettings.keepUnmergedFiles,
+                    onValueChange = {
+                        mutableSettings = mutableSettings.copy(keepUnmergedFiles = it)
+                    }
+                )
+            }
+
+            Row(horizontalArrangement = Arrangement.End) {
+                Button(onClick = cancel) { Text("Cancel") }
+
+                Spacer(Modifier.width(16.dp))
+
+                Button(onClick = { save(mutableSettings) }) { Text("Apply") }
+            }
+        }
     }
 }
 
@@ -158,7 +160,10 @@ private fun Section(sectionTitle: String, content: @Composable (ColumnScope.() -
 @Composable
 private fun NumberInput(description: String, value: Int?, onValueChange: (Int?) -> Unit) {
     TextInput(
-        description, value?.toString() ?: "", onValueChange = { onValueChange(it?.toIntOrNull()) })
+        description,
+        value?.toString() ?: "",
+        onValueChange = { onValueChange(it?.toIntOrNull()) }
+    )
 }
 
 @Composable
@@ -169,8 +174,11 @@ private fun TextInput(description: String, value: String?, onValueChange: (Strin
         onValueChange = {
             if (it.isEmpty()) {
                 onValueChange(null)
-            } else onValueChange(it)
-        })
+            } else {
+                onValueChange(it)
+            }
+        }
+    )
 }
 
 @Composable
