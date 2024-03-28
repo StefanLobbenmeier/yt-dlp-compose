@@ -20,6 +20,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import de.lobbenmeier.stefan.settings.business.Settings
@@ -152,7 +153,7 @@ private fun TextInput(description: String, value: String?, onValueChange: (Strin
 
 @Composable
 private fun BooleanInput(description: String, value: Boolean?, onValueChange: (Boolean) -> Unit) {
-    Row {
+    Row(verticalAlignment = Alignment.CenterVertically) {
         Checkbox(value == true, onValueChange)
         Text(description)
     }
