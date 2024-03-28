@@ -1,6 +1,8 @@
 package de.lobbenmeier.stefan.settings.ui
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
@@ -29,104 +31,120 @@ import de.lobbenmeier.stefan.settings.business.Settings
 fun SettingsUI(settings: Settings, save: (Settings) -> Unit, cancel: () -> Unit) {
     var mutableSettings by remember { mutableStateOf(settings.copy()) }
 
-    Column(
-        modifier = Modifier.padding(32.dp).fillMaxSize().verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.spacedBy(32.dp)) {
-            Section("Performance") {
-                NumberInput(
-                    "Max Concurrent Jobs",
-                    mutableSettings.maxConcurrentJobs,
-                    onValueChange = {
-                        mutableSettings = mutableSettings.copy(maxConcurrentJobs = it)
-                    })
+    Box(Modifier.fillMaxSize().padding(32.dp), contentAlignment = Alignment.Center) {
+        Column(
+            modifier = Modifier.verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(32.dp)) {
+                Section("Performance") {
+                    NumberInput(
+                        "Max Concurrent Jobs",
+                        mutableSettings.maxConcurrentJobs,
+                        onValueChange = {
+                            mutableSettings = mutableSettings.copy(maxConcurrentJobs = it)
+                        })
+                }
+
+                Section("Network") {
+                    TextInput(
+                        "Proxy",
+                        mutableSettings.proxy,
+                        onValueChange = { mutableSettings = mutableSettings.copy(proxy = it) })
+                    NumberInput(
+                        "Rate limit per video in KB/s",
+                        mutableSettings.rateLimit,
+                        onValueChange = { mutableSettings = mutableSettings.copy(rateLimit = it) })
+                }
+
+                Section("Output") {
+                    TextInput(
+                        "Merge Output Format (Fast)",
+                        mutableSettings.mergeOutputFormat,
+                        onValueChange = {
+                            mutableSettings = mutableSettings.copy(mergeOutputFormat = it)
+                        })
+                    TextInput(
+                        "Remux Output Format (Slower)",
+                        mutableSettings.remuxFormat,
+                        onValueChange = {
+                            mutableSettings = mutableSettings.copy(remuxFormat = it)
+                        })
+                    TextInput(
+                        "Recode Output Format (Slowest)",
+                        mutableSettings.recodeFormat,
+                        onValueChange = {
+                            mutableSettings = mutableSettings.copy(recodeFormat = it)
+                        })
+                    TextInput(
+                        "Audio Only Downloads Format",
+                        mutableSettings.audioFormat,
+                        onValueChange = {
+                            mutableSettings = mutableSettings.copy(audioFormat = it)
+                        })
+                }
+
+                Section("Embeddings") {
+                    BooleanInput(
+                        "Embed Chapters",
+                        mutableSettings.embedChapters,
+                        onValueChange = {
+                            mutableSettings = mutableSettings.copy(embedChapters = it)
+                        })
+                    BooleanInput(
+                        "Embed metadata",
+                        mutableSettings.embedMetadata,
+                        onValueChange = {
+                            mutableSettings = mutableSettings.copy(embedMetadata = it)
+                        })
+                    BooleanInput(
+                        "Embed subtitles",
+                        mutableSettings.embedSubtitles,
+                        onValueChange = {
+                            mutableSettings = mutableSettings.copy(embedSubtitles = it)
+                        })
+                    BooleanInput(
+                        "Embed thumbnail",
+                        mutableSettings.embedThumbnail,
+                        onValueChange = {
+                            mutableSettings = mutableSettings.copy(embedThumbnail = it)
+                        })
+                }
+
+                Section("Files") {
+                    TextInput(
+                        "Filename template",
+                        mutableSettings.filenameTemplate,
+                        onValueChange = {
+                            mutableSettings = mutableSettings.copy(filenameTemplate = it)
+                        })
+                    BooleanInput(
+                        "Save thumbnail to separate image file",
+                        mutableSettings.saveThumbnailToFile,
+                        onValueChange = {
+                            mutableSettings = mutableSettings.copy(saveThumbnailToFile = it)
+                        })
+                    BooleanInput(
+                        "Save metadata to separate JSON file",
+                        mutableSettings.saveMetadataToJsonFile,
+                        onValueChange = {
+                            mutableSettings = mutableSettings.copy(saveMetadataToJsonFile = it)
+                        })
+                    BooleanInput(
+                        "Keep unmerged files",
+                        mutableSettings.keepUnmergedFiles,
+                        onValueChange = {
+                            mutableSettings = mutableSettings.copy(keepUnmergedFiles = it)
+                        })
+                }
+
+                Row(horizontalArrangement = Arrangement.End) {
+                    Button(onClick = cancel) { Text("Cancel") }
+
+                    Spacer(Modifier.width(16.dp))
+
+                    Button(onClick = { save(mutableSettings) }) { Text("Apply") }
+                }
             }
-
-            Section("Network") {
-                TextInput(
-                    "Proxy",
-                    mutableSettings.proxy,
-                    onValueChange = { mutableSettings = mutableSettings.copy(proxy = it) })
-                NumberInput(
-                    "Rate limit per video in KB/s",
-                    mutableSettings.rateLimit,
-                    onValueChange = { mutableSettings = mutableSettings.copy(rateLimit = it) })
-            }
-
-            Section("Output") {
-                TextInput(
-                    "Merge Output Format (Fast)",
-                    mutableSettings.mergeOutputFormat,
-                    onValueChange = {
-                        mutableSettings = mutableSettings.copy(mergeOutputFormat = it)
-                    })
-                TextInput(
-                    "Remux Output Format (Slower)",
-                    mutableSettings.remuxFormat,
-                    onValueChange = { mutableSettings = mutableSettings.copy(remuxFormat = it) })
-                TextInput(
-                    "Recode Output Format (Slowest)",
-                    mutableSettings.recodeFormat,
-                    onValueChange = { mutableSettings = mutableSettings.copy(recodeFormat = it) })
-                TextInput(
-                    "Audio Only Downloads Format",
-                    mutableSettings.audioFormat,
-                    onValueChange = { mutableSettings = mutableSettings.copy(audioFormat = it) })
-            }
-
-            Section("Embeddings") {
-                BooleanInput(
-                    "Embed Chapters",
-                    mutableSettings.embedChapters,
-                    onValueChange = { mutableSettings = mutableSettings.copy(embedChapters = it) })
-                BooleanInput(
-                    "Embed metadata",
-                    mutableSettings.embedMetadata,
-                    onValueChange = { mutableSettings = mutableSettings.copy(embedMetadata = it) })
-                BooleanInput(
-                    "Embed subtitles",
-                    mutableSettings.embedSubtitles,
-                    onValueChange = { mutableSettings = mutableSettings.copy(embedSubtitles = it) })
-                BooleanInput(
-                    "Embed thumbnail",
-                    mutableSettings.embedThumbnail,
-                    onValueChange = { mutableSettings = mutableSettings.copy(embedThumbnail = it) })
-            }
-
-            Section("Files") {
-                TextInput(
-                    "Filename template",
-                    mutableSettings.filenameTemplate,
-                    onValueChange = {
-                        mutableSettings = mutableSettings.copy(filenameTemplate = it)
-                    })
-                BooleanInput(
-                    "Save thumbnail to separate image file",
-                    mutableSettings.saveThumbnailToFile,
-                    onValueChange = {
-                        mutableSettings = mutableSettings.copy(saveThumbnailToFile = it)
-                    })
-                BooleanInput(
-                    "Save metadata to separate JSON file",
-                    mutableSettings.saveMetadataToJsonFile,
-                    onValueChange = {
-                        mutableSettings = mutableSettings.copy(saveMetadataToJsonFile = it)
-                    })
-                BooleanInput(
-                    "Keep unmerged files",
-                    mutableSettings.keepUnmergedFiles,
-                    onValueChange = {
-                        mutableSettings = mutableSettings.copy(keepUnmergedFiles = it)
-                    })
-            }
-
-            Row(horizontalArrangement = Arrangement.End) {
-                Button(onClick = cancel) { Text("Cancel") }
-
-                Spacer(Modifier.width(16.dp))
-
-                Button(onClick = { save(mutableSettings) }) { Text("Apply") }
-            }
-        }
+    }
 }
 
 @Composable
@@ -152,9 +170,9 @@ private fun TextInput(description: String, value: String?, onValueChange: (Strin
 }
 
 @Composable
-private fun BooleanInput(description: String, value: Boolean?, onValueChange: (Boolean) -> Unit) {
+private fun BooleanInput(description: String, value: Boolean, onValueChange: (Boolean) -> Unit) {
     Row(verticalAlignment = Alignment.CenterVertically) {
-        Checkbox(value == true, onValueChange)
-        Text(description)
+        Checkbox(value, onValueChange)
+        Text(description, Modifier.clickable { onValueChange(!value) })
     }
 }

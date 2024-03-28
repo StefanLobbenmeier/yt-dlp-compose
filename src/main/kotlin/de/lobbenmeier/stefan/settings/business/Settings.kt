@@ -19,14 +19,14 @@ data class Settings(
     val audioFormat: String?,
 
     // embed
-    val embedSubtitles: Boolean?,
-    val embedMetadata: Boolean?,
-    val embedThumbnail: Boolean?,
-    val embedChapters: Boolean?,
+    val embedSubtitles: Boolean = false,
+    val embedMetadata: Boolean = false,
+    val embedThumbnail: Boolean = false,
+    val embedChapters: Boolean = false,
 
     // files
     val filenameTemplate: String?,
-    val saveMetadataToJsonFile: Boolean?,
-    val saveThumbnailToFile: Boolean?,
-    val keepUnmergedFiles: Boolean?,
+    val saveMetadataToJsonFile: Boolean = false,
+    val saveThumbnailToFile: Boolean = false,
+    val keepUnmergedFiles: Boolean = false,
 )
