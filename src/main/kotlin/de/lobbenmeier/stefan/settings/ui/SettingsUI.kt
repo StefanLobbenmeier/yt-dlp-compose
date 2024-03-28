@@ -173,6 +173,8 @@ private fun TextInput(description: String, value: String?, onValueChange: (Strin
 private fun BooleanInput(description: String, value: Boolean, onValueChange: (Boolean) -> Unit) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Checkbox(value, onValueChange)
-        Text(description, Modifier.clickable { onValueChange(!value) })
+        Box(Modifier.clickable { onValueChange(!value) }) {
+            Text(description, Modifier.padding(4.dp))
+        }
     }
 }
