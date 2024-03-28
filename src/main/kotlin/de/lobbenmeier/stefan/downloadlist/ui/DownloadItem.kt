@@ -224,6 +224,7 @@ private fun durationString(i: Int?): String {
 private fun DownloadItemPreview() {
 
     val downloadItem =
-        YtDlp(homeBrewBinaries).createDownloadItem("https://www.youtube.com/watch?v=JKjN5mmnSX0")
+        YtDlp(homeBrewBinaries, arrayOf())
+            .createDownloadItem("https://www.youtube.com/watch?v=JKjN5mmnSX0")
     DownloadItemView(downloadItem) {}
 }

@@ -11,6 +11,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import de.lobbenmeier.stefan.downloadlist.business.YtDlp
+import de.lobbenmeier.stefan.downloadlist.business.toYtDlpConfiguration
 import de.lobbenmeier.stefan.downloadlist.model.DownloadQueue
 import de.lobbenmeier.stefan.downloadlist.ui.DownloadList
 import de.lobbenmeier.stefan.downloadlist.ui.Header
@@ -37,7 +38,7 @@ fun App() {
 
 @Composable
 private fun MainView(settings: Settings, updateSettings: (Settings) -> Unit, binaries: Binaries) {
-    val ytDlp = remember { YtDlp(binaries) }
+    val ytDlp = remember(settings) { YtDlp(binaries, settings.toYtDlpConfiguration()) }
     val downloadQueue = remember { DownloadQueue(ytDlp) }
 
     var settingsOpen by remember { mutableStateOf(false) }

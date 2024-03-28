@@ -45,7 +45,6 @@ class DownloadItem(
                     *selectFormats(selectedVideoOption, selectedAudioOption),
                     "--progress-template",
                     PROGRESS_TEMPLATE,
-                    "--write-thumbnail",
                     url
                 ) { log ->
                     when {

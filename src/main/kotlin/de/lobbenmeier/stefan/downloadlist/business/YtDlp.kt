@@ -9,7 +9,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class YtDlp(val binaries: Binaries) {
+class YtDlp(private val binaries: Binaries, private val settings: Array<String>) {
 
     fun createDownloadItem(url: String): DownloadItem {
         return DownloadItem(this, url).also { it.gatherMetadata() }
@@ -34,7 +34,8 @@ class YtDlp(val binaries: Binaries) {
                 "manifest-filesize-approx",
                 "--cookies-from-browser",
                 "firefox",
-                *options
+                *settings,
+                *options,
             )
 
         val command = arrayOf(ytDlpBinary, *fullOptions).joinToString(separator = " ") { "\"$it\"" }
