@@ -26,7 +26,7 @@ class DownloadItem(
     companion object {
         private const val PROGRESS_PREFIX = "[download-progress]"
         private const val PROGRESS_TEMPLATE = "$PROGRESS_PREFIX%(progress)j"
-        private const val VIDOE_METADATA_JSON_PREFIX = "[video-metadata-json]"
+        private const val VIDEO_METADATA_JSON_PREFIX = "[video-metadata-json]"
     }
 
     fun download(selectedVideoOption: Format?, selectedAudioOption: Format?) {
@@ -38,7 +38,7 @@ class DownloadItem(
                 ytDlp.runAsync(
                     // Print the whole object again so we get the filename
                     "--print",
-                    "$VIDOE_METADATA_JSON_PREFIX%()j",
+                    "$VIDEO_METADATA_JSON_PREFIX%()j",
                     // Required because of the print
                     "--no-simulate",
                     "--no-quiet",
@@ -54,8 +54,8 @@ class DownloadItem(
                                 YtDlpJson.decodeFromString<YtDlpDownloadProgress>(progressJson)
                             downloadProgress.emit(progress)
                         }
-                        log.startsWith(VIDOE_METADATA_JSON_PREFIX) -> {
-                            val videoMedataJson = log.removePrefix(VIDOE_METADATA_JSON_PREFIX)
+                        log.startsWith(VIDEO_METADATA_JSON_PREFIX) -> {
+                            val videoMedataJson = log.removePrefix(VIDEO_METADATA_JSON_PREFIX)
                             videoMetadata =
                                 YtDlpJson.decodeFromString<VideoMetadata>(videoMedataJson)
                         }
