@@ -8,16 +8,20 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.Checkbox
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.LocalMinimumInteractiveComponentEnforcement
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -115,6 +119,7 @@ fun SettingsUI(settings: Settings, save: (Settings) -> Unit, cancel: () -> Unit)
                         mutableSettings = mutableSettings.copy(filenameTemplate = it)
                     }
                 )
+                Spacer(Modifier.height(12.dp))
                 BooleanInput(
                     "Save thumbnail to separate image file",
                     mutableSettings.saveThumbnailToFile,
@@ -153,7 +158,7 @@ fun SettingsUI(settings: Settings, save: (Settings) -> Unit, cancel: () -> Unit)
 private fun Section(sectionTitle: String, content: @Composable (ColumnScope.() -> Unit)) {
     Column {
         Text(sectionTitle, style = MaterialTheme.typography.h5)
-        Column(content = content)
+        Column(Modifier.padding(vertical = 8.dp), content = content)
     }
 }
 
@@ -181,10 +186,17 @@ private fun TextInput(description: String, value: String?, onValueChange: (Strin
     )
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun BooleanInput(description: String, value: Boolean, onValueChange: (Boolean) -> Unit) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Checkbox(value, onValueChange)
+    Row(
+        modifier = Modifier.padding(vertical = 4.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        CompositionLocalProvider(LocalMinimumInteractiveComponentEnforcement provides false) {
+            Checkbox(value, onValueChange)
+        }
         Box(Modifier.clickable { onValueChange(!value) }) {
             Text(description, Modifier.padding(4.dp))
         }
