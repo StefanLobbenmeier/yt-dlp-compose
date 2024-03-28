@@ -14,7 +14,7 @@ import kotlinx.coroutines.sync.withPermit
 
 class YtDlp(private val binaries: Binaries, private val settings: Settings) {
 
-    private val semaphore = Semaphore(settings.rateLimit ?: 100)
+    private val semaphore = Semaphore(settings.rateLimit?.toInt() ?: 100)
 
     fun createDownloadItem(url: String): DownloadItem {
         return DownloadItem(this, url).also { it.gatherMetadata() }
