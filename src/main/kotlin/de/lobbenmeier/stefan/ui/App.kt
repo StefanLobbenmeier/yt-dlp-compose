@@ -15,7 +15,7 @@ import de.lobbenmeier.stefan.downloadlist.model.DownloadQueue
 import de.lobbenmeier.stefan.downloadlist.ui.DownloadList
 import de.lobbenmeier.stefan.downloadlist.ui.Header
 import de.lobbenmeier.stefan.settings.business.Settings
-import de.lobbenmeier.stefan.settings.business.loadSettings
+import de.lobbenmeier.stefan.settings.business.SettingsViewModel
 import de.lobbenmeier.stefan.settings.ui.SettingsUI
 import de.lobbenmeier.stefan.updater.business.BinariesUpdater
 import de.lobbenmeier.stefan.updater.model.Binaries
@@ -23,14 +23,15 @@ import de.lobbenmeier.stefan.updater.ui.Updater
 
 @Composable
 fun App() {
-    var settings by remember { mutableStateOf(loadSettings()) }
+    val settingsViewModel = remember { SettingsViewModel() }
+    val settings by settingsViewModel.settings.collectAsState()
     val binariesUpdater = remember { BinariesUpdater() }
     val binaries = binariesUpdater.binaries.collectAsState().value
 
     if (binaries == null) {
         Updater(binariesUpdater.downloads)
     } else {
-        MainView(settings, { settings = it }, binaries)
+        MainView(settings, settingsViewModel::saveSettings, binaries)
     }
 }
 
