@@ -156,17 +156,21 @@ private fun Section(sectionTitle: String, content: @Composable (ColumnScope.() -
 }
 
 @Composable
-private fun NumberInput(description: String, value: Int?, onValueChange: (Int) -> Unit) {
-    OutlinedTextField(
-        value?.toString() ?: "",
-        label = { Text(description) },
-        onValueChange = { it.toIntOrNull()?.let(onValueChange) })
+private fun NumberInput(description: String, value: Int?, onValueChange: (Int?) -> Unit) {
+    TextInput(
+        description, value?.toString() ?: "", onValueChange = { onValueChange(it?.toIntOrNull()) })
 }
 
 @Composable
-private fun TextInput(description: String, value: String?, onValueChange: (String) -> Unit) {
+private fun TextInput(description: String, value: String?, onValueChange: (String?) -> Unit) {
     OutlinedTextField(
-        value ?: "", label = { Text(description) }, onValueChange = { it.let(onValueChange) })
+        value ?: "",
+        label = { Text(description) },
+        onValueChange = {
+            if (it.isEmpty()) {
+                onValueChange(null)
+            } else onValueChange(it)
+        })
 }
 
 @Composable

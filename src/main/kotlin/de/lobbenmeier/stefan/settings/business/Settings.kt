@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Settings(
     // App Settings
-    val maxConcurrentJobs: Int = 4,
+    val maxConcurrentJobs: Int?,
     //        val appearance: Theme,
 
     // Network
