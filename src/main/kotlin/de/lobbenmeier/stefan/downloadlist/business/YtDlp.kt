@@ -6,25 +6,19 @@ import de.lobbenmeier.stefan.settings.business.Settings
 import de.lobbenmeier.stefan.updater.business.getPlatform
 import de.lobbenmeier.stefan.updater.model.Binaries
 import kotlin.io.path.pathString
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
 
 class YtDlp(private val binaries: Binaries, private val settings: Settings) {
 
-    private val semaphore = Semaphore(settings.rateLimit?.toInt() ?: 100)
+    private val semaphore = Semaphore(settings.maxConcurrentJobs?.toInt() ?: 100)
 
     fun createDownloadItem(url: String): DownloadItem {
         return DownloadItem(this, url).also { it.gatherMetadata() }
     }
 
-    fun run(vararg options: String) {
-        CoroutineScope(Dispatchers.IO).launch { runAsync(*options) }
-    }
-
     suspend fun runAsync(
+        isDownloadJob: Boolean,
         vararg options: String,
         consumer: suspend (String) -> Unit = { line -> println("process $line") }
     ) {
@@ -46,7 +40,7 @@ class YtDlp(private val binaries: Binaries, private val settings: Settings) {
         val command = arrayOf(ytDlpBinary, *fullOptions).joinToString(separator = " ") { "\"$it\"" }
 
         val res =
-            semaphore.withPermit {
+            withPermit(isDownloadJob) {
                 println("Start process: $command")
 
                 process(
@@ -65,6 +59,17 @@ class YtDlp(private val binaries: Binaries, private val settings: Settings) {
 
         if (res.resultCode != 0) {
             throw Exception("yt-dlp indicated error in its response")
+        }
+    }
+
+    private suspend fun <T> withPermit(
+        usePermit: Boolean,
+        action: suspend () -> T,
+    ): T {
+        return if (usePermit) {
+            semaphore.withPermit { action() }
+        } else {
+            action()
         }
     }
 }

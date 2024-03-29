@@ -38,7 +38,7 @@ fun App() {
 @Composable
 private fun MainView(settings: Settings, updateSettings: (Settings) -> Unit, binaries: Binaries) {
     val ytDlp = remember(settings) { YtDlp(binaries, settings) }
-    val downloadQueue = remember { DownloadQueue(ytDlp) }
+    val downloadQueue = remember(ytDlp) { DownloadQueue(ytDlp) }
 
     var settingsOpen by remember { mutableStateOf(false) }
 

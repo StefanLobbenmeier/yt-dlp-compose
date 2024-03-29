@@ -36,6 +36,7 @@ class DownloadItem(
             var videoMetadata: VideoMetadata? = null
             try {
                 ytDlp.runAsync(
+                    false,
                     // Print the whole object again so we get the filename
                     "--print",
                     "$VIDEO_METADATA_JSON_PREFIX%()j",
@@ -90,7 +91,7 @@ class DownloadItem(
 
     fun gatherMetadata() {
         CoroutineScope(Dispatchers.IO).launch {
-            ytDlp.runAsync("-J", "--flat-playlist", url) { metadataJson ->
+            ytDlp.runAsync(true, "-J", "--flat-playlist", url) { metadataJson ->
                 val videoMetadata = YtDlpJson.decodeFromString<VideoMetadata>(metadataJson)
                 metadata.value = videoMetadata
 
