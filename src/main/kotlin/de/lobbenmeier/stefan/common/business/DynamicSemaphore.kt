@@ -1,8 +1,5 @@
 package de.lobbenmeier.stefan.common.business
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Semaphore
 
 const val maximalSize = 100
@@ -10,13 +7,16 @@ const val maximalSize = 100
 class DynamicSemaphore(private var permits: Int) : Semaphore {
     private val backingSemaphore = Semaphore(maximalSize, maximalSize - permits)
 
-    private val coroutineScope = CoroutineScope(Dispatchers.Default)
+    private var extraAcquires = 0
 
     fun updatePermits(newPermits: Int) {
         val difference = newPermits - permits
 
         if (difference < 0) {
-            coroutineScope.launch { repeat(-difference) { backingSemaphore.acquire() } }
+            val numberOfFailedAcquires =
+                List(-difference) { backingSemaphore.tryAcquire() }.count { it.not() }
+
+            synchronized(this) { extraAcquires += numberOfFailedAcquires }
         } else {
             repeat(difference) { backingSemaphore.release() }
         }
@@ -31,7 +31,13 @@ class DynamicSemaphore(private var permits: Int) : Semaphore {
     }
 
     override fun release() {
-        backingSemaphore.release()
+        synchronized(this) {
+            if (extraAcquires > 0) {
+                extraAcquires--
+            } else {
+                backingSemaphore.release()
+            }
+        }
     }
 
     override fun tryAcquire(): Boolean {
