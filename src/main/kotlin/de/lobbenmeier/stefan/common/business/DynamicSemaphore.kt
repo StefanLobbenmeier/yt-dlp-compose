@@ -4,6 +4,12 @@ import kotlinx.coroutines.sync.Semaphore
 
 const val maximalSize = 100
 
+private val DynamicSemaphoreSingleton = DynamicSemaphore(maximalSize)
+
+fun getDynamicSemaphoreSingleton(permits: Int): DynamicSemaphore {
+    return DynamicSemaphoreSingleton.also { it.updatePermits(permits) }
+}
+
 class DynamicSemaphore(private var permits: Int) : Semaphore {
     private val backingSemaphore = Semaphore(maximalSize, maximalSize - permits)
 

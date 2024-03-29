@@ -2,16 +2,16 @@ package de.lobbenmeier.stefan.downloadlist.business
 
 import com.github.pgreze.process.Redirect
 import com.github.pgreze.process.process
+import de.lobbenmeier.stefan.common.business.getDynamicSemaphoreSingleton
 import de.lobbenmeier.stefan.settings.business.Settings
 import de.lobbenmeier.stefan.updater.business.getPlatform
 import de.lobbenmeier.stefan.updater.model.Binaries
 import kotlin.io.path.pathString
-import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
 
 class YtDlp(private val binaries: Binaries, private val settings: Settings) {
 
-    private val semaphore = Semaphore(settings.maxConcurrentJobs?.toInt() ?: 100)
+    private val semaphore = getDynamicSemaphoreSingleton(settings.maxConcurrentJobs?.toInt() ?: 100)
 
     fun createDownloadItem(url: String): DownloadItem {
         return DownloadItem(this, url).also { it.gatherMetadata() }
