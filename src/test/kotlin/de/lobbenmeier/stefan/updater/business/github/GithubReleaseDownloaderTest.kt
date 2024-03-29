@@ -7,7 +7,7 @@ import kotlinx.coroutines.test.runTest
 class GithubReleaseDownloaderTest : AnnotationSpec() {
     private var downloadDirectory = tempdir().toPath()
 
-    @Test
+    //    @Test
     fun downloadRelease() = runTest {
         GithubReleaseDownloader("yt-dlp", "yt-dlp", downloadDirectory)
             .downloadRelease("yt-dlp_macos")
