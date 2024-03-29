@@ -37,5 +37,5 @@ fun fileSizeString(bytes: Double) =
         bytes >= 1 shl 30 -> "%.1f GiB".format(bytes / (1 shl 30))
         bytes >= 1 shl 20 -> "%.1f MiB".format(bytes / (1 shl 20))
         bytes >= 1 shl 10 -> "%.1f KiB".format(bytes / (1 shl 10))
-        else -> "$bytes B"
+        else -> "%.1f B".format(bytes)
     }
