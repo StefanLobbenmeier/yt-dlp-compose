@@ -38,8 +38,7 @@ fun App() {
 @Composable
 private fun MainView(settings: Settings, updateSettings: (Settings) -> Unit, binaries: Binaries) {
     val ytDlp = remember(settings) { YtDlp(binaries, settings) }
-    val downloadQueue = remember(ytDlp) { DownloadQueue(ytDlp) }
-
+    val downloadQueue = remember { DownloadQueue() }
     var settingsOpen by remember { mutableStateOf(false) }
 
     if (settingsOpen) {
@@ -56,7 +55,7 @@ private fun MainView(settings: Settings, updateSettings: (Settings) -> Unit, bin
             Scaffold(
                 topBar = {
                     Header(
-                        onDownload = { downloadQueue.add(it) },
+                        onDownload = { downloadQueue.add(ytDlp.createDownloadItem(it)) },
                         onSettingsButtonClicked = { settingsOpen = true }
                     )
                 },
