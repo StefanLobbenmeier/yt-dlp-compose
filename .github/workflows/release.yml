@@ -10,7 +10,6 @@ on:
 
 jobs:
   release-native:
-    needs: release-jar
     strategy:
       matrix:
         os:
