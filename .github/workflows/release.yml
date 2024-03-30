@@ -41,8 +41,8 @@ jobs:
           name: ${{ inputs.version }}
           files: |
             build/libs/*
-            build/binaries/main/*
-            build/binaries/main/*/*
+            build/compose/binaries/main/*
+            build/compose/binaries/main/*/*
           generate_release_notes: true
 
       - name: Release Non-Linux
@@ -52,6 +52,6 @@ jobs:
           draft: true
           name: ${{ inputs.version }}
           files: |
-            build/binaries/main/*
-            build/binaries/main/*/*
+            build/compose/binaries/main/*
+            build/compose/binaries/main/*/*
           generate_release_notes: true
