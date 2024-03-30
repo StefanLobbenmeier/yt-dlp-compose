@@ -32,8 +32,13 @@ jobs:
       - name: Execute Gradle build
         run: ./gradlew packageDistributionForCurrentOS --info --build-cache
 
-      - name: Print binaries
-        run: find build/compose/binaries/main/**/*
+      - name: Print binaries (Non-Windows)
+        if: ${{ matrix.os != 'windows-latest' }}
+        run: find build/compose/binaries/main/
+
+      - name: Print binaries (Windows)
+        if: ${{ matrix.os == 'windows-latest' }}
+        run: dir /B build/compose/binaries/main/
 
       - name: Release Linux+Jar
         if: ${{ matrix.os == 'ubuntu-latest' }}
