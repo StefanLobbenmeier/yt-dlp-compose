@@ -28,10 +28,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v3
 
       - name: Execute Gradle build
-        run: ./gradlew createDistributable
-
-      - name: Execute Gradle build
-        run: ./gradlew createDistributable
+        run: ./gradlew createDistributable --info
 
       - name: Print binaries
         run: echo build/compose/binaries/main/**/*
