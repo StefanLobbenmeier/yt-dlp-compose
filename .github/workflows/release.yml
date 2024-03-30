@@ -38,7 +38,7 @@ jobs:
 
       - name: Print binaries (Windows)
         if: ${{ matrix.os == 'windows-latest' }}
-        run: dir /B build/compose/binaries/main/
+        run: dir /b build/compose/binaries/main/
 
       - name: Release Linux+Jar
         if: ${{ matrix.os == 'ubuntu-latest' }}
