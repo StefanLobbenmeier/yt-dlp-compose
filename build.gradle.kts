@@ -18,7 +18,7 @@ repositories {
     google()
 }
 
-kotlin { jvmToolchain(17) }
+kotlin { jvmToolchain(21) }
 
 dependencies {
     val ktorVersion = "2.3.9"
