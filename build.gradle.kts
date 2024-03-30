@@ -58,19 +58,12 @@ compose {
                 packageName = "yt-dlp-compose"
                 packageVersion = "1.0.0"
 
-                linux {
-                    targetFormats(
-                        TargetFormat.Deb,
-                        TargetFormat.AppImage,
-                    )
-                }
-                macOS { targetFormats(TargetFormat.Dmg) }
-                windows {
-                    targetFormats(
-                        TargetFormat.Exe,
-                        TargetFormat.Msi,
-                    )
-                }
+                targetFormats(
+                    TargetFormat.Deb,
+                    TargetFormat.Dmg,
+                    TargetFormat.Exe,
+                    TargetFormat.Msi,
+                )
             }
         }
     }
