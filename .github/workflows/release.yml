@@ -42,11 +42,11 @@ jobs:
 
       - name: Print binaries (Windows)
         if: ${{ matrix.os == 'windows-latest' }}
-        run: Get-ChildItem -Path "build/compose/binaries/main/*" | ForEach-Object { Get-Content $_.FullName }
+        run: Get-ChildItem -Path "build/compose/binaries/main/" -Recurse | ForEach-Object { $_.FullName }
 
       - name: Print checksums (Windows)
         if: ${{ matrix.os == 'windows-latest' }}
-        run: foreach ($file in Get-ChildItem -Path "build/checksums/*") { Get-Content $file.FullName; Write-Host "" }
+        run: Get-ChildItem -Path "build/checksums/" | ForEach-Object { Get-Content $_.FullName }
 
       - name: Release Linux+Jar
         if: ${{ matrix.os == 'ubuntu-latest' }}
