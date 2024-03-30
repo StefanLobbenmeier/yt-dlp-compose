@@ -30,7 +30,7 @@ jobs:
           cache-read-only: 'true'
 
       - name: Execute Gradle build
-        run: ./gradlew createDistributable --info --build-cache
+        run: ./gradlew packageDistributionForCurrentOS --info --build-cache
 
       - name: Print binaries
         run: find build/compose/binaries/main/**/*
