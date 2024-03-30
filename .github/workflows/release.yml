@@ -1,0 +1,75 @@
+name: Release a distribution
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: The version of the release
+        required: false
+        default: SNAPSHOT
+
+jobs:
+  release-jar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Execute Gradle build
+        run: ./gradlew build
+
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          draft: true
+          name: ${{ inputs.version }}
+          files: |
+            build/libs/*
+          generate_release_notes: true
+
+  release-native:
+    needs: release-jar
+    strategy:
+      matrix:
+        os:
+          #            - "macos-latest"
+          #            - "windows-latest"
+          - "ubuntu-latest"
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Execute Gradle build
+        run: ./gradlew createDistributable
+
+      - name: Execute Gradle build
+        run: ./gradlew createDistributable
+
+      - name: Print binaries
+        run: echo build/compose/binaries/main/*/*
+
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          draft: true
+          name: ${{ inputs.version }}
+          files: |
+            build/binaries/main/dmg/*
+            build/binaries/main/msi/*
+            build/binaries/main/exe/*
+            build/binaries/main/deb/*
+            build/binaries/main/appimage/*
+          generate_release_notes: true
