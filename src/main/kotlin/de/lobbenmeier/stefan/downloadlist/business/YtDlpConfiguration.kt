@@ -18,6 +18,7 @@ fun Settings.toYtDlpConfiguration(): Array<String> =
             }
 
             addArgument("--proxy", proxy)
+            addArgument("--concurrent-fragments", concurrentFragments)
             addArgument("--rate-limit", rateLimit)
 
             addArgument("--merge-output-format", mergeOutputFormat)

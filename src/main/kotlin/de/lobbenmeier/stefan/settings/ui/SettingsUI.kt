@@ -57,6 +57,13 @@ fun SettingsUI(settings: Settings, save: (Settings) -> Unit, cancel: () -> Unit)
                     onValueChange = { mutableSettings = mutableSettings.copy(proxy = it) }
                 )
                 NumberInput(
+                    "Concurrent fragments",
+                    mutableSettings.concurrentFragments,
+                    onValueChange = {
+                        mutableSettings = mutableSettings.copy(concurrentFragments = it)
+                    }
+                )
+                NumberInput(
                     "Rate limit per video in KB/s",
                     mutableSettings.rateLimit,
                     onValueChange = { mutableSettings = mutableSettings.copy(rateLimit = it) }

@@ -10,6 +10,7 @@ data class Settings(
 
     // Network
     val proxy: String?,
+    val concurrentFragments: UInt?,
     val rateLimit: UInt?,
 
     // Output
