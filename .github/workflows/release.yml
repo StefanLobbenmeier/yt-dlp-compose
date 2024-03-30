@@ -41,6 +41,7 @@ jobs:
           name: ${{ inputs.version }}
           files: |
             build/libs/*
+            build/binaries/main/*
             build/binaries/main/*/*
           generate_release_notes: true
 
@@ -51,5 +52,6 @@ jobs:
           draft: true
           name: ${{ inputs.version }}
           files: |
+            build/binaries/main/*
             build/binaries/main/*/*
           generate_release_notes: true
