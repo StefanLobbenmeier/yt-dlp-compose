@@ -9,30 +9,6 @@ on:
         default: SNAPSHOT
 
 jobs:
-  release-jar:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: 21
-
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
-
-      - name: Execute Gradle build
-        run: ./gradlew build
-
-      - name: Release
-        uses: softprops/action-gh-release@v2
-        with:
-          draft: true
-          name: ${{ inputs.version }}
-          files: |
-            build/libs/*
-          generate_release_notes: true
-
   release-native:
     needs: release-jar
     strategy:
@@ -61,7 +37,19 @@ jobs:
       - name: Print binaries
         run: echo build/compose/binaries/main/*/*
 
-      - name: Release
+      - name: Release Linux+Jar
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        uses: softprops/action-gh-release@v2
+        with:
+          draft: true
+          name: ${{ inputs.version }}
+          files: |
+            build/libs/*
+            build/binaries/main/*/*
+          generate_release_notes: true
+
+      - name: Release Non-Linux
+        if: ${{ matrix.os != 'ubuntu-latest' }}
         uses: softprops/action-gh-release@v2
         with:
           draft: true
