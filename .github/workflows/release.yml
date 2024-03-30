@@ -48,6 +48,7 @@ jobs:
           name: ${{ inputs.version }}
           files: |
             build/libs/*
+            build/checksums/*
             build/compose/binaries/main/*
             build/compose/binaries/main/*/*
           generate_release_notes: true
@@ -59,6 +60,7 @@ jobs:
           draft: true
           name: ${{ inputs.version }}
           files: |
+            build/checksums/*
             build/compose/binaries/main/*
             build/compose/binaries/main/*/*
           generate_release_notes: true
