@@ -53,16 +53,24 @@ compose {
     desktop {
         application {
             mainClass = "MainKt"
+
             nativeDistributions {
-                targetFormats(
-                    TargetFormat.Dmg,
-                    TargetFormat.Msi,
-                    TargetFormat.Exe,
-                    TargetFormat.Deb,
-                    TargetFormat.AppImage,
-                )
                 packageName = "yt-dlp-compose"
                 packageVersion = "1.0.0"
+
+                linux {
+                    targetFormats(
+                        TargetFormat.Deb,
+                        TargetFormat.AppImage,
+                    )
+                }
+                macOS { targetFormats(TargetFormat.Dmg) }
+                windows {
+                    targetFormats(
+                        TargetFormat.Exe,
+                        TargetFormat.Msi,
+                    )
+                }
             }
         }
     }
