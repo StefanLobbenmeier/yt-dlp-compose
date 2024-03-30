@@ -33,7 +33,7 @@ jobs:
         run: ./gradlew createDistributable --info --build-cache
 
       - name: Print binaries
-        run: echo build/compose/binaries/main/**/*
+        run: find build/compose/binaries/main/**/*
 
       - name: Release Linux+Jar
         if: ${{ matrix.os == 'ubuntu-latest' }}
