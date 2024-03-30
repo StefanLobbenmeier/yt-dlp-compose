@@ -1,3 +1,4 @@
+import org.gradle.crypto.checksum.Checksum
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 
 plugins {
@@ -6,6 +7,7 @@ plugins {
     kotlin("plugin.serialization") version kotlinVersion
     id("org.jetbrains.compose") version "1.6.1"
     id("com.diffplug.spotless") version "6.25.0"
+    id("org.gradle.crypto.checksum") version "1.4.0"
 }
 
 group = "com.example"
@@ -66,6 +68,19 @@ compose {
                 )
             }
         }
+    }
+}
+
+tasks {
+    register<Checksum>("createChecksums") {
+        dependsOn("packageDistributionForCurrentOS")
+
+        inputFiles.setFrom(
+            layout.buildDirectory.dir("compose/binaries/main/dmg"),
+        )
+        outputDirectory = layout.buildDirectory.dir("checksums")
+        checksumAlgorithm = Checksum.Algorithm.SHA256
+        appendFileNameToChecksum = true
     }
 }
 
