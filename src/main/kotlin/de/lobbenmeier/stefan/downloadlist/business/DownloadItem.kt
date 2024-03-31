@@ -46,7 +46,7 @@ class DownloadItem(
                     *selectFormats(selectedVideoOption, selectedAudioOption),
                     "--progress-template",
                     PROGRESS_TEMPLATE,
-                    url
+                    url,
                 ) { log ->
                     when {
                         log.startsWith(PROGRESS_PREFIX) -> {
@@ -99,21 +99,36 @@ class DownloadItem(
 
     fun gatherMetadata() {
         CoroutineScope(Dispatchers.IO).launch {
-            ytDlp.runAsync(false, "-J", "--flat-playlist", url) { metadataJson ->
-                val videoMetadata = YtDlpJson.decodeFromString<VideoMetadata>(metadataJson)
-                metadata.value = videoMetadata
+            ytDlp.runAsync(
+                false,
+                "--print",
+                "$VIDEO_METADATA_JSON_PREFIX%()j",
+                "--flat-playlist",
+                url,
+            ) { log ->
+                when {
+                    log.startsWith(VIDEO_METADATA_JSON_PREFIX) -> {
+                        val videoMedataJson = log.removePrefix(VIDEO_METADATA_JSON_PREFIX)
+                        val videoMetadata =
+                            YtDlpJson.decodeFromString<VideoMetadata>(videoMedataJson)
+                        metadata.value = videoMetadata
 
-                val requestedFormats = videoMetadata.requestedFormats
-                if (requestedFormats != null) {
-                    requestedFormats.forEach(::selectFormat)
-                } else {
-                    videoMetadata.formats?.let { formats ->
-                        // set audio first, so we have a default option
-                        val audioFormat = formats.lastOrNull { it.isAudioOnly }
-                        audioFormat?.let { selectFormat(it) }
+                        val requestedFormats = videoMetadata.requestedFormats
+                        if (requestedFormats != null) {
+                            requestedFormats.forEach(::selectFormat)
+                        } else {
+                            videoMetadata.formats?.let { formats ->
+                                // set audio first, so we have a default option
+                                val audioFormat = formats.lastOrNull { it.isAudioOnly }
+                                audioFormat?.let { selectFormat(it) }
 
-                        val videoFormat = formats.lastOrNull { it.isVideo }
-                        videoFormat?.let { selectFormat(it) }
+                                val videoFormat = formats.lastOrNull { it.isVideo }
+                                videoFormat?.let { selectFormat(it) }
+                            }
+                        }
+                    }
+                    else -> {
+                        logger.info { log }
                     }
                 }
             }

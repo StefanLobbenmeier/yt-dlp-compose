@@ -47,15 +47,12 @@ class YtDlp(private val binaries: Binaries, private val settings: Settings) {
                     ytDlpBinary,
                     *fullOptions,
                     stdout = Redirect.Consume { it.collect(consumer) },
-                    stderr = Redirect.CAPTURE,
+                    stderr = Redirect.Consume { it.collect(consumer) },
                     directory = getPlatform().downloadsFolder.toFile()
                 )
             }
 
         println("Script finished with result=${res.resultCode}")
-        val output = res.output.joinToString("\n")
-        println("stdout+stderr:")
-        println(output)
 
         if (res.resultCode != 0) {
             throw Exception("yt-dlp indicated error in its response")
