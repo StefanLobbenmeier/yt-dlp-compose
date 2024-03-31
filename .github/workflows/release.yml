@@ -29,8 +29,12 @@ jobs:
         with:
           cache-read-only: 'true'
 
-      - name: Execute Gradle build
-        run: ./gradlew packageDistributionForCurrentOS createChecksums --info --build-cache
+      - name: Build .jar file
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        run: ./gradlew farJar --info --build-cache
+
+      - name: Build native distribution
+        run: ./gradlew nativeDistribution --info --build-cache
 
       - name: Print binaries (Unix)
         if: ${{ matrix.os != 'windows-latest' }}

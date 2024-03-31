@@ -72,15 +72,37 @@ compose {
 }
 
 tasks {
-    register<Checksum>("createChecksums") {
+    register("nativeDistribution") {
+        dependsOn("packageDistributionForCurrentOS", "createChecksumsForNativeDistributions")
+    }
+    register<Checksum>("createChecksumsForNativeDistributions") {
         dependsOn("packageDistributionForCurrentOS")
 
         inputFiles.setFrom(
-            layout.buildDirectory.dir("libs"),
             layout.buildDirectory.dir("compose/binaries/main/deb"),
             layout.buildDirectory.dir("compose/binaries/main/dmg"),
             layout.buildDirectory.dir("compose/binaries/main/exe"),
             layout.buildDirectory.dir("compose/binaries/main/msi"),
+        )
+        outputDirectory = layout.buildDirectory.dir("checksums")
+        checksumAlgorithm = Checksum.Algorithm.SHA256
+        appendFileNameToChecksum = true
+    }
+
+    register<Jar>("fatJar") {
+        destinationDirectory = layout.buildDirectory.dir("fatJar")
+        manifest { attributes("Main-Class" to "MainKt") }
+
+        from(configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) })
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
+        finalizedBy("createChecksumsForFatJar")
+    }
+    register<Checksum>("createChecksumsForFatJar") {
+        dependsOn("fatJar")
+
+        inputFiles.setFrom(
+            layout.buildDirectory.dir("fatJar"),
         )
         outputDirectory = layout.buildDirectory.dir("checksums")
         checksumAlgorithm = Checksum.Algorithm.SHA256
