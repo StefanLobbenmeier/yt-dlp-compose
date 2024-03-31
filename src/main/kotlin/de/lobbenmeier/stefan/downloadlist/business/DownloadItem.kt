@@ -51,14 +51,22 @@ class DownloadItem(
                     when {
                         log.startsWith(PROGRESS_PREFIX) -> {
                             val progressJson = log.removePrefix(PROGRESS_PREFIX)
-                            val progress =
-                                YtDlpJson.decodeFromString<YtDlpDownloadProgress>(progressJson)
-                            downloadProgress.emit(progress)
+                            try {
+                                val progress =
+                                    YtDlpJson.decodeFromString<YtDlpDownloadProgress>(progressJson)
+                                downloadProgress.emit(progress)
+                            } catch (e: Exception) {
+                                logger.warn(e) { "Failed to parse progressJson $progressJson" }
+                            }
                         }
                         log.startsWith(VIDEO_METADATA_JSON_PREFIX) -> {
                             val videoMedataJson = log.removePrefix(VIDEO_METADATA_JSON_PREFIX)
-                            videoMetadata =
-                                YtDlpJson.decodeFromString<VideoMetadata>(videoMedataJson)
+                            try {
+                                videoMetadata =
+                                    YtDlpJson.decodeFromString<VideoMetadata>(videoMedataJson)
+                            } catch (e: Exception) {
+                                logger.warn(e) { "Failed to parse metadata $videoMetadata" }
+                            }
                         }
                         else -> {
                             logger.info { log }
