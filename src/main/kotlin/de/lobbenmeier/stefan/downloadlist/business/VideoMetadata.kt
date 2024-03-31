@@ -37,13 +37,15 @@ data class Format(
 
 private val String?.isSet
     get() = this != null && this != "none"
+
+// arte audio has an audioExt, but acoded is "none" because it is unknown
 val Format?.isAudio
-    get() = this?.acodec.isSet
+    get() = this?.audioExt.isSet || this?.acodec.isSet
 val Format?.isAudioOnly
     get() = isAudio && !isVideo
 val Format?.isVideo: Boolean
     get() {
-        return this?.vcodec.isSet
+        return this?.videoExt.isSet || this?.vcodec.isSet
     }
 
 val Format.videoDescription: String
