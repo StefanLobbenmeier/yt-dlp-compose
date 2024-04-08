@@ -23,7 +23,7 @@ repositories {
 kotlin { jvmToolchain(21) }
 
 dependencies {
-    val ktorVersion = "2.3.9"
+    val ktorVersion = "2.3.10"
     val kotestVersion = "5.8.1"
     val kotlinProcessVersion = "1.4.1"
     val kotlinxSerializationVersion = "1.6.3"
