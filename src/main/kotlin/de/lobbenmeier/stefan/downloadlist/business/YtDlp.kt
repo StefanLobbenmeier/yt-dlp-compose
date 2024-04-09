@@ -31,8 +31,6 @@ class YtDlp(private val binaries: Binaries, private val settings: Settings) {
                 "-v",
                 "--compat-opt",
                 "manifest-filesize-approx",
-                "--cookies-from-browser",
-                "firefox",
                 *settings.toYtDlpConfiguration(),
                 *options,
             )

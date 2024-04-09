@@ -29,6 +29,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import de.lobbenmeier.stefan.downloadlist.ui.Menu
 import de.lobbenmeier.stefan.settings.business.Settings
 
 @Composable
@@ -73,6 +74,24 @@ fun SettingsUI(settings: Settings, save: (Settings) -> Unit, cancel: () -> Unit)
                     mutableSettings.header,
                     onValueChange = { mutableSettings = mutableSettings.copy(header = it) },
                     placeholder = "Bearer:yourTokenHere"
+                )
+                ChoiceInput(
+                    "Cookies from browser",
+                    mutableSettings.cookiesFromBrowser,
+                    onValueChange = {
+                        mutableSettings = mutableSettings.copy(cookiesFromBrowser = it)
+                    },
+                    options =
+                        listOf(
+                            "brave",
+                            "chrome",
+                            "chromium",
+                            "edge",
+                            "firefox",
+                            "opera",
+                            "safari",
+                            "vivaldi",
+                        )
                 )
             }
 
@@ -187,11 +206,27 @@ private fun NumberInput(description: String, value: UInt?, onValueChange: (UInt?
 }
 
 @Composable
+private fun ChoiceInput(
+    description: String,
+    value: String?,
+    onValueChange: (String?) -> Unit,
+    options: List<String>,
+) {
+    val nullOption = "(none)"
+    Menu(
+        options = listOf(nullOption) + options,
+        selectedOption = value ?: nullOption,
+        selectionChanged = { if (it == nullOption) onValueChange(null) else onValueChange(it) },
+        label = description,
+    )
+}
+
+@Composable
 private fun TextInput(
     description: String,
     value: String?,
     onValueChange: (String?) -> Unit,
-    placeholder: String? = null
+    placeholder: String? = null,
 ) {
     OutlinedTextField(
         value ?: "",

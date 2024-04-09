@@ -13,6 +13,7 @@ data class Settings(
     val concurrentFragments: UInt?,
     val rateLimit: UInt?,
     val header: String?,
+    val cookiesFromBrowser: String?,
 
     // Output
     val mergeOutputFormat: String?,

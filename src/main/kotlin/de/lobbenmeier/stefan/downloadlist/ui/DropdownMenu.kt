@@ -8,7 +8,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.Card
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.ExposedDropdownMenuBox
+import androidx.compose.material.ExposedDropdownMenuDefaults
 import androidx.compose.material.Icon
+import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -66,6 +70,44 @@ fun <T> DropdownMenu(
                     }
                 ) {
                     optionBuilder(option)
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun Menu(
+    options: List<String>,
+    optionBuilder: @Composable (String) -> Unit = { Text(it.toString()) },
+    modifier: Modifier = Modifier,
+    selectedOption: String,
+    selectionChanged: (String) -> Unit,
+    label: String,
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    ExposedDropdownMenuBox(
+        expanded = expanded,
+        onExpandedChange = { expanded = it },
+        modifier = modifier
+    ) {
+        OutlinedTextField(
+            value = selectedOption,
+            onValueChange = selectionChanged,
+            label = { Text(label) },
+            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+        )
+        ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+            options.forEach { selectionOption ->
+                DropdownMenuItem(
+                    onClick = {
+                        selectionChanged(selectionOption)
+                        expanded = false
+                    }
+                ) {
+                    optionBuilder(selectionOption)
                 }
             }
         }

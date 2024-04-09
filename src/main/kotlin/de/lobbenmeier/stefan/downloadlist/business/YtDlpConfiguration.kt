@@ -21,6 +21,7 @@ fun Settings.toYtDlpConfiguration(): Array<String> =
             addArgument("--concurrent-fragments", concurrentFragments)
             addArgument("--rate-limit", rateLimit)
             addArgument("--add-headers", header)
+            addArgument("--cookies-from-browser", cookiesFromBrowser)
 
             addArgument("--merge-output-format", mergeOutputFormat)
             addArgument("--remux-video", remuxFormat)
