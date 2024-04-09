@@ -20,6 +20,7 @@ fun Settings.toYtDlpConfiguration(): Array<String> =
             addArgument("--proxy", proxy)
             addArgument("--concurrent-fragments", concurrentFragments)
             addArgument("--rate-limit", rateLimit)
+            addArgument("--add-headers", header)
 
             addArgument("--merge-output-format", mergeOutputFormat)
             addArgument("--remux-video", remuxFormat)

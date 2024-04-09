@@ -8,10 +8,11 @@ data class Settings(
     val maxConcurrentJobs: UInt?,
     //        val appearance: Theme,
 
-    // Network
+    // Network & Authentication
     val proxy: String?,
     val concurrentFragments: UInt?,
     val rateLimit: UInt?,
+    val header: String?,
 
     // Output
     val mergeOutputFormat: String?,

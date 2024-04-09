@@ -50,7 +50,7 @@ fun SettingsUI(settings: Settings, save: (Settings) -> Unit, cancel: () -> Unit)
                 )
             }
 
-            Section("Network") {
+            Section("Network & Authentication") {
                 TextInput(
                     "Proxy",
                     mutableSettings.proxy,
@@ -67,6 +67,12 @@ fun SettingsUI(settings: Settings, save: (Settings) -> Unit, cancel: () -> Unit)
                     "Rate limit per video in KB/s",
                     mutableSettings.rateLimit,
                     onValueChange = { mutableSettings = mutableSettings.copy(rateLimit = it) }
+                )
+                TextInput(
+                    "Header",
+                    mutableSettings.header,
+                    onValueChange = { mutableSettings = mutableSettings.copy(header = it) },
+                    placeholder = "Bearer:yourTokenHere"
                 )
             }
 
@@ -181,10 +187,16 @@ private fun NumberInput(description: String, value: UInt?, onValueChange: (UInt?
 }
 
 @Composable
-private fun TextInput(description: String, value: String?, onValueChange: (String?) -> Unit) {
+private fun TextInput(
+    description: String,
+    value: String?,
+    onValueChange: (String?) -> Unit,
+    placeholder: String? = null
+) {
     OutlinedTextField(
         value ?: "",
         label = { Text(description) },
+        placeholder = placeholder?.let { { Text(it) } },
         onValueChange = {
             if (it.isEmpty()) {
                 onValueChange(null)
