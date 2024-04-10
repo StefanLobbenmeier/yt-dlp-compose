@@ -1,12 +1,13 @@
 name: Release a distribution
 
 on:
+  push:
+    branches: [ "main" ]
   workflow_dispatch:
     inputs:
       version:
         description: The version of the release
         required: false
-        default: SNAPSHOT
 
 jobs:
   release-native:
@@ -56,8 +57,8 @@ jobs:
         if: ${{ matrix.os == 'ubuntu-latest' }}
         uses: softprops/action-gh-release@v2
         with:
-          draft: true
-          name: ${{ inputs.version }}
+          make_latest: true
+          name: ${{ inputs.version || format('SNAPSHOT-{0}', GITHUB_RUN_ATTEMPT) }}
           files: |
             build/fatJar/*
             build/checksums/*
@@ -69,7 +70,7 @@ jobs:
         if: ${{ matrix.os != 'ubuntu-latest' }}
         uses: softprops/action-gh-release@v2
         with:
-          draft: true
+          make_latest: true
           name: ${{ inputs.version }}
           files: |
             build/checksums/*
