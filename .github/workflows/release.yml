@@ -58,7 +58,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           make_latest: true
-          name: ${{ inputs.version || format('SNAPSHOT-{0}', GITHUB_RUN_ATTEMPT) }}
+          name: ${{ inputs.version || format('SNAPSHOT-{0}', github.run_number) }}
           files: |
             build/fatJar/*
             build/checksums/*
