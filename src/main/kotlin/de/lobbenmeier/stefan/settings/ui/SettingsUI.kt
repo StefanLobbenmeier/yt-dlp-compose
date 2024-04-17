@@ -16,10 +16,13 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.Checkbox
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.LocalMinimumInteractiveComponentEnforcement
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
+import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -29,8 +32,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.darkrockstudios.libraries.mpfilepicker.FilePicker
+import compose.icons.FeatherIcons
+import compose.icons.feathericons.File
 import de.lobbenmeier.stefan.downloadlist.ui.Menu
 import de.lobbenmeier.stefan.settings.business.Settings
+import de.lobbenmeier.stefan.updater.business.getPlatform
 
 @Composable
 fun SettingsUI(settings: Settings, save: (Settings) -> Unit, cancel: () -> Unit) {
@@ -38,7 +45,8 @@ fun SettingsUI(settings: Settings, save: (Settings) -> Unit, cancel: () -> Unit)
 
     Box(Modifier.fillMaxSize().padding(32.dp), contentAlignment = Alignment.Center) {
         Column(
-            modifier = Modifier.verticalScroll(rememberScrollState()).width(320.dp),
+            modifier =
+                Modifier.verticalScroll(rememberScrollState()).width(TextFieldDefaults.MinWidth),
             verticalArrangement = Arrangement.spacedBy(32.dp),
         ) {
             Section("Performance") {
@@ -92,6 +100,11 @@ fun SettingsUI(settings: Settings, save: (Settings) -> Unit, cancel: () -> Unit)
                             "safari",
                             "vivaldi",
                         )
+                )
+                FileInput(
+                    "Cookies from file",
+                    mutableSettings.cookiesFile,
+                    onValueChange = { mutableSettings = mutableSettings.copy(cookiesFile = it) },
                 )
             }
 
@@ -227,11 +240,13 @@ private fun TextInput(
     value: String?,
     onValueChange: (String?) -> Unit,
     placeholder: String? = null,
+    trailingIcon: @Composable (() -> Unit)? = null,
 ) {
     OutlinedTextField(
         value ?: "",
         label = { Text(description) },
         placeholder = placeholder?.let { { Text(it) } },
+        trailingIcon = trailingIcon,
         onValueChange = {
             if (it.isEmpty()) {
                 onValueChange(null)
@@ -257,4 +272,30 @@ private fun BooleanInput(description: String, value: Boolean, onValueChange: (Bo
             Text(description, Modifier.padding(4.dp))
         }
     }
+}
+
+@Composable
+private fun FileInput(description: String, value: String?, onValueChange: (String?) -> Unit) {
+    var directoryPickerOpen by remember { mutableStateOf(false) }
+
+    FilePicker(
+        show = directoryPickerOpen,
+        title = description,
+        initialDirectory = value ?: "${getPlatform().homeFolder}/",
+        onFileSelected = {
+            directoryPickerOpen = false
+            onValueChange(it?.path)
+        },
+    )
+
+    TextInput(
+        description,
+        value,
+        onValueChange,
+        trailingIcon = {
+            IconButton(onClick = { directoryPickerOpen = true }) {
+                Icon(FeatherIcons.File, contentDescription = null)
+            }
+        },
+    )
 }

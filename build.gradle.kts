@@ -42,6 +42,7 @@ dependencies {
     implementation("io.github.oshai:kotlin-logging-jvm:6.0.9")
     implementation("org.slf4j:slf4j-simple:2.0.13")
     implementation("dev.dirs:directories:26")
+    implementation("com.darkrockstudios:mpfilepicker:3.1.0")
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.0")

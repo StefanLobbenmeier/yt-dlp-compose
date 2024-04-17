@@ -14,6 +14,7 @@ data class Settings(
     val rateLimit: UInt?,
     val header: String?,
     val cookiesFromBrowser: String?,
+    val cookiesFile: String?,
 
     // Output
     val mergeOutputFormat: String?,

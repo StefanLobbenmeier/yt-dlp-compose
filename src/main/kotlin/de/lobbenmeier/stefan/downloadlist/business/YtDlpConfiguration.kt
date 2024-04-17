@@ -22,6 +22,7 @@ fun Settings.toYtDlpConfiguration(): Array<String> =
             addArgument("--rate-limit", rateLimit)
             addArgument("--add-headers", header)
             addArgument("--cookies-from-browser", cookiesFromBrowser)
+            addArgument("--cookies", cookiesFile)
 
             addArgument("--merge-output-format", mergeOutputFormat)
             addArgument("--remux-video", remuxFormat)
