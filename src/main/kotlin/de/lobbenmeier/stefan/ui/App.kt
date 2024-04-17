@@ -10,6 +10,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import de.lobbenmeier.stefan.downloadlist.business.YtDlp
 import de.lobbenmeier.stefan.downloadlist.model.DownloadQueue
 import de.lobbenmeier.stefan.downloadlist.ui.DownloadList
@@ -35,6 +38,7 @@ fun App() {
     }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun MainView(settings: Settings, updateSettings: (Settings) -> Unit, binaries: Binaries) {
     val ytDlp = remember(settings) { YtDlp(binaries, settings) }
@@ -42,27 +46,33 @@ private fun MainView(settings: Settings, updateSettings: (Settings) -> Unit, bin
     var settingsOpen by remember { mutableStateOf(false) }
 
     if (settingsOpen) {
-        SettingsUI(
-            settings,
-            {
-                settingsOpen = false
-                updateSettings(it)
-            },
-            cancel = { settingsOpen = false }
-        )
-    } else {
-        Column {
-            Scaffold(
-                topBar = {
-                    Header(
-                        onDownload = { downloadQueue.add(ytDlp.createDownloadItem(it)) },
-                        onSettingsButtonClicked = { settingsOpen = true }
-                    )
+        Dialog(
+            onDismissRequest = { settingsOpen = false },
+            properties =
+                DialogProperties(usePlatformInsets = false, usePlatformDefaultWidth = false),
+        ) {
+            SettingsUI(
+                settings,
+                {
+                    settingsOpen = false
+                    updateSettings(it)
                 },
-                bottomBar = { Footer() }
-            ) {
-                DownloadList(downloadQueue)
-            }
+                cancel = { settingsOpen = false }
+            )
+        }
+    }
+
+    Column {
+        Scaffold(
+            topBar = {
+                Header(
+                    onDownload = { downloadQueue.add(ytDlp.createDownloadItem(it)) },
+                    onSettingsButtonClicked = { settingsOpen = true }
+                )
+            },
+            bottomBar = { Footer() }
+        ) {
+            DownloadList(downloadQueue)
         }
     }
 }

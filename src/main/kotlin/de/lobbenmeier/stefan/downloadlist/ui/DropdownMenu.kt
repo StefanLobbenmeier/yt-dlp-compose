@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import compose.icons.FeatherIcons
@@ -80,11 +81,12 @@ fun <T> DropdownMenu(
 @Composable
 fun Menu(
     options: List<String>,
-    optionBuilder: @Composable (String) -> Unit = { Text(it.toString()) },
+    optionBuilder: @Composable (String) -> Unit = { Text(it) },
     modifier: Modifier = Modifier,
     selectedOption: String,
     selectionChanged: (String) -> Unit,
     label: String,
+    width: Dp? = null,
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -98,6 +100,7 @@ fun Menu(
             onValueChange = selectionChanged,
             label = { Text(label) },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+            modifier = width?.let { Modifier.width(it) } ?: Modifier
         )
         ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
             options.forEach { selectionOption ->
