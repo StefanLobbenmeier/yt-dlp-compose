@@ -132,9 +132,9 @@ class DownloadItem(
         }
     }
 
-    fun selectVideoFormat(ytDlpFormat: Format) = format.selectVideoFormat(ytDlpFormat)
+    fun selectVideoFormat(ytDlpFormat: Format?) = format.selectVideoFormat(ytDlpFormat)
 
-    fun selectAudioFormat(ytDlpFormat: Format) = format.selectAudioFormat(ytDlpFormat)
+    fun selectAudioFormat(ytDlpFormat: Format?) = format.selectAudioFormat(ytDlpFormat)
 
     val fileSize = format.size
 }
@@ -161,7 +161,7 @@ class DownloadItemFormat {
         }
     }
 
-    fun selectVideoFormat(ytDlpFormat: Format) {
+    fun selectVideoFormat(ytDlpFormat: Format?) {
         selectedVideoFormat.value = ytDlpFormat
 
         if (
@@ -172,7 +172,7 @@ class DownloadItemFormat {
         }
     }
 
-    fun selectAudioFormat(ytDlpFormat: Format) {
+    fun selectAudioFormat(ytDlpFormat: Format?) {
         selectedAudioFormat.value = ytDlpFormat
 
         if (defaultAudioFormat == null && ytDlpFormat.isAudioOnly) {
