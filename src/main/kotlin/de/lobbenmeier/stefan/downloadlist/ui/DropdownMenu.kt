@@ -79,7 +79,7 @@ fun <T> DropdownMenu(
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun Menu(
+fun SuggestionMenu(
     options: List<String>,
     optionBuilder: @Composable (String) -> Unit = { Text(it) },
     modifier: Modifier = Modifier,

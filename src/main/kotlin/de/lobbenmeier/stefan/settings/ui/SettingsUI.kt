@@ -37,7 +37,7 @@ import com.darkrockstudios.libraries.mpfilepicker.FilePicker
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.File
 import compose.icons.feathericons.Folder
-import de.lobbenmeier.stefan.downloadlist.ui.Menu
+import de.lobbenmeier.stefan.downloadlist.ui.SuggestionMenu
 import de.lobbenmeier.stefan.settings.business.Settings
 import de.lobbenmeier.stefan.updater.business.getPlatform
 import kotlin.io.path.absolutePathString
@@ -247,7 +247,7 @@ private fun ChoiceInput(
     options: List<String>,
 ) {
     val nullOption = "(none)"
-    Menu(
+    SuggestionMenu(
         options = listOf(nullOption) + options,
         selectedOption = value ?: nullOption,
         selectionChanged = { if (it == nullOption) onValueChange(null) else onValueChange(it) },
