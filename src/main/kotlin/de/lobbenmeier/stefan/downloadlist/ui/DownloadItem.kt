@@ -191,14 +191,14 @@ private fun FormatSelector(
             DropdownMenu(
                 videoFormats,
                 selectedOption = selectedVideoOption,
-                selectionChanged = { downloadItem.selectFormat(it) },
+                selectionChanged = { downloadItem.selectVideoFormat(it) },
                 modifier = Modifier.weight(1f),
                 optionBuilder = { Text(it.videoDescription) }
             )
             DropdownMenu(
                 audioFormats,
                 selectedOption = selectedAudioOption,
-                selectionChanged = { downloadItem.selectFormat(it) },
+                selectionChanged = { downloadItem.selectAudioFormat(it) },
                 modifier = Modifier.weight(1f),
                 optionBuilder = { Text(it.audioDescription) }
             )
