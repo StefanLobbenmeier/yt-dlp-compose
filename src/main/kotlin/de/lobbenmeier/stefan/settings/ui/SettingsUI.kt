@@ -32,12 +32,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.darkrockstudios.libraries.mpfilepicker.DirectoryPicker
 import com.darkrockstudios.libraries.mpfilepicker.FilePicker
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.File
+import compose.icons.feathericons.Folder
 import de.lobbenmeier.stefan.downloadlist.ui.Menu
 import de.lobbenmeier.stefan.settings.business.Settings
 import de.lobbenmeier.stefan.updater.business.getPlatform
+import kotlin.io.path.absolutePathString
 
 private val textFieldWidth = 350.dp
 
@@ -164,6 +167,17 @@ fun SettingsUI(settings: Settings, save: (Settings) -> Unit, cancel: () -> Unit)
             }
 
             Section("Files") {
+                DirectoryInput(
+                    "Download Folder",
+                    mutableSettings.downloadFolder,
+                    onValueChange = {
+                        mutableSettings =
+                            mutableSettings.copy(
+                                downloadFolder =
+                                    it ?: getPlatform().downloadsFolder.absolutePathString()
+                            )
+                    }
+                )
                 TextInput(
                     "Filename template",
                     mutableSettings.filenameTemplate,
@@ -285,14 +299,14 @@ private fun BooleanInput(description: String, value: Boolean, onValueChange: (Bo
 
 @Composable
 private fun FileInput(description: String, value: String?, onValueChange: (String?) -> Unit) {
-    var directoryPickerOpen by remember { mutableStateOf(false) }
+    var filePickerOpen by remember { mutableStateOf(false) }
 
     FilePicker(
-        show = directoryPickerOpen,
+        show = filePickerOpen,
         title = description,
         initialDirectory = value ?: "${getPlatform().homeFolder}/",
         onFileSelected = {
-            directoryPickerOpen = false
+            filePickerOpen = false
             onValueChange(it?.path)
         },
     )
@@ -302,8 +316,34 @@ private fun FileInput(description: String, value: String?, onValueChange: (Strin
         value,
         onValueChange,
         trailingIcon = {
-            IconButton(onClick = { directoryPickerOpen = true }) {
+            IconButton(onClick = { filePickerOpen = true }) {
                 Icon(FeatherIcons.File, contentDescription = null)
+            }
+        },
+    )
+}
+
+@Composable
+private fun DirectoryInput(description: String, value: String?, onValueChange: (String?) -> Unit) {
+    var directoryPickerOpen by remember { mutableStateOf(false) }
+
+    DirectoryPicker(
+        show = directoryPickerOpen,
+        title = description,
+        initialDirectory = value ?: "${getPlatform().homeFolder}/",
+        onFileSelected = {
+            directoryPickerOpen = false
+            onValueChange(it)
+        },
+    )
+
+    TextInput(
+        description,
+        value,
+        onValueChange,
+        trailingIcon = {
+            IconButton(onClick = { directoryPickerOpen = true }) {
+                Icon(FeatherIcons.Folder, contentDescription = null)
             }
         },
     )

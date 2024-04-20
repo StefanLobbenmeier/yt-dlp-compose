@@ -1,5 +1,7 @@
 package de.lobbenmeier.stefan.settings.business
 
+import de.lobbenmeier.stefan.updater.business.getPlatform
+import kotlin.io.path.absolutePathString
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -29,6 +31,7 @@ data class Settings(
     val embedChapters: Boolean = false,
 
     // files
+    val downloadFolder: String = getPlatform().downloadsFolder.absolutePathString(),
     val filenameTemplate: String?,
     val saveMetadataToJsonFile: Boolean = false,
     val saveThumbnailToFile: Boolean = false,

@@ -4,7 +4,6 @@ import com.github.pgreze.process.Redirect
 import com.github.pgreze.process.process
 import de.lobbenmeier.stefan.common.business.getDynamicSemaphoreSingleton
 import de.lobbenmeier.stefan.settings.business.Settings
-import de.lobbenmeier.stefan.updater.business.getPlatform
 import de.lobbenmeier.stefan.updater.model.Binaries
 import kotlin.io.path.pathString
 import kotlinx.coroutines.sync.withPermit
@@ -45,8 +44,7 @@ class YtDlp(private val binaries: Binaries, private val settings: Settings) {
                     ytDlpBinary,
                     *fullOptions,
                     stdout = Redirect.Consume { it.collect(consumer) },
-                    stderr = Redirect.Consume { it.collect(consumer) },
-                    directory = getPlatform().downloadsFolder.toFile()
+                    stderr = Redirect.Consume { it.collect(consumer) }
                 )
             }
 

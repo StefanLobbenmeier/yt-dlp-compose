@@ -34,6 +34,7 @@ fun Settings.toYtDlpConfiguration(): Array<String> =
             addArgument("--embed-thumbnail", embedThumbnail)
             addArgument("--embed-chapters", embedChapters)
 
+            addArgument("--paths", downloadFolder)
             addArgument("--output", filenameTemplate)
             addArgument("--save", saveMetadataToJsonFile)
             addArgument("--write-thumbnail", saveThumbnailToFile)

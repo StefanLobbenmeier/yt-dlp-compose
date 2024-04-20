@@ -1,7 +1,6 @@
 package de.lobbenmeier.stefan.downloadlist.business
 
 import de.lobbenmeier.stefan.common.business.YtDlpJson
-import de.lobbenmeier.stefan.updater.business.getPlatform
 import io.github.oshai.kotlinlogging.KotlinLogging
 import java.io.File
 import kotlinx.coroutines.CoroutineScope
@@ -74,9 +73,7 @@ class DownloadItem(
                     }
                 }
                 downloadProgress.emit(DownloadCompleted)
-                videoMetadata?.filename?.let {
-                    targetFile.emit(getPlatform().downloadsFolder.resolve(it).toFile())
-                }
+                videoMetadata?.filename?.let { targetFile.emit(File(it)) }
             } catch (e: Exception) {
                 e.printStackTrace()
                 downloadProgress.emit(DownloadFailed(e))
