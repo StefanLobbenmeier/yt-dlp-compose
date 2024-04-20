@@ -88,7 +88,8 @@ class DownloadItem(
         val selectedFormats = listOfNotNull(selectedVideoOption, selectedAudioOption).distinct()
 
         if (selectedFormats.isEmpty()) {
-            return arrayOf()
+            // Do not download the video but write all related files
+            return arrayOf("--skip-download")
         }
 
         return arrayOf("-f", selectedFormats.joinToString("+") { it.formatId })
