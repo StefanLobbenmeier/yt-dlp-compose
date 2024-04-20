@@ -181,26 +181,27 @@ private fun FormatSelector(
     val formats = metadata?.formats?.asReversed()
 
     if (formats != null) {
-        val videoFormats = formats.filter { it.isVideo }
+        val videoFormats = listOf(null) + formats.filter { it.isVideo }
         val audioFormats =
-            formats.filter {
-                it.isAudioOnly || (selectedVideoOption.isAudio && it == selectedVideoOption)
-            }
+            listOf(null) +
+                formats.filter {
+                    it.isAudioOnly || (selectedVideoOption.isAudio && it == selectedVideoOption)
+                }
 
         Row {
             DropdownMenu(
                 videoFormats,
                 selectedOption = selectedVideoOption,
-                selectionChanged = { downloadItem.selectFormat(it) },
+                selectionChanged = { downloadItem.selectVideoFormat(it) },
                 modifier = Modifier.weight(1f),
-                optionBuilder = { Text(it.videoDescription) }
+                optionFormatter = { it?.videoDescription ?: "(No Video)" }
             )
             DropdownMenu(
                 audioFormats,
                 selectedOption = selectedAudioOption,
-                selectionChanged = { downloadItem.selectFormat(it) },
+                selectionChanged = { downloadItem.selectAudioFormat(it) },
                 modifier = Modifier.weight(1f),
-                optionBuilder = { Text(it.audioDescription) }
+                optionFormatter = { it?.audioDescription ?: "(No Audio)" }
             )
         }
     } else {

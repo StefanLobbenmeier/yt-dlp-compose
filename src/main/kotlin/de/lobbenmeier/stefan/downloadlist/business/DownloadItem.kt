@@ -88,7 +88,8 @@ class DownloadItem(
         val selectedFormats = listOfNotNull(selectedVideoOption, selectedAudioOption).distinct()
 
         if (selectedFormats.isEmpty()) {
-            return arrayOf()
+            // Do not download the video but write all related files
+            return arrayOf("--skip-download")
         }
 
         return arrayOf("-f", selectedFormats.joinToString("+") { it.formatId })
@@ -112,15 +113,15 @@ class DownloadItem(
 
                         val requestedFormats = videoMetadata.requestedFormats
                         if (requestedFormats != null) {
-                            requestedFormats.forEach(::selectFormat)
+                            requestedFormats.forEach(format::selectFormat)
                         } else {
                             videoMetadata.formats?.let { formats ->
                                 // set audio first, so we have a default option
                                 val audioFormat = formats.lastOrNull { it.isAudioOnly }
-                                audioFormat?.let { selectFormat(it) }
+                                audioFormat?.let { selectAudioFormat(it) }
 
                                 val videoFormat = formats.lastOrNull { it.isVideo }
-                                videoFormat?.let { selectFormat(it) }
+                                videoFormat?.let { selectVideoFormat(it) }
                             }
                         }
                     }
@@ -132,9 +133,9 @@ class DownloadItem(
         }
     }
 
-    fun selectFormat(ytDlpFormat: Format) {
-        format.selectFormat(ytDlpFormat)
-    }
+    fun selectVideoFormat(ytDlpFormat: Format?) = format.selectVideoFormat(ytDlpFormat)
+
+    fun selectAudioFormat(ytDlpFormat: Format?) = format.selectAudioFormat(ytDlpFormat)
 
     val fileSize = format.size
 }
@@ -154,22 +155,29 @@ class DownloadItemFormat {
 
     fun selectFormat(ytDlpFormat: Format) {
         if (ytDlpFormat.isVideo) {
-            selectedVideoFormat.value = ytDlpFormat
-
-            if (
-                !ytDlpFormat.isAudio &&
-                    selectedAudioFormat.value.isVideo &&
-                    defaultAudioFormat != null
-            ) {
-                // reset the audio format to default again, to avoid having to download 2 videos
-                selectedAudioFormat.value = defaultAudioFormat
-            }
+            selectVideoFormat(ytDlpFormat)
         }
         if (ytDlpFormat.isAudio) {
-            selectedAudioFormat.value = ytDlpFormat
+            selectAudioFormat(ytDlpFormat)
+        }
+    }
 
-            if (defaultAudioFormat == null && ytDlpFormat.isAudioOnly)
-                defaultAudioFormat = ytDlpFormat
+    fun selectVideoFormat(ytDlpFormat: Format?) {
+        selectedVideoFormat.value = ytDlpFormat
+
+        if (
+            !ytDlpFormat.isAudio && selectedAudioFormat.value.isVideo && defaultAudioFormat != null
+        ) {
+            // reset the audio format to default again, to avoid having to download 2 videos
+            selectedAudioFormat.value = defaultAudioFormat
+        }
+    }
+
+    fun selectAudioFormat(ytDlpFormat: Format?) {
+        selectedAudioFormat.value = ytDlpFormat
+
+        if (defaultAudioFormat == null && ytDlpFormat.isAudioOnly) {
+            defaultAudioFormat = ytDlpFormat
         }
     }
 
