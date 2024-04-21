@@ -16,8 +16,8 @@ import java.io.InputStream
 import java.nio.file.Files
 import java.nio.file.attribute.PosixFilePermissions
 import java.util.zip.ZipInputStream
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 private val logger = KotlinLogging.logger {}
 
@@ -33,7 +33,7 @@ suspend fun HttpClient.downloadFile(
         return targetFile
     }
 
-    return CoroutineScope(Dispatchers.IO).run {
+    return withContext(Dispatchers.IO) {
         logger.info { "Starting download to $targetFile from $url" }
 
         val downloadFile =
@@ -60,7 +60,7 @@ suspend fun HttpClient.downloadFile(
         onProgress(DownloadCompleted)
         logger.info { "Completed download to $targetFile from $url" }
 
-        return targetFile
+        targetFile
     }
 }
 

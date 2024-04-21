@@ -2,6 +2,8 @@ package de.lobbenmeier.stefan.updater.business
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import com.github.pgreze.process.Redirect
+import com.github.pgreze.process.process
 import de.lobbenmeier.stefan.downloadlist.business.DownloadStarted
 import de.lobbenmeier.stefan.downloadlist.business.UpdateDownloadProgress
 import de.lobbenmeier.stefan.settings.business.Settings
@@ -14,6 +16,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 fun detectBinaries(settings: Settings, changeSettings: (Settings) -> Unit) {
     if (settings.ytDlpSource == null) {}
@@ -25,8 +28,36 @@ fun detectLocalYtDlp(): Path? {
     return detectLocalYtDlp()
 }
 
-fun detectOnPath(binaryName: String): Path? {
-    return Path.of(binaryName)
+suspend fun detectOnPath(binaryName: String): List<String> {
+    return withContext(Dispatchers.IO) {
+        buildList<String> {
+            val process =
+                process(
+                    "/bin/bash",
+                    "-c",
+                    "which $binaryName",
+                    stdout = Redirect.Consume { it.collect(::add) },
+                )
+
+            println("detectOnPath $this")
+        }
+    }
+}
+
+suspend fun getBashPath(): List<String> {
+    return withContext(Dispatchers.IO) {
+        buildList<String> {
+            val process =
+                process(
+                    "/bin/bash",
+                    "-c",
+                    "echo \$PATH",
+                    stdout = Redirect.Consume { it.collect(::add) },
+                )
+
+            println("getBashPath $this")
+        }
+    }
 }
 
 class BinariesUpdater {
