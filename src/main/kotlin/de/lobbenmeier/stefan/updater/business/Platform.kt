@@ -4,7 +4,7 @@ import dev.dirs.ProjectDirectories
 import java.nio.file.Path
 
 val Directories = ProjectDirectories.fromPath("yt-dlp-compose")
-val platform = getPlatform()
+val platform = detectPlatform()
 
 data class Platform(
     val name: String,
@@ -39,7 +39,7 @@ enum class FfmpegPlatforms(val platformName: String) {
     windows64("windows-64")
 }
 
-private fun getPlatform(): Platform {
+private fun detectPlatform(): Platform {
     val name = System.getProperty("os.name")
     val arch = System.getProperty("os.arch")
     val version = System.getProperty("os.version")
