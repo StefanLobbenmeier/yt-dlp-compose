@@ -1,6 +1,6 @@
 package de.lobbenmeier.stefan.settings.business
 
-import de.lobbenmeier.stefan.updater.business.getPlatform
+import de.lobbenmeier.stefan.updater.business.platform
 import kotlin.io.path.absolutePathString
 import kotlinx.serialization.Serializable
 
@@ -8,6 +8,10 @@ import kotlinx.serialization.Serializable
 data class Settings(
     // App Settings
     val maxConcurrentJobs: UInt?,
+    val ytDlpSource: YtDlpLocation?,
+    val ytDlpPath: String?,
+    val ffmpegSource: FfmpegLocation?,
+    val ffmpegPath: String?,
     //        val appearance: Theme,
 
     // Network & Authentication
@@ -31,7 +35,7 @@ data class Settings(
     val embedChapters: Boolean = false,
 
     // files
-    val downloadFolder: String = getPlatform().downloadsFolder.absolutePathString(),
+    val downloadFolder: String = platform.downloadsFolder.absolutePathString(),
     val filenameTemplate: String?,
     val saveMetadataToJsonFile: Boolean = false,
     val saveThumbnailToFile: Boolean = false,
