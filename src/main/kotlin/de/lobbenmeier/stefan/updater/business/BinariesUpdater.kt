@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 class BinariesUpdater {
-    private val downloadDirectory = getPlatform().binariesFolder
+    private val downloadDirectory = platform.binariesFolder
     private val ytDlpDownloader = createYtDlpDownloader(downloadDirectory)
     private val ffmpegReleaseDownloader = FfmpegReleaseDownloader(downloadDirectory)
 
@@ -22,7 +22,6 @@ class BinariesUpdater {
     val binaries = MutableStateFlow<Binaries?>(null)
 
     init {
-        val platform = getPlatform()
         val ytDlpProcess = updateProcess(platform.ytDlpName.filename)
         val ffmpegProcess = updateProcess("ffmpeg")
         val ffprobeProcess = updateProcess("ffprobe")

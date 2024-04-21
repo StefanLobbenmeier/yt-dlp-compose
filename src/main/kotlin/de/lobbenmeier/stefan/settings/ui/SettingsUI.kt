@@ -39,7 +39,7 @@ import compose.icons.feathericons.File
 import compose.icons.feathericons.Folder
 import de.lobbenmeier.stefan.downloadlist.ui.DropdownMenu
 import de.lobbenmeier.stefan.settings.business.Settings
-import de.lobbenmeier.stefan.updater.business.getPlatform
+import de.lobbenmeier.stefan.updater.business.platform
 import kotlin.io.path.absolutePathString
 
 private val textFieldWidth = 350.dp
@@ -173,8 +173,7 @@ fun SettingsUI(settings: Settings, save: (Settings) -> Unit, cancel: () -> Unit)
                     onValueChange = {
                         mutableSettings =
                             mutableSettings.copy(
-                                downloadFolder =
-                                    it ?: getPlatform().downloadsFolder.absolutePathString()
+                                downloadFolder = it ?: platform.downloadsFolder.absolutePathString()
                             )
                     }
                 )
@@ -305,7 +304,7 @@ private fun FileInput(description: String, value: String?, onValueChange: (Strin
     FilePicker(
         show = filePickerOpen,
         title = description,
-        initialDirectory = value ?: "${getPlatform().homeFolder}/",
+        initialDirectory = value ?: "${platform.homeFolder}/",
         onFileSelected = {
             filePickerOpen = false
             onValueChange(it?.path)
@@ -331,7 +330,7 @@ private fun DirectoryInput(description: String, value: String?, onValueChange: (
     DirectoryPicker(
         show = directoryPickerOpen,
         title = description,
-        initialDirectory = value ?: "${getPlatform().homeFolder}/",
+        initialDirectory = value ?: "${platform.homeFolder}/",
         onFileSelected = {
             directoryPickerOpen = false
             onValueChange(it)
