@@ -4,14 +4,30 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import de.lobbenmeier.stefan.downloadlist.business.DownloadStarted
 import de.lobbenmeier.stefan.downloadlist.business.UpdateDownloadProgress
+import de.lobbenmeier.stefan.settings.business.Settings
 import de.lobbenmeier.stefan.updater.business.ffmpeg.FfmpegReleaseDownloader
 import de.lobbenmeier.stefan.updater.model.Binaries
 import de.lobbenmeier.stefan.updater.model.UpdateProcess
+import java.nio.file.Path
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+
+fun detectBinaries(settings: Settings, changeSettings: (Settings) -> Unit) {
+    if (settings.ytDlpSource == null) {}
+}
+
+fun detectLocalYtDlp(): Path? {
+    val paths = listOf("")
+
+    return detectLocalYtDlp()
+}
+
+fun detectOnPath(binaryName: String): Path? {
+    return Path.of(binaryName)
+}
 
 class BinariesUpdater {
     private val downloadDirectory = platform.binariesFolder
