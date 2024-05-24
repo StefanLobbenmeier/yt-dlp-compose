@@ -5,6 +5,7 @@ plugins {
     val kotlinVersion = "2.0.0"
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.serialization") version kotlinVersion
+    kotlin("plugin.compose") version kotlinVersion
     id("org.jetbrains.compose") version "1.6.10"
     id("com.diffplug.spotless") version "6.25.0"
     id("org.gradle.crypto.checksum") version "1.4.0"
