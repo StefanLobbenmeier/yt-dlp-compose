@@ -2,7 +2,7 @@ import org.gradle.crypto.checksum.Checksum
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 
 plugins {
-    val kotlinVersion = "1.9.24"
+    val kotlinVersion = "2.0.0"
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.serialization") version kotlinVersion
     id("org.jetbrains.compose") version "1.6.10"
