@@ -9,6 +9,7 @@ data class Platform(
     val name: String,
     val ytDlpName: YtDlpNames,
     val ffmpegPlatform: FfmpegPlatforms,
+    val needsExecutableBit: Boolean,
 ) {
     val settingsFile = Path.of(Directories.configDir).resolve("settings.json")
     val binariesFolder = Path.of(Directories.dataDir).resolve("binaries")
@@ -46,7 +47,12 @@ fun getPlatform(): Platform {
 
     return when {
         name.contains("Windows") -> {
-            Platform(displayName, YtDlpNames.windows, FfmpegPlatforms.windows64)
+            Platform(
+                displayName,
+                YtDlpNames.windows,
+                FfmpegPlatforms.windows64,
+                needsExecutableBit = false
+            )
         }
         name.contains("Mac") -> {
             val ytDlpName =
@@ -55,7 +61,7 @@ fun getPlatform(): Platform {
                 } else {
                     YtDlpNames.osx
                 }
-            Platform(displayName, ytDlpName, FfmpegPlatforms.osx64)
+            Platform(displayName, ytDlpName, FfmpegPlatforms.osx64, needsExecutableBit = true)
         }
         else -> {
             val ffmpegPlatform =
@@ -65,7 +71,7 @@ fun getPlatform(): Platform {
                     else -> FfmpegPlatforms.linux64
                 }
 
-            Platform(displayName, YtDlpNames.python, ffmpegPlatform)
+            Platform(displayName, YtDlpNames.python, ffmpegPlatform, needsExecutableBit = true)
         }
     }
 }
