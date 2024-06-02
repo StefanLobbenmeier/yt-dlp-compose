@@ -82,8 +82,8 @@ spotless {
 }
 
 tasks {
-    withType<JavaCompile> { targetCompatibility = JavaVersion.VERSION_11.toString() }
-    withType<KotlinCompile> { compilerOptions { jvmTarget.set(JvmTarget.JVM_11) } }
+    withType<JavaCompile> { targetCompatibility = JavaVersion.VERSION_17.toString() }
+    withType<KotlinCompile> { compilerOptions { jvmTarget.set(JvmTarget.JVM_17) } }
 
     register("nativeDistribution") {
         dependsOn("packageDistributionForCurrentOS", "createChecksumsForNativeDistributions")
