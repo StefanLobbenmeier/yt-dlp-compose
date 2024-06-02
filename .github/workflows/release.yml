@@ -32,7 +32,7 @@ jobs:
 
       - name: Build .jar file
         if: ${{ matrix.os == 'ubuntu-latest' }}
-        run: ./gradlew fatJar --info --build-cache
+        run: ./gradlew shadowJar --info --build-cache
 
       - name: Build native distribution
         run: ./gradlew nativeDistribution --info --build-cache

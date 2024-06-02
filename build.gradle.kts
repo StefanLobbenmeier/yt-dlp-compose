@@ -1,5 +1,7 @@
 import org.gradle.crypto.checksum.Checksum
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     val kotlinVersion = "2.0.0"
@@ -8,6 +10,7 @@ plugins {
     kotlin("plugin.compose") version kotlinVersion
     id("org.jetbrains.compose") version "1.6.10"
     id("com.diffplug.spotless") version "6.25.0"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
     id("org.gradle.crypto.checksum") version "1.4.0"
 }
 
@@ -73,7 +76,15 @@ compose {
     }
 }
 
+spotless {
+    kotlin { ktfmt().kotlinlangStyle() }
+    kotlinGradle { ktfmt().kotlinlangStyle() }
+}
+
 tasks {
+    withType<JavaCompile> { targetCompatibility = JavaVersion.VERSION_17.toString() }
+    withType<KotlinCompile> { compilerOptions { jvmTarget.set(JvmTarget.JVM_17) } }
+
     register("nativeDistribution") {
         dependsOn("packageDistributionForCurrentOS", "createChecksumsForNativeDistributions")
     }
@@ -90,18 +101,14 @@ tasks {
         checksumAlgorithm = Checksum.Algorithm.SHA256
         appendFileNameToChecksum = true
     }
-
-    register<Jar>("fatJar") {
+    jar { manifest { attributes("Main-Class" to "MainKt") } }
+    shadowJar {
         destinationDirectory = layout.buildDirectory.dir("fatJar")
-        manifest { attributes("Main-Class" to "MainKt") }
-
-        from(configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) })
-        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-
+        archiveFileName = "yt-dlp-compose.jar"
         finalizedBy("createChecksumsForFatJar")
     }
     register<Checksum>("createChecksumsForFatJar") {
-        dependsOn("fatJar")
+        dependsOn("shadowJar")
 
         inputFiles.setFrom(
             layout.buildDirectory.dir("fatJar"),
@@ -110,9 +117,4 @@ tasks {
         checksumAlgorithm = Checksum.Algorithm.SHA256
         appendFileNameToChecksum = true
     }
-}
-
-spotless {
-    kotlin { ktfmt().kotlinlangStyle() }
-    kotlinGradle { ktfmt().kotlinlangStyle() }
 }
