@@ -1,5 +1,7 @@
 import org.gradle.crypto.checksum.Checksum
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     val kotlinVersion = "2.0.0"
@@ -80,6 +82,9 @@ spotless {
 }
 
 tasks {
+    withType<JavaCompile> { targetCompatibility = JavaVersion.VERSION_11.toString() }
+    withType<KotlinCompile> { compilerOptions { jvmTarget.set(JvmTarget.JVM_11) } }
+
     register("nativeDistribution") {
         dependsOn("packageDistributionForCurrentOS", "createChecksumsForNativeDistributions")
     }
