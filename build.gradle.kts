@@ -8,6 +8,7 @@ plugins {
     kotlin("plugin.compose") version kotlinVersion
     id("org.jetbrains.compose") version "1.6.10"
     id("com.diffplug.spotless") version "6.25.0"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
     id("org.gradle.crypto.checksum") version "1.4.0"
 }
 
@@ -73,6 +74,11 @@ compose {
     }
 }
 
+spotless {
+    kotlin { ktfmt().kotlinlangStyle() }
+    kotlinGradle { ktfmt().kotlinlangStyle() }
+}
+
 tasks {
     register("nativeDistribution") {
         dependsOn("packageDistributionForCurrentOS", "createChecksumsForNativeDistributions")
@@ -90,18 +96,14 @@ tasks {
         checksumAlgorithm = Checksum.Algorithm.SHA256
         appendFileNameToChecksum = true
     }
-
-    register<Jar>("fatJar") {
+    jar { manifest { attributes("Main-Class" to "MainKt") } }
+    shadowJar {
         destinationDirectory = layout.buildDirectory.dir("fatJar")
-        manifest { attributes("Main-Class" to "MainKt") }
-
-        from(configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) })
-        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-
+        archiveFileName = "yt-dlp-compose.jar"
         finalizedBy("createChecksumsForFatJar")
     }
     register<Checksum>("createChecksumsForFatJar") {
-        dependsOn("fatJar")
+        dependsOn("shadowJar")
 
         inputFiles.setFrom(
             layout.buildDirectory.dir("fatJar"),
@@ -110,9 +112,4 @@ tasks {
         checksumAlgorithm = Checksum.Algorithm.SHA256
         appendFileNameToChecksum = true
     }
-}
-
-spotless {
-    kotlin { ktfmt().kotlinlangStyle() }
-    kotlinGradle { ktfmt().kotlinlangStyle() }
 }
