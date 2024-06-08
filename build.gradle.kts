@@ -71,6 +71,9 @@ compose {
                     TargetFormat.Exe,
                     TargetFormat.Msi,
                 )
+
+                // lwjgl3 needs sun.misc.Unsafe to be included in the bundled JRE
+                modules("jdk.unsupported")
             }
         }
     }
