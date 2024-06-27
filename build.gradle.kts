@@ -48,7 +48,7 @@ dependencies {
     implementation("dev.dirs:directories:26")
     implementation("com.darkrockstudios:mpfilepicker:3.1.0")
 
-    testImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.10.3")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.1")
 
     testImplementation("io.kotest:kotest-runner-junit5:$kotestVersion")
