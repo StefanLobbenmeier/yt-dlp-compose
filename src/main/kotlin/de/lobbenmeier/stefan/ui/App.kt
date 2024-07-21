@@ -19,20 +19,23 @@ import de.lobbenmeier.stefan.downloadlist.ui.DownloadList
 import de.lobbenmeier.stefan.downloadlist.ui.Header
 import de.lobbenmeier.stefan.settings.business.Settings
 import de.lobbenmeier.stefan.settings.business.SettingsViewModel
+import de.lobbenmeier.stefan.settings.business.binariesSettings
 import de.lobbenmeier.stefan.settings.ui.SettingsUI
 import de.lobbenmeier.stefan.updater.business.BinariesUpdater
 import de.lobbenmeier.stefan.updater.model.Binaries
+import de.lobbenmeier.stefan.updater.model.RemoteBinaryProgress
 import de.lobbenmeier.stefan.updater.ui.Updater
 
 @Composable
 fun App() {
     val settingsViewModel = remember { SettingsViewModel() }
     val settings by settingsViewModel.settings.collectAsState()
-    val binariesUpdater = remember { BinariesUpdater() }
+    val binariesUpdater =
+        remember(settings.binariesSettings) { BinariesUpdater(settings.binariesSettings) }
     val binaries = binariesUpdater.binaries.collectAsState().value
 
     if (binaries == null) {
-        Updater(binariesUpdater.downloads)
+        Updater(binariesUpdater.progress.mapNotNull { it as? RemoteBinaryProgress })
     } else {
         MainView(settings, settingsViewModel::saveSettings, binaries)
     }

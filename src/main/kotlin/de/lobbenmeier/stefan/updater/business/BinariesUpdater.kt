@@ -4,10 +4,15 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import de.lobbenmeier.stefan.downloadlist.business.DownloadStarted
 import de.lobbenmeier.stefan.downloadlist.business.UpdateDownloadProgress
+import de.lobbenmeier.stefan.settings.business.BinariesSettings
 import de.lobbenmeier.stefan.settings.business.Settings
+import de.lobbenmeier.stefan.settings.business.YtDlpLocation
 import de.lobbenmeier.stefan.updater.business.ffmpeg.FfmpegReleaseDownloader
 import de.lobbenmeier.stefan.updater.model.Binaries
-import de.lobbenmeier.stefan.updater.model.UpdateProcess
+import de.lobbenmeier.stefan.updater.model.BinariesProgress
+import de.lobbenmeier.stefan.updater.model.LocalBinaryProgress
+import de.lobbenmeier.stefan.updater.model.RemoteBinaryProgress
+import java.io.File
 import java.nio.file.Path
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -25,28 +30,54 @@ fun detectLocalYtDlp(): Path? {
     return detectLocalYtDlp()
 }
 
-fun detectOnPath(binaryName: String): Path? {
-    return Path.of(binaryName)
+fun detectOnPath(binaryName: String, pathVariable: String = System.getenv("PATH")): List<File> {
+    val systemPaths = pathVariable.split(platform.pathDelimiter).map(Path::of)
+
+    return (systemPaths + platform.extraPaths)
+        .map { it.resolve(binaryName).toFile() }
+        .filter(File::isFile)
 }
 
-class BinariesUpdater {
+class BinariesUpdater(
+    private val binariesSettings: BinariesSettings,
+) {
     private val downloadDirectory = platform.binariesFolder
     private val ytDlpDownloader = createYtDlpDownloader(downloadDirectory)
     private val ffmpegReleaseDownloader = FfmpegReleaseDownloader(downloadDirectory)
 
-    val downloads: SnapshotStateList<UpdateProcess>
+    val progress: SnapshotStateList<BinariesProgress> = mutableStateListOf()
     val binaries = MutableStateFlow<Binaries?>(null)
 
     init {
-        val ytDlpProcess = updateProcess(platform.ytDlpName.filename)
-        val ffmpegProcess = updateProcess("ffmpeg")
-        val ffprobeProcess = updateProcess("ffprobe")
-        downloads =
-            mutableStateListOf(
-                ytDlpProcess,
-                ffmpegProcess,
-                ffprobeProcess,
-            )
+        progress.add(checkYtDlp())
+        downloadBinaries()
+    }
+
+    private fun checkYtDlp(): BinariesProgress {
+        if (binariesSettings.ytDlpSource == YtDlpLocation.DISK) {
+            if (binariesSettings.ytDlpPath != null) {
+                return LocalBinaryProgress("yt-dlp", "found on disk")
+            }
+
+            val detectOnPath = detectOnPath("yt-dlp")
+
+            if (detectOnPath.isNotEmpty()) {
+                return LocalBinaryProgress("yt-dlp", "found on path")
+            }
+        }
+
+        return downloadYtDlp()
+    }
+
+    private fun downloadBinaries() {
+        val ytDlpProcess = downloadYtDlp()
+        val (ffmpegProcess, ffprobeProcess) = downloadFfmpeg()
+        //        progress =
+        //            mutableStateListOf(
+        //                ytDlpProcess,
+        //                ffmpegProcess,
+        //                ffprobeProcess,
+        //            )
 
         CoroutineScope(Dispatchers.IO).launch {
             val ytDlpFuture = async {
@@ -75,16 +106,26 @@ class BinariesUpdater {
         }
     }
 
+    private fun downloadFfmpeg(): Pair<RemoteBinaryProgress, RemoteBinaryProgress> {
+        val ffmpegProcess = updateProcess("ffmpeg")
+        val ffprobeProcess = updateProcess("ffprobe")
+        return Pair(ffmpegProcess, ffprobeProcess)
+    }
+
+    private fun downloadYtDlp(): RemoteBinaryProgress {
+        return updateProcess(platform.ytDlpName.filename)
+    }
+
     private fun updateProcess(
         name: String,
-    ): UpdateProcess {
+    ): RemoteBinaryProgress {
         val progressFlow = MutableStateFlow<UpdateDownloadProgress>(DownloadStarted)
-        val updateProcess = UpdateProcess(name, progressFlow)
+        val updateProcess = RemoteBinaryProgress(name, progressFlow)
         return updateProcess
     }
 
     private fun withProgress(
-        updateProcess: UpdateProcess
+        updateProcess: RemoteBinaryProgress
     ): suspend (UpdateDownloadProgress) -> Unit {
         return { updateProcess.progress.emit(it) }
     }

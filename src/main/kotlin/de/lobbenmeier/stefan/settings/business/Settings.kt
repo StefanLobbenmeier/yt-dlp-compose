@@ -8,6 +8,8 @@ import kotlinx.serialization.Serializable
 data class Settings(
     // App Settings
     val maxConcurrentJobs: UInt?,
+
+    // Binaries Settings
     val ytDlpSource: YtDlpLocation?,
     val ytDlpPath: String?,
     val ffmpegSource: FfmpegLocation?,
@@ -41,3 +43,19 @@ data class Settings(
     val saveThumbnailToFile: Boolean = false,
     val keepUnmergedFiles: Boolean = false,
 )
+
+data class BinariesSettings(
+    val ytDlpSource: YtDlpLocation?,
+    val ytDlpPath: String?,
+    val ffmpegSource: FfmpegLocation?,
+    val ffmpegPath: String?,
+)
+
+val Settings.binariesSettings
+    get() =
+        BinariesSettings(
+            ytDlpSource = ytDlpSource,
+            ytDlpPath = ytDlpPath,
+            ffmpegSource = ffmpegSource,
+            ffmpegPath = ffmpegPath
+        )

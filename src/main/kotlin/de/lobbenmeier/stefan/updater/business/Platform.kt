@@ -11,6 +11,8 @@ data class Platform(
     val ytDlpName: YtDlpNames,
     val ffmpegPlatform: FfmpegPlatforms,
     val needsExecutableBit: Boolean,
+    val pathDelimiter: String,
+    val extraPaths: List<Path> = emptyList(),
 ) {
     val settingsFile = Path.of(Directories.configDir).resolve("settings.json")
     val binariesFolder = Path.of(Directories.dataDir).resolve("binaries")
@@ -52,7 +54,8 @@ private fun detectPlatform(): Platform {
                 displayName,
                 YtDlpNames.windows,
                 FfmpegPlatforms.windows64,
-                needsExecutableBit = false
+                needsExecutableBit = false,
+                pathDelimiter = ";",
             )
         }
         name.contains("Mac") -> {
@@ -62,7 +65,14 @@ private fun detectPlatform(): Platform {
                 } else {
                     YtDlpNames.osx
                 }
-            Platform(displayName, ytDlpName, FfmpegPlatforms.osx64, needsExecutableBit = true)
+            Platform(
+                displayName,
+                ytDlpName,
+                FfmpegPlatforms.osx64,
+                needsExecutableBit = true,
+                pathDelimiter = ":",
+                extraPaths = listOf("/opt/homebrew/bin/").map(Path::of)
+            )
         }
         else -> {
             val ffmpegPlatform =
@@ -72,7 +82,13 @@ private fun detectPlatform(): Platform {
                     else -> FfmpegPlatforms.linux64
                 }
 
-            Platform(displayName, YtDlpNames.python, ffmpegPlatform, needsExecutableBit = true)
+            Platform(
+                displayName,
+                YtDlpNames.python,
+                ffmpegPlatform,
+                needsExecutableBit = true,
+                pathDelimiter = ":",
+            )
         }
     }
 }
