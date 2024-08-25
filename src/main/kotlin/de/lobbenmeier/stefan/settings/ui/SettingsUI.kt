@@ -69,7 +69,7 @@ fun SettingsUI(settings: Settings, save: (Settings) -> Unit, cancel: () -> Unit)
                     options = YtDlpLocation.entries
                 )
                 if (mutableSettings.ytDlpSource == YtDlpLocation.DISK) {
-                    DirectoryInput(
+                    FileInput(
                         "Yt-Dlp Path",
                         mutableSettings.ytDlpPath,
                         onValueChange = { mutableSettings = mutableSettings.copy(ytDlpPath = it) }
@@ -83,7 +83,7 @@ fun SettingsUI(settings: Settings, save: (Settings) -> Unit, cancel: () -> Unit)
                     options = FfmpegLocation.entries
                 )
                 if (mutableSettings.ffmpegSource == FfmpegLocation.DISK) {
-                    DirectoryInput(
+                    FileInput(
                         "Ffmpeg Path",
                         mutableSettings.ffmpegPath,
                         onValueChange = { mutableSettings = mutableSettings.copy(ffmpegPath = it) }
