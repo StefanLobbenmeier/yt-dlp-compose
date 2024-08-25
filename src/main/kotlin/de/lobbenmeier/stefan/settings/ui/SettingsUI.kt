@@ -39,6 +39,7 @@ import compose.icons.feathericons.File
 import compose.icons.feathericons.Folder
 import de.lobbenmeier.stefan.downloadlist.ui.DropdownMenu
 import de.lobbenmeier.stefan.settings.business.Settings
+import de.lobbenmeier.stefan.settings.business.YtDlpLocation
 import de.lobbenmeier.stefan.updater.business.platform
 import kotlin.io.path.absolutePathString
 
@@ -59,6 +60,15 @@ fun SettingsUI(settings: Settings, save: (Settings) -> Unit, cancel: () -> Unit)
             modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(32.dp),
         ) {
+            Section("Binaries") {
+                FixedChoiceInput(
+                    "Yt-Dlp Source",
+                    mutableSettings.ytDlpSource,
+                    onValueChange = { mutableSettings = mutableSettings.copy(ytDlpSource = it) },
+                    options = YtDlpLocation.entries
+                )
+            }
+
             Section("Performance") {
                 NumberInput(
                     "Max Concurrent Jobs",
@@ -235,6 +245,22 @@ private fun NumberInput(description: String, value: UInt?, onValueChange: (UInt?
         description,
         value?.toString() ?: "",
         onValueChange = { onValueChange(it?.toUIntOrNull()) }
+    )
+}
+
+@Composable
+private fun <T> FixedChoiceInput(
+    description: String,
+    value: T?,
+    onValueChange: (T?) -> Unit,
+    options: List<T>,
+) {
+    DropdownMenu(
+        options = options,
+        selectedOption = value,
+        selectionChanged = { onValueChange(it) },
+        label = description,
+        textFieldModifier = Modifier.width(textFieldWidth),
     )
 }
 
