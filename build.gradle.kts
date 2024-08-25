@@ -35,6 +35,14 @@ dependencies {
 
     implementation(compose.desktop.currentOs)
 
+    if (System.getenv("CI") == "true") {
+        implementation(compose.desktop.macos_x64)
+        implementation(compose.desktop.macos_arm64)
+        implementation(compose.desktop.windows_x64)
+        implementation(compose.desktop.linux_x64)
+        implementation(compose.desktop.linux_arm64)
+    }
+
     implementation("io.ktor:ktor-client-core:$ktorVersion")
     implementation("io.ktor:ktor-client-cio:$ktorVersion")
     implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
