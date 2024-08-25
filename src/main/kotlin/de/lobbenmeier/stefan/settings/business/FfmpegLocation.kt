@@ -2,7 +2,8 @@ package de.lobbenmeier.stefan.settings.business
 
 enum class FfmpegLocation {
     DISK,
-    FFBINARIES_GITHUB,
-    NIGHTLY,
-    MASTER,
+    FFBINARIES_COM,
+    // FFBINARIES_GITHUB,
+    // NIGHTLY,
+    // MASTER,
 }
