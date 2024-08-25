@@ -42,8 +42,6 @@ class BinariesUpdater(
     private val binariesSettings: BinariesSettings,
 ) {
     private val downloadDirectory = platform.binariesFolder
-    private val ytDlpDownloader = createYtDlpDownloader(downloadDirectory)
-    private val ffmpegReleaseDownloader = FfmpegReleaseDownloader(downloadDirectory)
 
     val progress: SnapshotStateList<BinariesProgress> = mutableStateListOf()
     val binaries = MutableStateFlow<Binaries?>(null)
@@ -62,10 +60,11 @@ class BinariesUpdater(
                 ) {
                     val ytDlpProcess = downloadYtDlp()
                     async {
-                        ytDlpDownloader.downloadRelease(
-                            platform.ytDlpName.filename,
-                            withProgress(ytDlpProcess)
-                        )
+                        createYtDlpDownloader(downloadDirectory, binariesSettings.ytDlpSource)
+                            .downloadRelease(
+                                platform.ytDlpName.filename,
+                                withProgress(ytDlpProcess),
+                            )
                     }
                 } else {
                     async { findBinary(binariesSettings.ytDlpPath, platform.ytDlpName.filename) }
@@ -79,11 +78,12 @@ class BinariesUpdater(
                     async {
                         val (ffmpegProcess, ffprobeProcess) = downloadFfmpeg()
                         val binaries =
-                            ffmpegReleaseDownloader.downloadRelease(
-                                platform,
-                                withProgress(ffmpegProcess),
-                                withProgress(ffprobeProcess)
-                            )
+                            FfmpegReleaseDownloader(downloadDirectory)
+                                .downloadRelease(
+                                    platform,
+                                    withProgress(ffmpegProcess),
+                                    withProgress(ffprobeProcess)
+                                )
                         binaries.first()
                     }
                 } else {
