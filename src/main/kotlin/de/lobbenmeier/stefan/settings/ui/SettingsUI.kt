@@ -38,6 +38,7 @@ import compose.icons.FeatherIcons
 import compose.icons.feathericons.File
 import compose.icons.feathericons.Folder
 import de.lobbenmeier.stefan.downloadlist.ui.DropdownMenu
+import de.lobbenmeier.stefan.settings.business.FfmpegLocation
 import de.lobbenmeier.stefan.settings.business.Settings
 import de.lobbenmeier.stefan.settings.business.YtDlpLocation
 import de.lobbenmeier.stefan.updater.business.platform
@@ -67,6 +68,27 @@ fun SettingsUI(settings: Settings, save: (Settings) -> Unit, cancel: () -> Unit)
                     onValueChange = { mutableSettings = mutableSettings.copy(ytDlpSource = it) },
                     options = YtDlpLocation.entries
                 )
+                if (mutableSettings.ytDlpSource == YtDlpLocation.DISK) {
+                    DirectoryInput(
+                        "Yt-Dlp Path",
+                        mutableSettings.ytDlpPath,
+                        onValueChange = { mutableSettings = mutableSettings.copy(ytDlpPath = it) }
+                    )
+                }
+
+                FixedChoiceInput(
+                    "Ffmpeg Source",
+                    mutableSettings.ffmpegSource,
+                    onValueChange = { mutableSettings = mutableSettings.copy(ffmpegSource = it) },
+                    options = FfmpegLocation.entries
+                )
+                if (mutableSettings.ffmpegSource == FfmpegLocation.DISK) {
+                    DirectoryInput(
+                        "Ffmpeg Path",
+                        mutableSettings.ffmpegPath,
+                        onValueChange = { mutableSettings = mutableSettings.copy(ffmpegPath = it) }
+                    )
+                }
             }
 
             Section("Performance") {
