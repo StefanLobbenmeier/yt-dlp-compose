@@ -6,37 +6,17 @@ import de.lobbenmeier.stefan.downloadlist.business.DownloadStarted
 import de.lobbenmeier.stefan.downloadlist.business.UpdateDownloadProgress
 import de.lobbenmeier.stefan.settings.business.BinariesSettings
 import de.lobbenmeier.stefan.settings.business.FfmpegLocation
-import de.lobbenmeier.stefan.settings.business.Settings
 import de.lobbenmeier.stefan.settings.business.YtDlpLocation
 import de.lobbenmeier.stefan.updater.business.ffmpeg.FfmpegReleaseDownloader
 import de.lobbenmeier.stefan.updater.model.Binaries
 import de.lobbenmeier.stefan.updater.model.BinariesProgress
 import de.lobbenmeier.stefan.updater.model.RemoteBinaryProgress
 import java.io.File
-import java.nio.file.Path
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
-
-fun detectBinaries(settings: Settings, changeSettings: (Settings) -> Unit) {
-    if (settings.ytDlpSource == null) {}
-}
-
-fun detectLocalYtDlp(): Path? {
-    val paths = listOf("")
-
-    return detectLocalYtDlp()
-}
-
-fun detectOnPath(binaryName: String, pathVariable: String = System.getenv("PATH")): List<File> {
-    val systemPaths = pathVariable.split(platform.pathDelimiter).map(Path::of)
-
-    return (systemPaths + platform.extraPaths)
-        .map { it.resolve(binaryName).toFile() }
-        .filter(File::isFile)
-}
 
 class BinariesUpdater(
     private val binariesSettings: BinariesSettings,
