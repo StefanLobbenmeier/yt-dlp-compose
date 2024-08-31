@@ -42,6 +42,8 @@ import de.lobbenmeier.stefan.settings.business.YtDlpLocation
 import de.lobbenmeier.stefan.updater.business.platform
 import io.github.vinceglb.filekit.compose.rememberDirectoryPickerLauncher
 import io.github.vinceglb.filekit.compose.rememberFilePickerLauncher
+import io.github.vinceglb.filekit.core.FileKitMacOSSettings
+import io.github.vinceglb.filekit.core.FileKitPlatformSettings
 import kotlin.io.path.absolutePathString
 
 private val textFieldWidth = 350.dp
@@ -350,7 +352,11 @@ private fun FileInput(description: String, value: String?, onValueChange: (Strin
     val launcher =
         rememberFilePickerLauncher(
             title = description,
-            initialDirectory = value ?: "${platform.homeFolder}/"
+            initialDirectory = value ?: "${platform.homeFolder}/",
+            platformSettings =
+                FileKitPlatformSettings(
+                    macOS = FileKitMacOSSettings(resolvesAliases = false),
+                ),
         ) { file ->
             if (file != null) {
                 onValueChange(file.path)
