@@ -33,19 +33,24 @@ fun App() {
     val binariesUpdater =
         remember(settings.binariesSettings) { BinariesUpdater(settings.binariesSettings) }
     val binaries = binariesUpdater.binaries.collectAsState().value
+    val downloadQueue = remember { DownloadQueue() }
 
     if (binaries == null) {
         Updater(binariesUpdater.progress.mapNotNull { it as? RemoteBinaryProgress })
     } else {
-        MainView(settings, settingsViewModel::saveSettings, binaries)
+        MainView(settings, settingsViewModel::saveSettings, binaries, downloadQueue)
     }
 }
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-private fun MainView(settings: Settings, updateSettings: (Settings) -> Unit, binaries: Binaries) {
+private fun MainView(
+    settings: Settings,
+    updateSettings: (Settings) -> Unit,
+    binaries: Binaries,
+    downloadQueue: DownloadQueue
+) {
     val ytDlp = remember(settings) { YtDlp(binaries, settings) }
-    val downloadQueue = remember { DownloadQueue() }
     var settingsOpen by remember { mutableStateOf(false) }
 
     if (settingsOpen) {
