@@ -12,17 +12,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import de.lobbenmeier.stefan.updater.model.UpdateProcess
+import de.lobbenmeier.stefan.updater.model.RemoteBinaryProgress
 
 @Composable
-fun Updater(updates: List<UpdateProcess>) {
+fun Updater(updates: List<RemoteBinaryProgress>) {
     Row(Modifier.padding(4.dp).fillMaxWidth(), horizontalArrangement = Arrangement.SpaceAround) {
         updates.forEach { SmallDownloadProgress(it) }
     }
 }
 
 @Composable
-private fun SmallDownloadProgress(updateProcess: UpdateProcess) {
+private fun SmallDownloadProgress(updateProcess: RemoteBinaryProgress) {
     val progress = updateProcess.progress.collectAsState(initial = null).value
     Row {
         Text(updateProcess.name)

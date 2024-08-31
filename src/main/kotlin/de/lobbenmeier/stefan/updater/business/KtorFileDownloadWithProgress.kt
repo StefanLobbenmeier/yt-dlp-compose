@@ -47,7 +47,7 @@ suspend fun HttpClient.downloadFile(
         targetFile.parentFile.mkdirs()
         Files.deleteIfExists(targetFile.toPath())
 
-        val platform = getPlatform()
+        val platform = platform
         if (platform.needsExecutableBit) {
             val executable = PosixFilePermissions.fromString("rwxr-xr-x")
             val permissions = PosixFilePermissions.asFileAttribute(executable)

@@ -4,12 +4,15 @@ import dev.dirs.ProjectDirectories
 import java.nio.file.Path
 
 val Directories = ProjectDirectories.fromPath("yt-dlp-compose")
+val platform = detectPlatform()
 
 data class Platform(
     val name: String,
     val ytDlpName: YtDlpNames,
     val ffmpegPlatform: FfmpegPlatforms,
     val needsExecutableBit: Boolean,
+    val pathDelimiter: String,
+    val extraPaths: List<Path> = emptyList(),
 ) {
     val settingsFile = Path.of(Directories.configDir).resolve("settings.json")
     val binariesFolder = Path.of(Directories.dataDir).resolve("binaries")
@@ -38,7 +41,7 @@ enum class FfmpegPlatforms(val platformName: String) {
     windows64("windows-64")
 }
 
-fun getPlatform(): Platform {
+private fun detectPlatform(): Platform {
     val name = System.getProperty("os.name")
     val arch = System.getProperty("os.arch")
     val version = System.getProperty("os.version")
@@ -51,7 +54,8 @@ fun getPlatform(): Platform {
                 displayName,
                 YtDlpNames.windows,
                 FfmpegPlatforms.windows64,
-                needsExecutableBit = false
+                needsExecutableBit = false,
+                pathDelimiter = ";",
             )
         }
         name.contains("Mac") -> {
@@ -61,7 +65,14 @@ fun getPlatform(): Platform {
                 } else {
                     YtDlpNames.osx
                 }
-            Platform(displayName, ytDlpName, FfmpegPlatforms.osx64, needsExecutableBit = true)
+            Platform(
+                displayName,
+                ytDlpName,
+                FfmpegPlatforms.osx64,
+                needsExecutableBit = true,
+                pathDelimiter = ":",
+                extraPaths = listOf("/opt/homebrew/bin/").map(Path::of)
+            )
         }
         else -> {
             val ffmpegPlatform =
@@ -71,7 +82,13 @@ fun getPlatform(): Platform {
                     else -> FfmpegPlatforms.linux64
                 }
 
-            Platform(displayName, YtDlpNames.python, ffmpegPlatform, needsExecutableBit = true)
+            Platform(
+                displayName,
+                YtDlpNames.python,
+                ffmpegPlatform,
+                needsExecutableBit = true,
+                pathDelimiter = ":",
+            )
         }
     }
 }

@@ -32,14 +32,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.darkrockstudios.libraries.mpfilepicker.DirectoryPicker
-import com.darkrockstudios.libraries.mpfilepicker.FilePicker
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.File
 import compose.icons.feathericons.Folder
 import de.lobbenmeier.stefan.downloadlist.ui.DropdownMenu
+import de.lobbenmeier.stefan.settings.business.FfmpegLocation
 import de.lobbenmeier.stefan.settings.business.Settings
-import de.lobbenmeier.stefan.updater.business.getPlatform
+import de.lobbenmeier.stefan.settings.business.YtDlpLocation
+import de.lobbenmeier.stefan.updater.business.platform
+import io.github.vinceglb.filekit.compose.rememberDirectoryPickerLauncher
+import io.github.vinceglb.filekit.compose.rememberFilePickerLauncher
+import io.github.vinceglb.filekit.core.FileKitMacOSSettings
+import io.github.vinceglb.filekit.core.FileKitPlatformSettings
 import kotlin.io.path.absolutePathString
 
 private val textFieldWidth = 350.dp
@@ -59,6 +63,36 @@ fun SettingsUI(settings: Settings, save: (Settings) -> Unit, cancel: () -> Unit)
             modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(32.dp),
         ) {
+            Section("Binaries") {
+                FixedChoiceInput(
+                    "Yt-Dlp Source",
+                    mutableSettings.ytDlpSource,
+                    onValueChange = { mutableSettings = mutableSettings.copy(ytDlpSource = it) },
+                    options = YtDlpLocation.entries
+                )
+                if (mutableSettings.ytDlpSource == YtDlpLocation.DISK) {
+                    FileInput(
+                        "Yt-Dlp Path",
+                        mutableSettings.ytDlpPath,
+                        onValueChange = { mutableSettings = mutableSettings.copy(ytDlpPath = it) }
+                    )
+                }
+
+                FixedChoiceInput(
+                    "Ffmpeg Source",
+                    mutableSettings.ffmpegSource,
+                    onValueChange = { mutableSettings = mutableSettings.copy(ffmpegSource = it) },
+                    options = FfmpegLocation.entries
+                )
+                if (mutableSettings.ffmpegSource == FfmpegLocation.DISK) {
+                    FileInput(
+                        "Ffmpeg Path",
+                        mutableSettings.ffmpegPath,
+                        onValueChange = { mutableSettings = mutableSettings.copy(ffmpegPath = it) }
+                    )
+                }
+            }
+
             Section("Performance") {
                 NumberInput(
                     "Max Concurrent Jobs",
@@ -173,8 +207,7 @@ fun SettingsUI(settings: Settings, save: (Settings) -> Unit, cancel: () -> Unit)
                     onValueChange = {
                         mutableSettings =
                             mutableSettings.copy(
-                                downloadFolder =
-                                    it ?: getPlatform().downloadsFolder.absolutePathString()
+                                downloadFolder = it ?: platform.downloadsFolder.absolutePathString()
                             )
                     }
                 )
@@ -240,6 +273,22 @@ private fun NumberInput(description: String, value: UInt?, onValueChange: (UInt?
 }
 
 @Composable
+private fun <T> FixedChoiceInput(
+    description: String,
+    value: T?,
+    onValueChange: (T?) -> Unit,
+    options: List<T>,
+) {
+    DropdownMenu(
+        options = options,
+        selectedOption = value,
+        selectionChanged = { onValueChange(it) },
+        label = description,
+        textFieldModifier = Modifier.width(textFieldWidth),
+    )
+}
+
+@Composable
 private fun ChoiceInput(
     description: String,
     value: String?,
@@ -300,24 +349,26 @@ private fun BooleanInput(description: String, value: Boolean, onValueChange: (Bo
 
 @Composable
 private fun FileInput(description: String, value: String?, onValueChange: (String?) -> Unit) {
-    var filePickerOpen by remember { mutableStateOf(false) }
-
-    FilePicker(
-        show = filePickerOpen,
-        title = description,
-        initialDirectory = value ?: "${getPlatform().homeFolder}/",
-        onFileSelected = {
-            filePickerOpen = false
-            onValueChange(it?.path)
-        },
-    )
+    val launcher =
+        rememberFilePickerLauncher(
+            title = description,
+            initialDirectory = value ?: "${platform.homeFolder}/",
+            platformSettings =
+                FileKitPlatformSettings(
+                    macOS = FileKitMacOSSettings(resolvesAliases = false),
+                ),
+        ) { file ->
+            if (file != null) {
+                onValueChange(file.path)
+            }
+        }
 
     TextInput(
         description,
         value,
         onValueChange,
         trailingIcon = {
-            IconButton(onClick = { filePickerOpen = true }) {
+            IconButton(onClick = { launcher.launch() }) {
                 Icon(FeatherIcons.File, contentDescription = null)
             }
         },
@@ -326,24 +377,26 @@ private fun FileInput(description: String, value: String?, onValueChange: (Strin
 
 @Composable
 private fun DirectoryInput(description: String, value: String?, onValueChange: (String?) -> Unit) {
-    var directoryPickerOpen by remember { mutableStateOf(false) }
-
-    DirectoryPicker(
-        show = directoryPickerOpen,
-        title = description,
-        initialDirectory = value ?: "${getPlatform().homeFolder}/",
-        onFileSelected = {
-            directoryPickerOpen = false
-            onValueChange(it)
-        },
-    )
+    val launcher =
+        rememberDirectoryPickerLauncher(
+            title = description,
+            initialDirectory = value ?: "${platform.homeFolder}/",
+            platformSettings =
+                FileKitPlatformSettings(
+                    macOS = FileKitMacOSSettings(resolvesAliases = false),
+                ),
+        ) { file ->
+            if (file != null) {
+                onValueChange(file.path)
+            }
+        }
 
     TextInput(
         description,
         value,
         onValueChange,
         trailingIcon = {
-            IconButton(onClick = { directoryPickerOpen = true }) {
+            IconButton(onClick = { launcher.launch() }) {
                 Icon(FeatherIcons.Folder, contentDescription = null)
             }
         },

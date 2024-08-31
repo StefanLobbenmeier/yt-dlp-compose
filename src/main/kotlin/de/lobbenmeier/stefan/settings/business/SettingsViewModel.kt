@@ -1,7 +1,7 @@
 package de.lobbenmeier.stefan.settings.business
 
 import de.lobbenmeier.stefan.common.business.SettingsJson
-import de.lobbenmeier.stefan.updater.business.getPlatform
+import de.lobbenmeier.stefan.updater.business.platform
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlin.io.path.exists
 import kotlin.io.path.readText
@@ -12,7 +12,6 @@ import kotlinx.serialization.encodeToString
 
 class SettingsViewModel {
     private val logger = KotlinLogging.logger {}
-    private val platform = getPlatform()
     private val settingsFile = platform.settingsFile
 
     private val _settings = MutableStateFlow(loadSettings())
