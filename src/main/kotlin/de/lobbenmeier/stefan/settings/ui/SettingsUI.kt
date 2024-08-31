@@ -380,7 +380,11 @@ private fun DirectoryInput(description: String, value: String?, onValueChange: (
     val launcher =
         rememberDirectoryPickerLauncher(
             title = description,
-            initialDirectory = value ?: "${platform.homeFolder}/"
+            initialDirectory = value ?: "${platform.homeFolder}/",
+            platformSettings =
+                FileKitPlatformSettings(
+                    macOS = FileKitMacOSSettings(resolvesAliases = false),
+                ),
         ) { file ->
             if (file != null) {
                 onValueChange(file.path)
