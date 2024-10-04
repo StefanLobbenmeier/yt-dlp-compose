@@ -56,7 +56,7 @@ dependencies {
     implementation("dev.dirs:directories:26")
     implementation("io.github.vinceglb:filekit-compose:0.8.3")
 
-    testImplementation("org.junit.jupiter:junit-jupiter:5.11.1")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.11.2")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
 
     testImplementation("io.kotest:kotest-runner-junit5:$kotestVersion")
