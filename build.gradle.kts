@@ -8,7 +8,7 @@ plugins {
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.serialization") version kotlinVersion
     kotlin("plugin.compose") version kotlinVersion
-    id("org.jetbrains.compose") version "1.6.11"
+    id("org.jetbrains.compose") version "1.7.0+build1877-release-1.7"
     id("com.diffplug.spotless") version "6.25.0"
     id("com.github.johnrengelman.shadow") version "8.1.1"
     id("org.gradle.crypto.checksum") version "1.4.0"
