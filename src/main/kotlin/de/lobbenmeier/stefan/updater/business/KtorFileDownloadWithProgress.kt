@@ -16,7 +16,9 @@ import java.io.InputStream
 import java.nio.file.Files
 import java.nio.file.attribute.PosixFilePermissions
 import java.util.zip.ZipInputStream
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 private val logger = KotlinLogging.logger {}
@@ -39,8 +41,10 @@ suspend fun HttpClient.downloadFile(
         val downloadFile =
             get(url) {
                 onDownload { bytesSentTotal, contentLength ->
-                    val progress = bytesSentTotal.toFloat() / contentLength
-                    onProgress(CustomUpdateDownloadProgress(progress))
+                    if (contentLength != null) {
+                        val progress = bytesSentTotal.toFloat() / contentLength
+                        onProgress(CustomUpdateDownloadProgress(progress))
+                    }
                 }
             }
 
@@ -71,9 +75,13 @@ suspend fun HttpClient.downloadFile(
 }
 
 private suspend fun copyFirstEntryToFile(zipInputStream: InputStream, targetFile: File) {
-    ZipInputStream(zipInputStream).use {
-        if (it.nextEntry != null) {
-            it.copyTo(targetFile.writeChannel())
+    CoroutineScope(Dispatchers.IO)
+        .launch {
+            ZipInputStream(zipInputStream).use {
+                if (it.nextEntry != null) {
+                    it.copyTo(targetFile.outputStream())
+                }
+            }
         }
-    }
+        .join()
 }
