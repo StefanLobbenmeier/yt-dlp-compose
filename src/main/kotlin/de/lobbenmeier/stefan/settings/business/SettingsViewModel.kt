@@ -3,6 +3,7 @@ package de.lobbenmeier.stefan.settings.business
 import de.lobbenmeier.stefan.common.business.SettingsJson
 import de.lobbenmeier.stefan.updater.business.platform
 import io.github.oshai.kotlinlogging.KotlinLogging
+import kotlin.io.path.createParentDirectories
 import kotlin.io.path.exists
 import kotlin.io.path.readText
 import kotlin.io.path.writeText
@@ -31,6 +32,7 @@ class SettingsViewModel {
 
     fun saveSettings(settings: Settings) {
         val settingsJson = SettingsJson.encodeToString(settings)
+        settingsFile.createParentDirectories()
         settingsFile.writeText(settingsJson)
 
         _settings.value = settings
