@@ -18,7 +18,7 @@ import kotlinx.coroutines.withContext
 class DownloadItem(
     val ytDlp: YtDlp,
     val url: String = "https://www.youtube.com/watch?v=CBB75zjxTR4"
-) {
+) : CoroutineScope by CoroutineScope(Dispatchers.IO) {
 
     val logger = KotlinLogging.logger {}
     val metadata = MutableStateFlow<VideoMetadata?>(null)
@@ -34,7 +34,7 @@ class DownloadItem(
     }
 
     fun download(selectedVideoOption: Format?, selectedAudioOption: Format?) {
-        CoroutineScope(Dispatchers.IO).launch {
+        async {
             downloadProgress.emit(DownloadStarted)
             targetFile.emit(null)
             var videoMetadata: VideoMetadata? = null
