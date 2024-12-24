@@ -31,7 +31,7 @@ dependencies {
     val kotestVersion = "5.9.1"
     val kotlinProcessVersion = "1.5"
     val kotlinxSerializationVersion = "1.7.3"
-    val kamelVersion = "0.4.1"
+    val kamelVersion = "1.0.2"
 
     implementation(compose.desktop.currentOs)
 
@@ -49,7 +49,7 @@ dependencies {
     implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
     implementation("com.github.pgreze:kotlin-process:$kotlinProcessVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinxSerializationVersion")
-    implementation("com.alialbaali.kamel:kamel-image:$kamelVersion")
+    implementation("media.kamel:kamel-image-default:$kamelVersion")
     implementation("br.com.devsrsouza.compose.icons.jetbrains:feather:1.0.0")
     implementation("io.github.oshai:kotlin-logging-jvm:7.0.3")
     implementation("org.slf4j:slf4j-simple:2.0.16")
