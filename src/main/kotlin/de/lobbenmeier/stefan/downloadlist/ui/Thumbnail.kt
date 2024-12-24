@@ -8,16 +8,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import io.kamel.image.KamelImage
-import io.kamel.image.lazyPainterResource
+import io.kamel.image.asyncPainterResource
 
 @Composable
 fun Thumbnail(thumbnail: String?) {
     val modifier = Modifier.aspectRatio(16f / 9f)
 
     if (thumbnail != null) {
-        val painterResource = lazyPainterResource(data = thumbnail)
         KamelImage(
-            resource = painterResource,
+            resource = { asyncPainterResource(data = thumbnail) },
             contentDescription = "Profile",
             modifier = modifier,
             onLoading = { progress -> ProgressIndicator(modifier, progress) }
