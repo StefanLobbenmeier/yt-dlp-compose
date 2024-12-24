@@ -19,7 +19,7 @@
       "matchPackageNames": [
         "org.jetbrains.compose"
       ],
-      "allowedVersions": "^\\d+\\.\\d+\\.\\d+$"
+      "allowedVersions": "/^\\d+\\.\\d+\\.\\d+$/"
     }
   ]
 }
