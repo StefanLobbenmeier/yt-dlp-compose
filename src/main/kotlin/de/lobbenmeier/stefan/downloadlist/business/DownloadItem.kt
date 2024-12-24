@@ -3,13 +3,17 @@ package de.lobbenmeier.stefan.downloadlist.business
 import de.lobbenmeier.stefan.common.business.YtDlpJson
 import io.github.oshai.kotlinlogging.KotlinLogging
 import java.io.File
+import java.nio.file.Files
+import kotlin.io.path.writeText
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class DownloadItem(
     val ytDlp: YtDlp,
@@ -18,6 +22,7 @@ class DownloadItem(
 
     val logger = KotlinLogging.logger {}
     val metadata = MutableStateFlow<VideoMetadata?>(null)
+    val metadataFile = MutableStateFlow<File?>(null)
     val downloadProgress = MutableStateFlow<VideoDownloadProgress?>(null)
     val targetFile = MutableStateFlow<File?>(null)
     val format = DownloadItemFormat()
@@ -43,6 +48,7 @@ class DownloadItem(
                     "--no-simulate",
                     "--no-quiet",
                     *selectFormats(selectedVideoOption, selectedAudioOption),
+                    *useCachedMetadata(),
                     "--progress-template",
                     PROGRESS_TEMPLATE,
                     url,
@@ -95,6 +101,11 @@ class DownloadItem(
         return arrayOf("-f", selectedFormats.joinToString("+") { it.formatId })
     }
 
+    private fun useCachedMetadata(): Array<String> {
+        return metadataFile.value?.let { arrayOf("--load-info-json", it.absolutePath) }
+            ?: emptyArray<String>()
+    }
+
     fun gatherMetadata() {
         CoroutineScope(Dispatchers.IO).launch {
             ytDlp.runAsync(
@@ -110,6 +121,7 @@ class DownloadItem(
                         val videoMetadata =
                             YtDlpJson.decodeFromString<VideoMetadata>(videoMedataJson)
                         metadata.value = videoMetadata
+                        async { writeMetadataToFile(videoMedataJson) }
 
                         val requestedFormats = videoMetadata.requestedFormats
                         if (requestedFormats != null) {
@@ -138,6 +150,16 @@ class DownloadItem(
     fun selectAudioFormat(ytDlpFormat: Format?) = format.selectAudioFormat(ytDlpFormat)
 
     val fileSize = format.size
+
+    private suspend fun writeMetadataToFile(videoMetadataJson: String) {
+        withContext(Dispatchers.IO) {
+            val tmpFilePath = Files.createTempFile("yt-dlp-compose", "yt-dlp-metadata.json")
+            tmpFilePath.writeText(videoMetadataJson)
+            val tmpFile = tmpFilePath.toFile()
+            tmpFile.deleteOnExit()
+            metadataFile.value = tmpFile
+        }
+    }
 }
 
 class DownloadItemFormat {
