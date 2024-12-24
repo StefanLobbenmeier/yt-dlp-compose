@@ -6,8 +6,20 @@
   ],
   "commitMessagePrefix": "REN - ",
   "automerge": true,
-  "automerge": true,
+  "platformAutomerge": true,
   "rebaseWhen": "never",
   "labels": ["dependencies"],
-  "enabledManagers": ["gradle", "gradle-wrapper", "github-actions"]
+  "enabledManagers": [
+    "gradle",
+    "gradle-wrapper",
+    "github-actions"
+  ],
+  "packageRules": [
+    {
+      "matchPackageNames": [
+        "org.jetbrains.compose"
+      ],
+      "allowedVersions": "^\\d+\\.\\d+\\.\\d+$"
+    }
+  ]
 }
