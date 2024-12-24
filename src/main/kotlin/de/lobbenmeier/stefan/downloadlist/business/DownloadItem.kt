@@ -15,7 +15,8 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class DownloadItem(val url: String = "https://www.youtube.com/watch?v=CBB75zjxTR4") {
+class DownloadItem(val url: String = "https://www.youtube.com/watch?v=CBB75zjxTR4")
+    : CoroutineScope by CoroutineScope(Dispatchers.IO) {
 
     val key = "$url ${System.currentTimeMillis()}"
     val metadata = MutableStateFlow<VideoMetadata?>(null)
@@ -51,7 +52,7 @@ class DownloadItem(val url: String = "https://www.youtube.com/watch?v=CBB75zjxTR
     }
 
     fun downloadPlaylistEntry(index: Int) {
-        CoroutineScope(Dispatchers.IO).launch { asyncDownloadPlaylistEntry(index) }
+        async { asyncDownloadPlaylistEntry(index) }
     }
 
     private suspend fun DownloadItem.asyncDownloadPlaylistEntry(index: Int) {
