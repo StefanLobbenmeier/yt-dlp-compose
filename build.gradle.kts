@@ -54,7 +54,7 @@ dependencies {
     implementation("io.github.oshai:kotlin-logging-jvm:7.0.0")
     implementation("org.slf4j:slf4j-simple:2.0.16")
     implementation("dev.dirs:directories:26")
-    implementation("io.github.vinceglb:filekit-compose:0.8.7")
+    implementation("io.github.vinceglb:filekit-compose:0.8.8")
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.11.3")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
