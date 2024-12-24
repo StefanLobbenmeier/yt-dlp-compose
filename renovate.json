@@ -17,7 +17,7 @@
   "packageRules": [
     {
       "matchPackageNames": [
-        "org.jetbrains.compose"
+        "org.jetbrains.compose:org.jetbrains.compose.gradle.plugin"
       ],
       "allowedVersions": "/^\\d+\\.\\d+\\.\\d+$/"
     }
