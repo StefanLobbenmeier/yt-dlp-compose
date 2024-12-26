@@ -1,5 +1,6 @@
 package de.lobbenmeier.stefan.downloadlist.business
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -12,6 +13,10 @@ data class VideoMetadata(
     val thumbnails: List<Thumbnail>?,
     val title: String?,
     val webpageUrl: String?,
+
+    // playlist and playlist items only
+    @SerialName("_type") val type: String?,
+    val entries: List<VideoMetadata>?,
 )
 
 val VideoMetadata.thumbnailWithFallBack

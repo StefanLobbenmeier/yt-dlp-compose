@@ -178,34 +178,37 @@ private fun FormatSelector(
     selectedVideoOption: Format?,
     selectedAudioOption: Format?
 ) {
-    val formats = metadata?.formats?.asReversed()
 
-    if (formats != null) {
-        val videoFormats = listOf(null) + formats.filter { it.isVideo }
-        val audioFormats =
-            listOf(null) +
-                formats.filter {
-                    it.isAudioOnly || (selectedVideoOption.isAudio && it == selectedVideoOption)
-                }
+    if (metadata == null) {
+        return LinearProgressIndicator(Modifier.fillMaxWidth())
+    }
 
-        Row {
-            DropdownMenu(
-                videoFormats,
-                selectedOption = selectedVideoOption,
-                selectionChanged = { downloadItem.selectVideoFormat(it) },
-                modifier = Modifier.weight(1f),
-                optionFormatter = { it?.videoDescription ?: "(No Video)" }
-            )
-            DropdownMenu(
-                audioFormats,
-                selectedOption = selectedAudioOption,
-                selectionChanged = { downloadItem.selectAudioFormat(it) },
-                modifier = Modifier.weight(1f),
-                optionFormatter = { it?.audioDescription ?: "(No Audio)" }
-            )
-        }
-    } else {
-        LinearProgressIndicator(Modifier.fillMaxWidth())
+    val formats =
+        metadata.formats?.asReversed()
+            ?: return Text("No formats available, most likely because this is a playlist")
+
+    val videoFormats = listOf(null) + formats.filter { it.isVideo }
+    val audioFormats =
+        listOf(null) +
+            formats.filter {
+                it.isAudioOnly || (selectedVideoOption.isAudio && it == selectedVideoOption)
+            }
+
+    Row {
+        DropdownMenu(
+            videoFormats,
+            selectedOption = selectedVideoOption,
+            selectionChanged = { downloadItem.selectVideoFormat(it) },
+            modifier = Modifier.weight(1f),
+            optionFormatter = { it?.videoDescription ?: "(No Video)" }
+        )
+        DropdownMenu(
+            audioFormats,
+            selectedOption = selectedAudioOption,
+            selectionChanged = { downloadItem.selectAudioFormat(it) },
+            modifier = Modifier.weight(1f),
+            optionFormatter = { it?.audioDescription ?: "(No Audio)" }
+        )
     }
 }
 
