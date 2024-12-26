@@ -52,7 +52,7 @@ class DownloadItem(
                     "--progress-template",
                     PROGRESS_TEMPLATE,
                     url,
-                ) { log ->
+                ) { log, _ ->
                     when {
                         log.startsWith(PROGRESS_PREFIX) -> {
                             val progressJson = log.removePrefix(PROGRESS_PREFIX)
@@ -110,18 +110,15 @@ class DownloadItem(
         CoroutineScope(Dispatchers.IO).launch {
             ytDlp.runAsync(
                 false,
-                "--print",
-                "$VIDEO_METADATA_JSON_PREFIX%()j",
+                "--dump-single-json",
                 "--flat-playlist",
                 url,
-            ) { log ->
-                when {
-                    log.startsWith(VIDEO_METADATA_JSON_PREFIX) -> {
-                        val videoMedataJson = log.removePrefix(VIDEO_METADATA_JSON_PREFIX)
-                        val videoMetadata =
-                            YtDlpJson.decodeFromString<VideoMetadata>(videoMedataJson)
+            ) { log, logLevel ->
+                when (logLevel) {
+                    LogLevel.STDOUT -> {
+                        val videoMetadata = YtDlpJson.decodeFromString<VideoMetadata>(log)
                         metadata.value = videoMetadata
-                        async { writeMetadataToFile(videoMedataJson) }
+                        async { writeMetadataToFile(log) }
 
                         val requestedFormats = videoMetadata.requestedFormats
                         if (requestedFormats != null) {
@@ -137,7 +134,7 @@ class DownloadItem(
                             }
                         }
                     }
-                    else -> {
+                    LogLevel.STDERR -> {
                         logger.info { log }
                     }
                 }

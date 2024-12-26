@@ -19,7 +19,7 @@ class YtDlp(private val binaries: Binaries, private val settings: Settings) {
     suspend fun runAsync(
         isDownloadJob: Boolean,
         vararg options: String,
-        consumer: suspend (String) -> Unit = { line -> println("process $line") }
+        consumer: suspend (String, LogLevel) -> Unit = { line, _ -> println("process $line") }
     ) {
         val ytDlpBinary = binaries.ytDlp.pathString
         val ffmpegBinary = binaries.ffmpeg.pathString
@@ -43,8 +43,8 @@ class YtDlp(private val binaries: Binaries, private val settings: Settings) {
                 process(
                     ytDlpBinary,
                     *fullOptions,
-                    stdout = Redirect.Consume { it.collect(consumer) },
-                    stderr = Redirect.Consume { it.collect(consumer) }
+                    stdout = Redirect.Consume { it.collect { consumer(it, LogLevel.STDOUT) } },
+                    stderr = Redirect.Consume { it.collect { consumer(it, LogLevel.STDERR) } }
                 )
             }
 
