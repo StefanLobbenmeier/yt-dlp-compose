@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.Card
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -47,46 +46,44 @@ import kotlin.math.roundToInt
 import kotlin.time.Duration.Companion.seconds
 
 @Composable
-fun DownloadItemView(downloadItem: DownloadItem, removeItem: (DownloadItem) -> Unit) {
+fun DownloadItemTopView(downloadItem: DownloadItem, removeItem: (DownloadItem) -> Unit) {
     val metadata by downloadItem.metadata.collectAsState()
     val thumbnail = metadata?.thumbnailWithFallBack
 
     val selectedVideoOption by downloadItem.format.video.collectAsState()
     val selectedAudioOption by downloadItem.format.audio.collectAsState(initial = null)
 
-    Card {
-        Row(Modifier.requiredHeight(135.dp)) {
-            Thumbnail(thumbnail)
-            Column(
-                Modifier.weight(1f).padding(20.dp, 15.dp).fillMaxHeight(),
-                verticalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(metadata?.title ?: downloadItem.url, fontSize = 1.1.em)
+    Row(Modifier.requiredHeight(135.dp)) {
+        Thumbnail(thumbnail)
+        Column(
+            Modifier.weight(1f).padding(20.dp, 15.dp).fillMaxHeight(),
+            verticalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(metadata?.title ?: downloadItem.url, fontSize = 1.1.em)
 
-                FormatSelectorOrDownloadProgress(
-                    downloadItem,
-                    metadata,
-                    selectedVideoOption,
-                    selectedAudioOption
-                )
-                InformationRow(metadata, downloadItem)
+            FormatSelectorOrDownloadProgress(
+                downloadItem,
+                metadata,
+                selectedVideoOption,
+                selectedAudioOption
+            )
+            InformationRow(metadata, downloadItem)
+        }
+        Divider(Modifier.fillMaxHeight().width(1.dp))
+        Column {
+            IconButton(
+                onClick = { downloadItem.download(selectedVideoOption, selectedAudioOption) }
+            ) {
+                Icon(FeatherIcons.Download, "Download")
             }
-            Divider(Modifier.fillMaxHeight().width(1.dp))
-            Column {
-                IconButton(
-                    onClick = { downloadItem.download(selectedVideoOption, selectedAudioOption) }
-                ) {
-                    Icon(FeatherIcons.Download, "Download")
+            val file = downloadItem.targetFile.collectAsState().value
+            if (file == null) {
+                IconButton(onClick = { removeItem(downloadItem) }) {
+                    Icon(FeatherIcons.XCircle, "Delete")
                 }
-                val file = downloadItem.targetFile.collectAsState().value
-                if (file == null) {
-                    IconButton(onClick = { removeItem(downloadItem) }) {
-                        Icon(FeatherIcons.XCircle, "Delete")
-                    }
-                } else {
-                    OpenFileButton(file)
-                    BrowseFileButton(file)
-                }
+            } else {
+                OpenFileButton(file)
+                BrowseFileButton(file)
             }
         }
     }
