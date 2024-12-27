@@ -11,12 +11,12 @@ import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
 
 @Composable
-fun Thumbnail(thumbnail: String?) {
+fun Thumbnail(thumbnailUrl: String?) {
     val modifier = Modifier.aspectRatio(16f / 9f)
 
-    if (thumbnail != null) {
+    if (thumbnailUrl != null) {
         KamelImage(
-            resource = { asyncPainterResource(data = thumbnail) },
+            resource = { asyncPainterResource(data = thumbnailUrl) },
             contentDescription = "Profile",
             modifier = modifier,
             onLoading = { progress -> ProgressIndicator(modifier, progress) }

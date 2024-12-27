@@ -22,6 +22,9 @@ data class VideoMetadata(
 val VideoMetadata.thumbnailWithFallBack
     get() = thumbnail ?: thumbnails?.lastOrNull()?.url
 
+val VideoMetadata.entryThumbnail
+    get() = thumbnails?.firstOrNull()?.url ?: thumbnail
+
 @Serializable
 data class Format(
     val formatId: String,
