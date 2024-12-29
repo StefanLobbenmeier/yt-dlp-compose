@@ -20,6 +20,7 @@ class DownloadItem(
     val url: String = "https://www.youtube.com/watch?v=CBB75zjxTR4"
 ) {
 
+    val key = "$url ${System.currentTimeMillis()}"
     val logger = KotlinLogging.logger {}
     val metadata = MutableStateFlow<VideoMetadata?>(null)
     val metadataFile = MutableStateFlow<File?>(null)

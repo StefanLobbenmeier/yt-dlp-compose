@@ -22,18 +22,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.Download
-import de.lobbenmeier.stefan.common.ui.reloadUiEvery
 import de.lobbenmeier.stefan.downloadlist.business.DownloadItem
 import de.lobbenmeier.stefan.downloadlist.business.VideoMetadata
 import de.lobbenmeier.stefan.downloadlist.business.entryThumbnail
-import kotlin.time.Duration.Companion.seconds
 
 private val entryHeight = 50.dp
 
 @Composable
 fun DownloadItemPlaylistEntriesView(downloadItem: DownloadItem) {
-    reloadUiEvery(1.seconds).value
-
     val metadataNonFinal by downloadItem.metadata.collectAsState()
     val metadata = metadataNonFinal
 
@@ -55,8 +51,6 @@ fun DownloadItemPlaylistEntriesView(downloadItem: DownloadItem) {
 
 @Composable
 fun PlaylistEntryView(entry: VideoMetadata) {
-    reloadUiEvery(1.seconds).value
-
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.padding(all = 4.dp).height(entryHeight)
