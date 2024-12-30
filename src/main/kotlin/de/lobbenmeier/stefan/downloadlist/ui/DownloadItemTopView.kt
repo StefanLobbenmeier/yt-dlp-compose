@@ -95,7 +95,7 @@ private fun InformationRow(metadata: VideoMetadata?, downloadItem: DownloadItem)
         return Text("Downloading metadata...")
     }
 
-    val downloadProgress by downloadItem.downloadProgress.collectAsState()
+    val downloadProgress by downloadItem.getProgress().collectAsState()
     val finalDownloadProgress = downloadProgress
 
     if (finalDownloadProgress == null) {
@@ -160,7 +160,7 @@ private fun FormatSelectorOrDownloadProgress(
     selectedVideoOption: Format?,
     selectedAudioOption: Format?
 ) {
-    val downloadProgress by downloadItem.downloadProgress.collectAsState(null)
+    val downloadProgress by downloadItem.getProgress().collectAsState()
 
     val finalDownloadProgress = downloadProgress
     if (finalDownloadProgress == null)

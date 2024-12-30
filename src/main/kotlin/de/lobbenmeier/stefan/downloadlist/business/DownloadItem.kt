@@ -22,12 +22,12 @@ class DownloadItem(
 
     val key = "$url ${System.currentTimeMillis()}"
     val metadata = MutableStateFlow<VideoMetadata?>(null)
-    val downloadProgress = MutableStateFlow<VideoDownloadProgress?>(null)
     val targetFile = MutableStateFlow<File?>(null)
     val format = DownloadItemFormat()
 
     private val logger = KotlinLogging.logger {}
     private val metadataFile = MutableStateFlow<File?>(null)
+    private val downloadProgress = mutableMapOf<String, MutableStateFlow<VideoDownloadProgress?>>()
 
     companion object {
         private const val PROGRESS_PREFIX = "[download-progress]"
@@ -46,7 +46,7 @@ class DownloadItem(
 
     private fun doDownload(vararg extraOptions: String) {
         CoroutineScope(Dispatchers.IO).launch {
-            downloadProgress.emit(DownloadStarted)
+            getProgress().emit(DownloadStarted)
             targetFile.emit(null)
             var videoMetadata: VideoMetadata? = null
             try {
@@ -61,7 +61,7 @@ class DownloadItem(
                             try {
                                 val progress =
                                     YtDlpJson.decodeFromString<YtDlpDownloadProgress>(progressJson)
-                                downloadProgress.emit(progress)
+                                getProgress().emit(progress)
                             } catch (e: Exception) {
                                 logger.warn(e) { "Failed to parse progressJson $progressJson" }
                             }
@@ -80,11 +80,11 @@ class DownloadItem(
                         }
                     }
                 }
-                downloadProgress.emit(DownloadCompleted)
+                getProgress().emit(DownloadCompleted)
                 videoMetadata?.filename?.let { targetFile.emit(File(it)) }
             } catch (e: Exception) {
                 e.printStackTrace()
-                downloadProgress.emit(DownloadFailed(e))
+                getProgress().emit(DownloadFailed(e))
             }
         }
     }
@@ -123,6 +123,11 @@ class DownloadItem(
     private fun useCachedMetadata(): Array<String> {
         return metadataFile.value?.let { arrayOf("--load-info-json", it.absolutePath) }
             ?: emptyArray<String>()
+    }
+
+    fun getProgress(videoOrEntryId: String? = null): MutableStateFlow<VideoDownloadProgress?> {
+        val key = videoOrEntryId ?: this.metadata.value?.id ?: "default id"
+        return downloadProgress.computeIfAbsent(key) { MutableStateFlow(null) }
     }
 
     fun gatherMetadata() {
