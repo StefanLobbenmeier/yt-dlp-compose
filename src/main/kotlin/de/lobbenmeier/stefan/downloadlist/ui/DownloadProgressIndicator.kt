@@ -15,17 +15,20 @@ import de.lobbenmeier.stefan.downloadlist.business.VideoDownloadProgress
 import de.lobbenmeier.stefan.downloadlist.business.YtDlpDownloadProgress
 
 @Composable
-fun DownloadProgressIndicator(downloadProgress: VideoDownloadProgress) {
+fun DownloadProgressIndicator(
+    downloadProgress: VideoDownloadProgress,
+    modifier: Modifier = Modifier.height(20.dp)
+) {
     if (downloadProgress is DownloadFailed) {
         return LinearProgressIndicator(
             progress = downloadProgress.progress,
-            modifier = Modifier.height(20.dp).fillMaxWidth(),
+            modifier = modifier.fillMaxWidth(),
             color = Color.Red
         )
     }
     LinearProgressIndicator(
         progress = downloadProgress.progress,
-        modifier = Modifier.height(20.dp).fillMaxWidth()
+        modifier = modifier.fillMaxWidth()
     )
 }
 

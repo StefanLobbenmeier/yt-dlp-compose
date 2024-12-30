@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -63,19 +64,19 @@ fun PlaylistEntryView(downloadItem: DownloadItem, index: Int, entry: VideoMetada
         Spacer(Modifier.width(4.dp))
 
         Column(
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.fillMaxHeight().weight(1f),
             verticalArrangement = Arrangement.SpaceAround,
         ) {
             Text(
-                modifier = Modifier.weight(1f),
                 text = entry.title ?: "No Title",
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                maxLines = 1,
             )
 
             val progressNonFinal by downloadItem.getProgress(index).collectAsState()
             val progress = progressNonFinal
             if (progress != null) {
-                DownloadProgressIndicator(progress)
+                DownloadProgressIndicator(progress, modifier = Modifier.height(5.dp))
             }
         }
 
