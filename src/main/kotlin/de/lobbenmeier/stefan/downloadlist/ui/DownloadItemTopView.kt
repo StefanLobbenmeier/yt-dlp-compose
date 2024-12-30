@@ -160,12 +160,11 @@ private fun FormatSelectorOrDownloadProgress(
     selectedVideoOption: Format?,
     selectedAudioOption: Format?
 ) {
-    val downloadProgress by downloadItem.getProgress().collectAsState()
+    val downloadProgress = downloadItem.getProgress().collectAsState().value
 
-    val finalDownloadProgress = downloadProgress
-    if (finalDownloadProgress == null)
+    if (downloadProgress == null)
         FormatSelector(downloadItem, metadata, selectedVideoOption, selectedAudioOption)
-    else DownloadProgressIndicator(finalDownloadProgress)
+    else DownloadProgressIndicator(downloadProgress)
 }
 
 @Composable

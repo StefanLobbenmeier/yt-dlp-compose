@@ -30,8 +30,7 @@ private val entryHeight = 50.dp
 
 @Composable
 fun DownloadItemPlaylistEntriesView(downloadItem: DownloadItem) {
-    val metadataNonFinal by downloadItem.metadata.collectAsState()
-    val metadata = metadataNonFinal
+    val metadata = downloadItem.metadata.collectAsState().value
 
     if (metadata == null || metadata.type != "playlist") {
         return
@@ -80,6 +79,10 @@ fun PlaylistEntryView(downloadItem: DownloadItem, index: Int, entry: VideoMetada
 
         IconButton(onClick = { downloadItem.downloadPlaylistEntry(index) }) {
             Icon(FeatherIcons.Download, "Download")
+        }
+        val targetFile = downloadItem.getTargetFile(index).collectAsState().value
+        if (targetFile != null) {
+            BrowseFileButton(targetFile)
         }
     }
 }
