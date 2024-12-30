@@ -27,7 +27,7 @@ class DownloadItem(
 
     private val logger = KotlinLogging.logger {}
     private val metadataFile = MutableStateFlow<File?>(null)
-    private val downloadProgress = mutableMapOf<String, MutableStateFlow<VideoDownloadProgress?>>()
+    private val downloadProgress = mutableMapOf<Int, MutableStateFlow<VideoDownloadProgress?>>()
 
     companion object {
         private const val PROGRESS_PREFIX = "[download-progress]"
@@ -36,17 +36,23 @@ class DownloadItem(
     }
 
     fun download(selectedVideoOption: Format?, selectedAudioOption: Format?) {
-        doDownload(*selectFormats(selectedVideoOption, selectedAudioOption))
+        doDownload(
+            *selectFormats(selectedVideoOption, selectedAudioOption),
+            progressFlow = getProgress()
+        )
     }
 
     fun downloadPlaylistEntry(index: Int) {
         val indexForYtDlp = index + 1
-        doDownload("--playlist-items", "$indexForYtDlp")
+        doDownload("--playlist-items", "$indexForYtDlp", progressFlow = getProgress(index))
     }
 
-    private fun doDownload(vararg extraOptions: String) {
+    private fun doDownload(
+        vararg extraOptions: String,
+        progressFlow: MutableStateFlow<VideoDownloadProgress?>
+    ) {
         CoroutineScope(Dispatchers.IO).launch {
-            getProgress().emit(DownloadStarted)
+            progressFlow.emit(DownloadStarted)
             targetFile.emit(null)
             var videoMetadata: VideoMetadata? = null
             try {
@@ -61,7 +67,7 @@ class DownloadItem(
                             try {
                                 val progress =
                                     YtDlpJson.decodeFromString<YtDlpDownloadProgress>(progressJson)
-                                getProgress().emit(progress)
+                                progressFlow.emit(progress)
                             } catch (e: Exception) {
                                 logger.warn(e) { "Failed to parse progressJson $progressJson" }
                             }
@@ -80,11 +86,11 @@ class DownloadItem(
                         }
                     }
                 }
-                getProgress().emit(DownloadCompleted)
+                progressFlow.emit(DownloadCompleted)
                 videoMetadata?.filename?.let { targetFile.emit(File(it)) }
             } catch (e: Exception) {
                 e.printStackTrace()
-                getProgress().emit(DownloadFailed(e))
+                progressFlow.emit(DownloadFailed(e))
             }
         }
     }
@@ -125,8 +131,8 @@ class DownloadItem(
             ?: emptyArray<String>()
     }
 
-    fun getProgress(videoOrEntryId: String? = null): MutableStateFlow<VideoDownloadProgress?> {
-        val key = videoOrEntryId ?: this.metadata.value?.id ?: "default id"
+    fun getProgress(index: Int? = null): MutableStateFlow<VideoDownloadProgress?> {
+        val key = index ?: -1
         return downloadProgress.computeIfAbsent(key) { MutableStateFlow(null) }
     }
 
