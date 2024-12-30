@@ -1,5 +1,6 @@
 package de.lobbenmeier.stefan.downloadlist.ui
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -7,7 +8,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
@@ -45,12 +46,15 @@ fun DownloadItemPlaylistEntriesView(downloadItem: DownloadItem) {
         modifier = Modifier.height(entryHeight * minOf(metadata.entries.size, 5)),
         userScrollEnabled = true
     ) {
-        items(metadata.entries, itemContent = { entry -> PlaylistEntryView(entry) })
+        itemsIndexed(
+            metadata.entries,
+            itemContent = { index, entry -> PlaylistEntryView(downloadItem, index, entry) }
+        )
     }
 }
 
 @Composable
-fun PlaylistEntryView(entry: VideoMetadata) {
+fun PlaylistEntryView(downloadItem: DownloadItem, index: Int, entry: VideoMetadata) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.padding(all = 4.dp).height(entryHeight)
@@ -58,15 +62,27 @@ fun PlaylistEntryView(entry: VideoMetadata) {
         Thumbnail(entry.entryThumbnail)
         Spacer(Modifier.width(4.dp))
 
-        Column(modifier = Modifier.weight(1f)) {
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.SpaceAround,
+        ) {
             Text(
                 modifier = Modifier.weight(1f),
                 text = entry.title ?: "No Title",
                 fontWeight = FontWeight.Bold
             )
+
+            val progressNonFinal by downloadItem.getProgress(index).collectAsState()
+            val progress = progressNonFinal
+            if (progress != null) {
+                DownloadProgressIndicator(progress)
+            }
         }
 
         IconButton(onClick = {}) { Icon(Icons.Default.Add, "Add") }
-        IconButton(onClick = {}) { Icon(FeatherIcons.Download, "Download") }
+
+        IconButton(onClick = { downloadItem.downloadPlaylistEntry(index) }) {
+            Icon(FeatherIcons.Download, "Download")
+        }
     }
 }
