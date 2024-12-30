@@ -20,12 +20,14 @@ class DownloadItem(
     val url: String = "https://www.youtube.com/watch?v=CBB75zjxTR4"
 ) {
 
-    val logger = KotlinLogging.logger {}
+    val key = "$url ${System.currentTimeMillis()}"
     val metadata = MutableStateFlow<VideoMetadata?>(null)
-    val metadataFile = MutableStateFlow<File?>(null)
-    val downloadProgress = MutableStateFlow<VideoDownloadProgress?>(null)
-    val targetFile = MutableStateFlow<File?>(null)
     val format = DownloadItemFormat()
+
+    private val logger = KotlinLogging.logger {}
+    private val metadataFile = MutableStateFlow<File?>(null)
+    private val targetFile = mutableMapOf<Int, MutableStateFlow<File?>>()
+    private val downloadProgress = mutableMapOf<Int, MutableStateFlow<VideoDownloadProgress?>>()
 
     companion object {
         private const val PROGRESS_PREFIX = "[download-progress]"
@@ -34,32 +36,45 @@ class DownloadItem(
     }
 
     fun download(selectedVideoOption: Format?, selectedAudioOption: Format?) {
+        doDownload(
+            *selectFormats(selectedVideoOption, selectedAudioOption),
+            progressFlow = getProgress(),
+            targetFile = getTargetFile(),
+        )
+    }
+
+    fun downloadPlaylistEntry(index: Int) {
+        val indexForYtDlp = index + 1
+        doDownload(
+            "--playlist-items",
+            "$indexForYtDlp",
+            progressFlow = getProgress(index),
+            targetFile = getTargetFile(index),
+        )
+    }
+
+    private fun doDownload(
+        vararg extraOptions: String,
+        progressFlow: MutableStateFlow<VideoDownloadProgress?>,
+        targetFile: MutableStateFlow<File?>,
+    ) {
         CoroutineScope(Dispatchers.IO).launch {
-            downloadProgress.emit(DownloadStarted)
+            progressFlow.emit(DownloadStarted)
             targetFile.emit(null)
             var videoMetadata: VideoMetadata? = null
             try {
                 ytDlp.runAsync(
                     true,
                     // Print the whole object again so we get the filename
-                    "--print",
-                    "$VIDEO_METADATA_JSON_PREFIX%()j",
-                    // Required because of the print
-                    "--no-simulate",
-                    "--no-quiet",
-                    *selectFormats(selectedVideoOption, selectedAudioOption),
-                    *useCachedMetadata(),
-                    "--progress-template",
-                    PROGRESS_TEMPLATE,
-                    url,
-                ) { log ->
+                    options = downloadOptions(*extraOptions),
+                ) { log, _ ->
                     when {
                         log.startsWith(PROGRESS_PREFIX) -> {
                             val progressJson = log.removePrefix(PROGRESS_PREFIX)
                             try {
                                 val progress =
                                     YtDlpJson.decodeFromString<YtDlpDownloadProgress>(progressJson)
-                                downloadProgress.emit(progress)
+                                progressFlow.emit(progress)
                             } catch (e: Exception) {
                                 logger.warn(e) { "Failed to parse progressJson $progressJson" }
                             }
@@ -78,14 +93,31 @@ class DownloadItem(
                         }
                     }
                 }
-                downloadProgress.emit(DownloadCompleted)
+                progressFlow.emit(DownloadCompleted)
                 videoMetadata?.filename?.let { targetFile.emit(File(it)) }
             } catch (e: Exception) {
                 e.printStackTrace()
-                downloadProgress.emit(DownloadFailed(e))
+                progressFlow.emit(DownloadFailed(e))
             }
         }
     }
+
+    private fun downloadOptions(vararg extraOptions: String = arrayOf()) =
+        arrayOf(
+            "--print",
+            "$VIDEO_METADATA_JSON_PREFIX%()j",
+            // Required because of the print
+            "--no-simulate",
+            "--no-quiet",
+            *useCachedMetadata(),
+
+            // --no-clean-info-json allows you to reuse json for playlists
+            "--no-clean-info-json",
+            "--progress-template",
+            PROGRESS_TEMPLATE,
+            *extraOptions,
+            url,
+        )
 
     private fun selectFormats(
         selectedVideoOption: Format?,
@@ -106,22 +138,30 @@ class DownloadItem(
             ?: emptyArray<String>()
     }
 
+    fun getProgress(index: Int? = null): MutableStateFlow<VideoDownloadProgress?> {
+        val key = index ?: -1
+        return downloadProgress.computeIfAbsent(key) { MutableStateFlow(null) }
+    }
+
+    fun getTargetFile(index: Int? = null): MutableStateFlow<File?> {
+        val key = index ?: -1
+        return targetFile.computeIfAbsent(key) { MutableStateFlow(null) }
+    }
+
     fun gatherMetadata() {
         CoroutineScope(Dispatchers.IO).launch {
             ytDlp.runAsync(
                 false,
-                "--print",
-                "$VIDEO_METADATA_JSON_PREFIX%()j",
+                "--dump-single-json",
+                "--no-clean-info-json",
                 "--flat-playlist",
                 url,
-            ) { log ->
-                when {
-                    log.startsWith(VIDEO_METADATA_JSON_PREFIX) -> {
-                        val videoMedataJson = log.removePrefix(VIDEO_METADATA_JSON_PREFIX)
-                        val videoMetadata =
-                            YtDlpJson.decodeFromString<VideoMetadata>(videoMedataJson)
+            ) { log, logLevel ->
+                when (logLevel) {
+                    LogLevel.STDOUT -> {
+                        val videoMetadata = YtDlpJson.decodeFromString<VideoMetadata>(log)
                         metadata.value = videoMetadata
-                        async { writeMetadataToFile(videoMedataJson) }
+                        async { writeMetadataToFile(log) }
 
                         val requestedFormats = videoMetadata.requestedFormats
                         if (requestedFormats != null) {
@@ -137,7 +177,7 @@ class DownloadItem(
                             }
                         }
                     }
-                    else -> {
+                    LogLevel.STDERR -> {
                         logger.info { log }
                     }
                 }

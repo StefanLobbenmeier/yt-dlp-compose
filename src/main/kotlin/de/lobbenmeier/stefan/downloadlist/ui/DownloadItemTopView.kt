@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.Card
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -47,46 +46,44 @@ import kotlin.math.roundToInt
 import kotlin.time.Duration.Companion.seconds
 
 @Composable
-fun DownloadItemView(downloadItem: DownloadItem, removeItem: (DownloadItem) -> Unit) {
+fun DownloadItemTopView(downloadItem: DownloadItem, removeItem: (DownloadItem) -> Unit) {
     val metadata by downloadItem.metadata.collectAsState()
     val thumbnail = metadata?.thumbnailWithFallBack
 
     val selectedVideoOption by downloadItem.format.video.collectAsState()
     val selectedAudioOption by downloadItem.format.audio.collectAsState(initial = null)
 
-    Card {
-        Row(Modifier.requiredHeight(135.dp)) {
-            Thumbnail(thumbnail)
-            Column(
-                Modifier.weight(1f).padding(20.dp, 15.dp).fillMaxHeight(),
-                verticalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(metadata?.title ?: downloadItem.url, fontSize = 1.1.em)
+    Row(Modifier.requiredHeight(135.dp)) {
+        Thumbnail(thumbnail)
+        Column(
+            Modifier.weight(1f).padding(20.dp, 15.dp).fillMaxHeight(),
+            verticalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(metadata?.title ?: downloadItem.url, fontSize = 1.1.em)
 
-                FormatSelectorOrDownloadProgress(
-                    downloadItem,
-                    metadata,
-                    selectedVideoOption,
-                    selectedAudioOption
-                )
-                InformationRow(metadata, downloadItem)
+            FormatSelectorOrDownloadProgress(
+                downloadItem,
+                metadata,
+                selectedVideoOption,
+                selectedAudioOption
+            )
+            InformationRow(metadata, downloadItem)
+        }
+        Divider(Modifier.fillMaxHeight().width(1.dp))
+        Column {
+            IconButton(
+                onClick = { downloadItem.download(selectedVideoOption, selectedAudioOption) }
+            ) {
+                Icon(FeatherIcons.Download, "Download")
             }
-            Divider(Modifier.fillMaxHeight().width(1.dp))
-            Column {
-                IconButton(
-                    onClick = { downloadItem.download(selectedVideoOption, selectedAudioOption) }
-                ) {
-                    Icon(FeatherIcons.Download, "Download")
+            val file = downloadItem.getTargetFile().collectAsState().value
+            if (file == null) {
+                IconButton(onClick = { removeItem(downloadItem) }) {
+                    Icon(FeatherIcons.XCircle, "Delete")
                 }
-                val file = downloadItem.targetFile.collectAsState().value
-                if (file == null) {
-                    IconButton(onClick = { removeItem(downloadItem) }) {
-                        Icon(FeatherIcons.XCircle, "Delete")
-                    }
-                } else {
-                    OpenFileButton(file)
-                    BrowseFileButton(file)
-                }
+            } else {
+                OpenFileButton(file)
+                BrowseFileButton(file)
             }
         }
     }
@@ -98,7 +95,7 @@ private fun InformationRow(metadata: VideoMetadata?, downloadItem: DownloadItem)
         return Text("Downloading metadata...")
     }
 
-    val downloadProgress by downloadItem.downloadProgress.collectAsState()
+    val downloadProgress by downloadItem.getProgress().collectAsState()
     val finalDownloadProgress = downloadProgress
 
     if (finalDownloadProgress == null) {
@@ -163,12 +160,11 @@ private fun FormatSelectorOrDownloadProgress(
     selectedVideoOption: Format?,
     selectedAudioOption: Format?
 ) {
-    val downloadProgress by downloadItem.downloadProgress.collectAsState(null)
+    val downloadProgress = downloadItem.getProgress().collectAsState().value
 
-    val finalDownloadProgress = downloadProgress
-    if (finalDownloadProgress == null)
+    if (downloadProgress == null)
         FormatSelector(downloadItem, metadata, selectedVideoOption, selectedAudioOption)
-    else DownloadProgressIndicator(finalDownloadProgress)
+    else DownloadProgressIndicator(downloadProgress)
 }
 
 @Composable
@@ -178,34 +174,37 @@ private fun FormatSelector(
     selectedVideoOption: Format?,
     selectedAudioOption: Format?
 ) {
-    val formats = metadata?.formats?.asReversed()
 
-    if (formats != null) {
-        val videoFormats = listOf(null) + formats.filter { it.isVideo }
-        val audioFormats =
-            listOf(null) +
-                formats.filter {
-                    it.isAudioOnly || (selectedVideoOption.isAudio && it == selectedVideoOption)
-                }
+    if (metadata == null) {
+        return LinearProgressIndicator(Modifier.fillMaxWidth())
+    }
 
-        Row {
-            DropdownMenu(
-                videoFormats,
-                selectedOption = selectedVideoOption,
-                selectionChanged = { downloadItem.selectVideoFormat(it) },
-                modifier = Modifier.weight(1f),
-                optionFormatter = { it?.videoDescription ?: "(No Video)" }
-            )
-            DropdownMenu(
-                audioFormats,
-                selectedOption = selectedAudioOption,
-                selectionChanged = { downloadItem.selectAudioFormat(it) },
-                modifier = Modifier.weight(1f),
-                optionFormatter = { it?.audioDescription ?: "(No Audio)" }
-            )
-        }
-    } else {
-        LinearProgressIndicator(Modifier.fillMaxWidth())
+    val formats =
+        metadata.formats?.asReversed()
+            ?: return Text("No formats available, most likely because this is a playlist")
+
+    val videoFormats = listOf(null) + formats.filter { it.isVideo }
+    val audioFormats =
+        listOf(null) +
+            formats.filter {
+                it.isAudioOnly || (selectedVideoOption.isAudio && it == selectedVideoOption)
+            }
+
+    Row {
+        DropdownMenu(
+            videoFormats,
+            selectedOption = selectedVideoOption,
+            selectionChanged = { downloadItem.selectVideoFormat(it) },
+            modifier = Modifier.weight(1f),
+            optionFormatter = { it?.videoDescription ?: "(No Video)" }
+        )
+        DropdownMenu(
+            audioFormats,
+            selectedOption = selectedAudioOption,
+            selectionChanged = { downloadItem.selectAudioFormat(it) },
+            modifier = Modifier.weight(1f),
+            optionFormatter = { it?.audioDescription ?: "(No Audio)" }
+        )
     }
 }
 
