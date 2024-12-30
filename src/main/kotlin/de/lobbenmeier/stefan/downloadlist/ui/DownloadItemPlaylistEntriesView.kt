@@ -13,8 +13,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -79,8 +77,6 @@ fun PlaylistEntryView(downloadItem: DownloadItem, index: Int, entry: VideoMetada
                 DownloadProgressIndicator(progress, modifier = Modifier.height(5.dp))
             }
         }
-
-        IconButton(onClick = {}) { Icon(Icons.Default.Add, "Add") }
 
         IconButton(onClick = { downloadItem.downloadPlaylistEntry(index) }) {
             Icon(FeatherIcons.Download, "Download")

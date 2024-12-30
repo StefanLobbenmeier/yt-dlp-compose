@@ -76,7 +76,7 @@ fun DownloadItemTopView(downloadItem: DownloadItem, removeItem: (DownloadItem) -
             ) {
                 Icon(FeatherIcons.Download, "Download")
             }
-            val file = downloadItem.targetFile.collectAsState().value
+            val file = downloadItem.getTargetFile().collectAsState().value
             if (file == null) {
                 IconButton(onClick = { removeItem(downloadItem) }) {
                     Icon(FeatherIcons.XCircle, "Delete")

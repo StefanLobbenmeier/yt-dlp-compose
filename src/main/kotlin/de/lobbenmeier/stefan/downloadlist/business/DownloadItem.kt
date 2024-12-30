@@ -22,11 +22,11 @@ class DownloadItem(
 
     val key = "$url ${System.currentTimeMillis()}"
     val metadata = MutableStateFlow<VideoMetadata?>(null)
-    val targetFile = MutableStateFlow<File?>(null)
     val format = DownloadItemFormat()
 
     private val logger = KotlinLogging.logger {}
     private val metadataFile = MutableStateFlow<File?>(null)
+    private val targetFile = mutableMapOf<Int, MutableStateFlow<File?>>()
     private val downloadProgress = mutableMapOf<Int, MutableStateFlow<VideoDownloadProgress?>>()
 
     companion object {
@@ -38,18 +38,25 @@ class DownloadItem(
     fun download(selectedVideoOption: Format?, selectedAudioOption: Format?) {
         doDownload(
             *selectFormats(selectedVideoOption, selectedAudioOption),
-            progressFlow = getProgress()
+            progressFlow = getProgress(),
+            targetFile = getTargetFile(),
         )
     }
 
     fun downloadPlaylistEntry(index: Int) {
         val indexForYtDlp = index + 1
-        doDownload("--playlist-items", "$indexForYtDlp", progressFlow = getProgress(index))
+        doDownload(
+            "--playlist-items",
+            "$indexForYtDlp",
+            progressFlow = getProgress(index),
+            targetFile = getTargetFile(index),
+        )
     }
 
     private fun doDownload(
         vararg extraOptions: String,
-        progressFlow: MutableStateFlow<VideoDownloadProgress?>
+        progressFlow: MutableStateFlow<VideoDownloadProgress?>,
+        targetFile: MutableStateFlow<File?>,
     ) {
         CoroutineScope(Dispatchers.IO).launch {
             progressFlow.emit(DownloadStarted)
@@ -134,6 +141,11 @@ class DownloadItem(
     fun getProgress(index: Int? = null): MutableStateFlow<VideoDownloadProgress?> {
         val key = index ?: -1
         return downloadProgress.computeIfAbsent(key) { MutableStateFlow(null) }
+    }
+
+    fun getTargetFile(index: Int? = null): MutableStateFlow<File?> {
+        val key = index ?: -1
+        return targetFile.computeIfAbsent(key) { MutableStateFlow(null) }
     }
 
     fun gatherMetadata() {
