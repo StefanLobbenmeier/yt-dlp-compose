@@ -21,12 +21,13 @@ class DownloadItem(
 ) {
 
     val key = "$url ${System.currentTimeMillis()}"
-    val logger = KotlinLogging.logger {}
     val metadata = MutableStateFlow<VideoMetadata?>(null)
-    val metadataFile = MutableStateFlow<File?>(null)
     val downloadProgress = MutableStateFlow<VideoDownloadProgress?>(null)
     val targetFile = MutableStateFlow<File?>(null)
     val format = DownloadItemFormat()
+
+    private val logger = KotlinLogging.logger {}
+    private val metadataFile = MutableStateFlow<File?>(null)
 
     companion object {
         private const val PROGRESS_PREFIX = "[download-progress]"
@@ -35,6 +36,15 @@ class DownloadItem(
     }
 
     fun download(selectedVideoOption: Format?, selectedAudioOption: Format?) {
+        doDownload(*selectFormats(selectedVideoOption, selectedAudioOption))
+    }
+
+    fun downloadPlaylistEntry(index: Int) {
+        val indexForYtDlp = index + 1
+        doDownload("--playlist-items", "$indexForYtDlp")
+    }
+
+    private fun doDownload(vararg extraOptions: String) {
         CoroutineScope(Dispatchers.IO).launch {
             downloadProgress.emit(DownloadStarted)
             targetFile.emit(null)
@@ -43,16 +53,7 @@ class DownloadItem(
                 ytDlp.runAsync(
                     true,
                     // Print the whole object again so we get the filename
-                    "--print",
-                    "$VIDEO_METADATA_JSON_PREFIX%()j",
-                    // Required because of the print
-                    "--no-simulate",
-                    "--no-quiet",
-                    *selectFormats(selectedVideoOption, selectedAudioOption),
-                    *useCachedMetadata(),
-                    "--progress-template",
-                    PROGRESS_TEMPLATE,
-                    url,
+                    options = downloadOptions(*extraOptions),
                 ) { log, _ ->
                     when {
                         log.startsWith(PROGRESS_PREFIX) -> {
@@ -88,6 +89,23 @@ class DownloadItem(
         }
     }
 
+    private fun downloadOptions(vararg extraOptions: String = arrayOf()) =
+        arrayOf(
+            "--print",
+            "$VIDEO_METADATA_JSON_PREFIX%()j",
+            // Required because of the print
+            "--no-simulate",
+            "--no-quiet",
+            *useCachedMetadata(),
+
+            // --no-clean-info-json allows you to reuse json for playlists
+            "--no-clean-info-json",
+            "--progress-template",
+            PROGRESS_TEMPLATE,
+            *extraOptions,
+            url,
+        )
+
     private fun selectFormats(
         selectedVideoOption: Format?,
         selectedAudioOption: Format?
@@ -112,6 +130,7 @@ class DownloadItem(
             ytDlp.runAsync(
                 false,
                 "--dump-single-json",
+                "--no-clean-info-json",
                 "--flat-playlist",
                 url,
             ) { log, logLevel ->
