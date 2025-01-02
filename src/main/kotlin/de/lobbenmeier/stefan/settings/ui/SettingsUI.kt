@@ -396,9 +396,29 @@ private fun DirectoryInput(description: String, value: String?, onValueChange: (
         value,
         onValueChange,
         trailingIcon = {
-            IconButton(onClick = { launcher.launch() }) {
-                Icon(FeatherIcons.Folder, contentDescription = null)
-            }
+            DirectoryPickerButton(description, value = value, onValueChange = onValueChange)
         },
     )
+}
+
+@Composable
+fun DirectoryPickerButton(description: String, value: String?, onValueChange: (String) -> Unit) {
+    val launcher =
+        rememberDirectoryPickerLauncher(
+            title = description,
+            initialDirectory = value ?: "${platform.homeFolder}/",
+            platformSettings =
+                FileKitPlatformSettings(
+                    macOS = FileKitMacOSSettings(resolvesAliases = false),
+                ),
+        ) { file ->
+            val filePath = file?.path
+            if (filePath != null) {
+                onValueChange(filePath)
+            }
+        }
+
+    return IconButton(onClick = { launcher.launch() }) {
+        Icon(FeatherIcons.Folder, contentDescription = null)
+    }
 }
