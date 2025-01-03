@@ -39,19 +39,20 @@ import de.lobbenmeier.stefan.settings.ui.textFieldWidth
 @Composable
 fun Footer(settings: Settings, updateSettings: (Settings) -> Unit) {
     BottomAppBar(backgroundColor = Color.White) {
-        Column {
-            Row {
-                DownloadFolderSetting(settings, updateSettings)
-                AuthenticationSetting(settings, updateSettings)
-                SubtitlesSetting(settings, updateSettings)
-                Text("Spacer")
-                Text("Media")
-                Text("Quality")
-                Text("Spacer")
-                Text("When done")
-                Text("Delete")
-                Text("Download")
-            }
+        Row {
+            Spacer(Modifier.weight(1f, true))
+            DownloadFolderSetting(settings, updateSettings)
+            AuthenticationSetting(settings, updateSettings)
+            SubtitlesSetting(settings, updateSettings)
+            Spacer(Modifier.weight(0.5f, true))
+            Text("Formats (Video / Audio)")
+            Text("Quality / Sorting")
+            Spacer(Modifier.weight(0.5f, true))
+            Text("When done")
+            Spacer(Modifier.weight(0.5f, true))
+            Text("Delete")
+            Text("Download")
+            Spacer(Modifier.weight(1f, true))
         }
     }
 }
