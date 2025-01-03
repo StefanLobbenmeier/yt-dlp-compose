@@ -29,6 +29,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.Key
+import compose.icons.feathericons.Trash
 import de.lobbenmeier.stefan.common.ui.icons.Subtitles
 import de.lobbenmeier.stefan.common.ui.icons.SubtitlesOff
 import de.lobbenmeier.stefan.settings.business.Settings
@@ -37,7 +38,7 @@ import de.lobbenmeier.stefan.settings.ui.authenticationSettings
 import de.lobbenmeier.stefan.settings.ui.textFieldWidth
 
 @Composable
-fun Footer(settings: Settings, updateSettings: (Settings) -> Unit) {
+fun Footer(settings: Settings, updateSettings: (Settings) -> Unit, clearDownloads: () -> Unit) {
     BottomAppBar(backgroundColor = Color.White) {
         Row {
             Spacer(Modifier.weight(1f, true))
@@ -48,9 +49,9 @@ fun Footer(settings: Settings, updateSettings: (Settings) -> Unit) {
             Text("Formats (Video / Audio)")
             Text("Quality / Sorting")
             Spacer(Modifier.weight(0.5f, true))
-            Text("When done")
+            // TODO Text("When done")
             Spacer(Modifier.weight(0.5f, true))
-            Text("Delete")
+            ClearDownloadQueueButton(clearDownloads)
             Text("Download")
             Spacer(Modifier.weight(1f, true))
         }
@@ -86,6 +87,13 @@ fun SubtitlesSetting(settings: Settings, updateSettings: (Settings) -> Unit) {
             embedSubtitlesEnabledIcon,
             contentDescription = "Embed Subtitles ($embedSubtitlesEnabledString)"
         )
+    }
+}
+
+@Composable
+fun ClearDownloadQueueButton(clearDownloads: () -> Unit) {
+    return IconButton(onClick = { clearDownloads() }) {
+        Icon(FeatherIcons.Trash, contentDescription = "Clear download list")
     }
 }
 

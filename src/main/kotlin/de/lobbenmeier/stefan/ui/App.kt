@@ -76,7 +76,9 @@ private fun MainView(
                     onSettingsButtonClicked = { settingsOpen = true }
                 )
             },
-            bottomBar = { Footer(settings, updateSettings) }
+            bottomBar = {
+                Footer(settings, updateSettings, clearDownloads = { downloadQueue.clear() })
+            }
         ) {
             DownloadList(downloadQueue)
         }

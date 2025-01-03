@@ -14,4 +14,8 @@ class DownloadQueue {
     fun remove(downloadItem: DownloadItem) {
         items.remove(downloadItem)
     }
+
+    fun clear() {
+        items.clear()
+    }
 }
