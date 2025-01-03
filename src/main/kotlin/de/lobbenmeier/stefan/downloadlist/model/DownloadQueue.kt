@@ -14,4 +14,16 @@ class DownloadQueue {
     fun remove(downloadItem: DownloadItem) {
         items.remove(downloadItem)
     }
+
+    fun clear() {
+        items.clear()
+    }
+
+    fun downloadAll() {
+        for (item in items) {
+            if (item.getTargetFile().value == null) {
+                item.download(null, null)
+            }
+        }
+    }
 }
