@@ -29,6 +29,8 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.Key
+import de.lobbenmeier.stefan.common.ui.icons.Subtitles
+import de.lobbenmeier.stefan.common.ui.icons.SubtitlesOff
 import de.lobbenmeier.stefan.settings.business.Settings
 import de.lobbenmeier.stefan.settings.ui.DirectoryPickerButton
 import de.lobbenmeier.stefan.settings.ui.authenticationSettings
@@ -41,7 +43,7 @@ fun Footer(settings: Settings, updateSettings: (Settings) -> Unit) {
             Row {
                 DownloadFolderSetting(settings, updateSettings)
                 AuthenticationSetting(settings, updateSettings)
-                Text("Subtitles")
+                SubtitlesSetting(settings, updateSettings)
                 Text("Spacer")
                 Text("Media")
                 Text("Quality")
@@ -67,6 +69,22 @@ fun DownloadFolderSetting(settings: Settings, updateSettings: (Settings) -> Unit
 fun AuthenticationSetting(settings: Settings, updateSettings: (Settings) -> Unit) {
     return QuickSetting(icon = FeatherIcons.Key, contentDescription = "Authentication") {
         authenticationSettings(settings, updateSettings)
+    }
+}
+
+@Composable
+fun SubtitlesSetting(settings: Settings, updateSettings: (Settings) -> Unit) {
+    val embedSubtitlesEnabled = settings.embedSubtitles
+    val embedSubtitlesEnabledString = if (embedSubtitlesEnabled) "Enabled" else "Disabled"
+    val embedSubtitlesEnabledIcon = if (embedSubtitlesEnabled) Subtitles else SubtitlesOff
+
+    return IconButton(
+        onClick = { updateSettings(settings.copy(embedSubtitles = !embedSubtitlesEnabled)) }
+    ) {
+        Icon(
+            embedSubtitlesEnabledIcon,
+            contentDescription = "Embed Subtitles ($embedSubtitlesEnabledString)"
+        )
     }
 }
 

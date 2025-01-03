@@ -413,6 +413,6 @@ fun DirectoryPickerButton(description: String, value: String?, onValueChange: (S
         }
 
     return IconButton(onClick = { launcher.launch() }) {
-        Icon(FeatherIcons.Folder, contentDescription = null)
+        Icon(FeatherIcons.Folder, contentDescription = description)
     }
 }
