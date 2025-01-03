@@ -18,4 +18,12 @@ class DownloadQueue {
     fun clear() {
         items.clear()
     }
+
+    fun downloadAll() {
+        for (item in items) {
+            if (item.getTargetFile().value == null) {
+                item.download(null, null)
+            }
+        }
+    }
 }

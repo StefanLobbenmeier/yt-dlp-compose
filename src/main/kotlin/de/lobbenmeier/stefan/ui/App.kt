@@ -77,7 +77,12 @@ private fun MainView(
                 )
             },
             bottomBar = {
-                Footer(settings, updateSettings, clearDownloads = { downloadQueue.clear() })
+                Footer(
+                    settings,
+                    updateSettings,
+                    clearDownloads = downloadQueue::clear,
+                    downloadAll = downloadQueue::downloadAll
+                )
             }
         ) {
             DownloadList(downloadQueue)

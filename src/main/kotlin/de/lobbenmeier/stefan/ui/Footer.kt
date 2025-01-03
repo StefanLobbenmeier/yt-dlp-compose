@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.BottomAppBar
+import androidx.compose.material.Button
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -38,7 +39,12 @@ import de.lobbenmeier.stefan.settings.ui.authenticationSettings
 import de.lobbenmeier.stefan.settings.ui.textFieldWidth
 
 @Composable
-fun Footer(settings: Settings, updateSettings: (Settings) -> Unit, clearDownloads: () -> Unit) {
+fun Footer(
+    settings: Settings,
+    updateSettings: (Settings) -> Unit,
+    clearDownloads: () -> Unit,
+    downloadAll: () -> Unit
+) {
     BottomAppBar(backgroundColor = Color.White) {
         Row {
             Spacer(Modifier.weight(1f, true))
@@ -52,7 +58,7 @@ fun Footer(settings: Settings, updateSettings: (Settings) -> Unit, clearDownload
             // TODO Text("When done")
             Spacer(Modifier.weight(0.5f, true))
             ClearDownloadQueueButton(clearDownloads)
-            Text("Download")
+            DownloadAllButton(downloadAll)
             Spacer(Modifier.weight(1f, true))
         }
     }
@@ -95,6 +101,11 @@ fun ClearDownloadQueueButton(clearDownloads: () -> Unit) {
     return IconButton(onClick = { clearDownloads() }) {
         Icon(FeatherIcons.Trash, contentDescription = "Clear download list")
     }
+}
+
+@Composable
+fun DownloadAllButton(downloadAll: () -> Unit) {
+    return Button(onClick = { downloadAll() }, enabled = false) { Text(text = "Download") }
 }
 
 @OptIn(ExperimentalComposeUiApi::class)
