@@ -155,6 +155,8 @@ class DownloadItem(
                 "--dump-single-json",
                 "--no-clean-info-json",
                 "--flat-playlist",
+                "--format",
+                "worstvideo*",
                 url,
             ) { log, logLevel ->
                 when (logLevel) {
@@ -163,19 +165,7 @@ class DownloadItem(
                         metadata.value = videoMetadata
                         async { writeMetadataToFile(log) }
 
-                        val requestedFormats = videoMetadata.requestedFormats
-                        if (requestedFormats != null) {
-                            requestedFormats.forEach(format::selectFormat)
-                        } else {
-                            videoMetadata.formats?.let { formats ->
-                                // set audio first, so we have a default option
-                                val audioFormat = formats.lastOrNull { it.isAudioOnly }
-                                audioFormat?.let { selectAudioFormat(it) }
-
-                                val videoFormat = formats.lastOrNull { it.isVideo }
-                                videoFormat?.let { selectVideoFormat(it) }
-                            }
-                        }
+                        videoMetadata.requestedDownloads?.forEach(format::selectFormat)
                     }
                     LogLevel.STDERR -> {
                         logger.info { log }
