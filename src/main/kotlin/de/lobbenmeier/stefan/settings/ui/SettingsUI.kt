@@ -46,11 +46,11 @@ import io.github.vinceglb.filekit.core.FileKitMacOSSettings
 import io.github.vinceglb.filekit.core.FileKitPlatformSettings
 import kotlin.io.path.absolutePathString
 
-private val textFieldWidth = 350.dp
+val textFieldWidth = 350.dp
 
 @Composable
 fun SettingsUI(settings: Settings, save: (Settings) -> Unit, cancel: () -> Unit) {
-    var mutableSettings by remember { mutableStateOf(settings.copy()) }
+    var mutableSettings by remember { mutableStateOf(settings) }
 
     Column(
         Modifier.padding(vertical = 32.dp)
@@ -103,7 +103,7 @@ fun SettingsUI(settings: Settings, save: (Settings) -> Unit, cancel: () -> Unit)
                 )
             }
 
-            Section("Network & Authentication") {
+            Section("Network") {
                 TextInput(
                     "Proxy",
                     mutableSettings.proxy,
@@ -121,34 +121,11 @@ fun SettingsUI(settings: Settings, save: (Settings) -> Unit, cancel: () -> Unit)
                     mutableSettings.rateLimit,
                     onValueChange = { mutableSettings = mutableSettings.copy(rateLimit = it) }
                 )
-                TextInput(
-                    "Header",
-                    mutableSettings.header,
-                    onValueChange = { mutableSettings = mutableSettings.copy(header = it) },
-                    placeholder = "Bearer:yourTokenHere"
-                )
-                ChoiceInput(
-                    "Cookies from browser",
-                    mutableSettings.cookiesFromBrowser,
-                    onValueChange = {
-                        mutableSettings = mutableSettings.copy(cookiesFromBrowser = it)
-                    },
-                    options =
-                        listOf(
-                            "brave",
-                            "chrome",
-                            "chromium",
-                            "edge",
-                            "firefox",
-                            "opera",
-                            "safari",
-                            "vivaldi",
-                        )
-                )
-                FileInput(
-                    "Cookies from file",
-                    mutableSettings.cookiesFile,
-                    onValueChange = { mutableSettings = mutableSettings.copy(cookiesFile = it) },
+            }
+            Section("Authentication") {
+                authenticationSettings(
+                    settings = mutableSettings,
+                    updateSettings = { mutableSettings = it }
                 )
             }
 
@@ -256,7 +233,38 @@ fun SettingsUI(settings: Settings, save: (Settings) -> Unit, cancel: () -> Unit)
 }
 
 @Composable
-private fun Section(sectionTitle: String, content: @Composable (ColumnScope.() -> Unit)) {
+fun authenticationSettings(settings: Settings, updateSettings: (Settings) -> Unit) {
+    TextInput(
+        "Header",
+        settings.header,
+        onValueChange = { updateSettings(settings.copy(header = it)) },
+        placeholder = "Bearer:yourTokenHere"
+    )
+    ChoiceInput(
+        "Cookies from browser",
+        settings.cookiesFromBrowser,
+        onValueChange = { updateSettings(settings.copy(cookiesFromBrowser = it)) },
+        options =
+            listOf(
+                "brave",
+                "chrome",
+                "chromium",
+                "edge",
+                "firefox",
+                "opera",
+                "safari",
+                "vivaldi",
+            )
+    )
+    FileInput(
+        "Cookies from file",
+        settings.cookiesFile,
+        onValueChange = { updateSettings(settings.copy(cookiesFile = it)) },
+    )
+}
+
+@Composable
+fun Section(sectionTitle: String, content: @Composable (ColumnScope.() -> Unit)) {
     Column {
         Text(sectionTitle, style = MaterialTheme.typography.h5)
         Column(Modifier.padding(vertical = 8.dp), content = content)
@@ -377,6 +385,18 @@ private fun FileInput(description: String, value: String?, onValueChange: (Strin
 
 @Composable
 private fun DirectoryInput(description: String, value: String?, onValueChange: (String?) -> Unit) {
+    TextInput(
+        description,
+        value,
+        onValueChange,
+        trailingIcon = {
+            DirectoryPickerButton(description, value = value, onValueChange = onValueChange)
+        },
+    )
+}
+
+@Composable
+fun DirectoryPickerButton(description: String, value: String?, onValueChange: (String) -> Unit) {
     val launcher =
         rememberDirectoryPickerLauncher(
             title = description,
@@ -386,19 +406,13 @@ private fun DirectoryInput(description: String, value: String?, onValueChange: (
                     macOS = FileKitMacOSSettings(resolvesAliases = false),
                 ),
         ) { file ->
-            if (file != null) {
-                onValueChange(file.path)
+            val filePath = file?.path
+            if (filePath != null) {
+                onValueChange(filePath)
             }
         }
 
-    TextInput(
-        description,
-        value,
-        onValueChange,
-        trailingIcon = {
-            IconButton(onClick = { launcher.launch() }) {
-                Icon(FeatherIcons.Folder, contentDescription = null)
-            }
-        },
-    )
+    return IconButton(onClick = { launcher.launch() }) {
+        Icon(FeatherIcons.Folder, contentDescription = description)
+    }
 }
