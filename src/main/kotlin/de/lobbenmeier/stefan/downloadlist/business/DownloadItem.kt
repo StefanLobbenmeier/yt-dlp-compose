@@ -155,8 +155,6 @@ class DownloadItem(
                 "--dump-single-json",
                 "--no-clean-info-json",
                 "--flat-playlist",
-                "--format",
-                "worstvideo*",
                 url,
             ) { log, logLevel ->
                 when (logLevel) {
@@ -165,7 +163,7 @@ class DownloadItem(
                         metadata.value = videoMetadata
                         async { writeMetadataToFile(log) }
 
-                        videoMetadata.requestedDownloads?.forEach(format::selectFormat)
+                        videoMetadata.requestedDownloadFormats?.forEach(format::selectFormat)
                     }
                     LogLevel.STDERR -> {
                         logger.info { log }

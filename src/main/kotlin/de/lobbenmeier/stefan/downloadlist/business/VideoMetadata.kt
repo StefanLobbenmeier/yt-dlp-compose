@@ -26,8 +26,12 @@ val VideoMetadata.thumbnailWithFallBack
 val VideoMetadata.entryThumbnail
     get() = thumbnails?.firstOrNull()?.url ?: thumbnail
 
+val VideoMetadata.requestedDownloadFormats: List<Format>?
+    get() = requestedDownloads?.firstOrNull()?.requestedFormats
+
 @Serializable
 data class Format(
+    val requestedFormats: List<Format>?,
     val formatId: String,
     val filesize: Long?,
     val filesizeApprox: Long?,
