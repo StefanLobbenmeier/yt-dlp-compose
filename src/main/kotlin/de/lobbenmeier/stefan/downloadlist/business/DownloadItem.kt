@@ -38,17 +38,26 @@ class DownloadItem(
     fun download() {
         val videoMetadata = metadata.value
         if (videoMetadata?.type == "playlist") {
-            videoMetadata.entries?.forEachIndexed { i, _ -> downloadPlaylistEntry(i) }
+
+            CoroutineScope(Dispatchers.IO).launch {
+                videoMetadata.entries?.forEachIndexed { i, _ -> asyncDownloadPlaylistEntry(i) }
+            }
         } else {
-            doDownload(
-                *selectFormats(format.video.value, format.audio.value),
-                progressFlow = getProgress(),
-                targetFile = getTargetFile(),
-            )
+            CoroutineScope(Dispatchers.IO).launch {
+                doDownload(
+                    *selectFormats(format.video.value, format.audio.value),
+                    progressFlow = getProgress(),
+                    targetFile = getTargetFile(),
+                )
+            }
         }
     }
 
     fun downloadPlaylistEntry(index: Int) {
+        CoroutineScope(Dispatchers.IO).launch { asyncDownloadPlaylistEntry(index) }
+    }
+
+    private suspend fun DownloadItem.asyncDownloadPlaylistEntry(index: Int) {
         val indexForYtDlp = index + 1
         doDownload(
             "--playlist-items",
@@ -58,57 +67,55 @@ class DownloadItem(
         )
     }
 
-    private fun doDownload(
+    private suspend fun doDownload(
         vararg extraOptions: String,
         progressFlow: MutableStateFlow<VideoDownloadProgress?>,
         targetFile: MutableStateFlow<File?>,
     ) {
-        CoroutineScope(Dispatchers.IO).launch {
-            if (progressFlow.value != null) {
-                // prevent starting download twice - todo recover after cancellation
-                return@launch
-            }
+        if (progressFlow.value != null) {
+            // prevent starting download twice - todo recover after cancellation
+            return
+        }
 
-            progressFlow.emit(DownloadStarted)
-            targetFile.emit(null)
-            var videoMetadata: VideoMetadata? = null
-            try {
-                ytDlp.runAsync(
-                    true,
-                    // Print the whole object again so we get the filename
-                    options = downloadOptions(*extraOptions),
-                ) { log, _ ->
-                    when {
-                        log.startsWith(PROGRESS_PREFIX) -> {
-                            val progressJson = log.removePrefix(PROGRESS_PREFIX)
-                            try {
-                                val progress =
-                                    YtDlpJson.decodeFromString<YtDlpDownloadProgress>(progressJson)
-                                progressFlow.emit(progress)
-                            } catch (e: Exception) {
-                                logger.warn(e) { "Failed to parse progressJson $progressJson" }
-                            }
-                        }
-                        log.startsWith(VIDEO_METADATA_JSON_PREFIX) -> {
-                            val videoMedataJson = log.removePrefix(VIDEO_METADATA_JSON_PREFIX)
-                            try {
-                                videoMetadata =
-                                    YtDlpJson.decodeFromString<VideoMetadata>(videoMedataJson)
-                            } catch (e: Exception) {
-                                logger.warn(e) { "Failed to parse metadata $videoMetadata" }
-                            }
-                        }
-                        else -> {
-                            logger.info { log }
+        progressFlow.emit(DownloadStarted)
+        targetFile.emit(null)
+        var videoMetadata: VideoMetadata? = null
+        try {
+            ytDlp.runAsync(
+                true,
+                // Print the whole object again so we get the filename
+                options = downloadOptions(*extraOptions),
+            ) { log, _ ->
+                when {
+                    log.startsWith(PROGRESS_PREFIX) -> {
+                        val progressJson = log.removePrefix(PROGRESS_PREFIX)
+                        try {
+                            val progress =
+                                YtDlpJson.decodeFromString<YtDlpDownloadProgress>(progressJson)
+                            progressFlow.emit(progress)
+                        } catch (e: Exception) {
+                            logger.warn(e) { "Failed to parse progressJson $progressJson" }
                         }
                     }
+                    log.startsWith(VIDEO_METADATA_JSON_PREFIX) -> {
+                        val videoMedataJson = log.removePrefix(VIDEO_METADATA_JSON_PREFIX)
+                        try {
+                            videoMetadata =
+                                YtDlpJson.decodeFromString<VideoMetadata>(videoMedataJson)
+                        } catch (e: Exception) {
+                            logger.warn(e) { "Failed to parse metadata $videoMetadata" }
+                        }
+                    }
+                    else -> {
+                        logger.info { log }
+                    }
                 }
-                progressFlow.emit(DownloadCompleted)
-                videoMetadata?.filename?.let { targetFile.emit(File(it)) }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                progressFlow.emit(DownloadFailed(e))
             }
+            progressFlow.emit(DownloadCompleted)
+            videoMetadata?.filename?.let { targetFile.emit(File(it)) }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            progressFlow.emit(DownloadFailed(e))
         }
     }
 
