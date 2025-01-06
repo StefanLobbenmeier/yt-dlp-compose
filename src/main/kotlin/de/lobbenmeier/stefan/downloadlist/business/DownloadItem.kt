@@ -35,9 +35,9 @@ class DownloadItem(
         private const val VIDEO_METADATA_JSON_PREFIX = "[video-metadata-json]"
     }
 
-    fun download(selectedVideoOption: Format?, selectedAudioOption: Format?) {
+    fun download() {
         doDownload(
-            *selectFormats(selectedVideoOption, selectedAudioOption),
+            *selectFormats(format.video.value, format.audio.value),
             progressFlow = getProgress(),
             targetFile = getTargetFile(),
         )

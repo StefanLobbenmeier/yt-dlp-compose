@@ -28,7 +28,6 @@ import de.lobbenmeier.stefan.downloadlist.business.DownloadCompleted
 import de.lobbenmeier.stefan.downloadlist.business.DownloadFailed
 import de.lobbenmeier.stefan.downloadlist.business.DownloadItem
 import de.lobbenmeier.stefan.downloadlist.business.DownloadStarted
-import de.lobbenmeier.stefan.downloadlist.business.Format
 import de.lobbenmeier.stefan.downloadlist.business.VideoDownloadProgress
 import de.lobbenmeier.stefan.downloadlist.business.VideoMetadata
 import de.lobbenmeier.stefan.downloadlist.business.YtDlp
@@ -50,9 +49,6 @@ fun DownloadItemTopView(downloadItem: DownloadItem, removeItem: (DownloadItem) -
     val metadata by downloadItem.metadata.collectAsState()
     val thumbnail = metadata?.thumbnailWithFallBack
 
-    val selectedVideoOption by downloadItem.format.video.collectAsState()
-    val selectedAudioOption by downloadItem.format.audio.collectAsState(initial = null)
-
     Row(Modifier.requiredHeight(135.dp)) {
         Thumbnail(thumbnail)
         Column(
@@ -64,16 +60,12 @@ fun DownloadItemTopView(downloadItem: DownloadItem, removeItem: (DownloadItem) -
             FormatSelectorOrDownloadProgress(
                 downloadItem,
                 metadata,
-                selectedVideoOption,
-                selectedAudioOption
             )
             InformationRow(metadata, downloadItem)
         }
         Divider(Modifier.fillMaxHeight().width(1.dp))
         Column {
-            IconButton(
-                onClick = { downloadItem.download(selectedVideoOption, selectedAudioOption) }
-            ) {
+            IconButton(onClick = { downloadItem.download() }) {
                 Icon(FeatherIcons.Download, "Download")
             }
             val file = downloadItem.getTargetFile().collectAsState().value
@@ -157,13 +149,10 @@ private fun DownloadInformation(downloadProgress: VideoDownloadProgress) {
 private fun FormatSelectorOrDownloadProgress(
     downloadItem: DownloadItem,
     metadata: VideoMetadata?,
-    selectedVideoOption: Format?,
-    selectedAudioOption: Format?
 ) {
     val downloadProgress = downloadItem.getProgress().collectAsState().value
 
-    if (downloadProgress == null)
-        FormatSelector(downloadItem, metadata, selectedVideoOption, selectedAudioOption)
+    if (downloadProgress == null) FormatSelector(downloadItem, metadata)
     else DownloadProgressIndicator(downloadProgress)
 }
 
@@ -171,8 +160,6 @@ private fun FormatSelectorOrDownloadProgress(
 private fun FormatSelector(
     downloadItem: DownloadItem,
     metadata: VideoMetadata?,
-    selectedVideoOption: Format?,
-    selectedAudioOption: Format?
 ) {
 
     if (metadata == null) {
@@ -182,6 +169,9 @@ private fun FormatSelector(
     val formats =
         metadata.formats?.asReversed()
             ?: return Text("No formats available, most likely because this is a playlist")
+
+    val selectedVideoOption by downloadItem.format.video.collectAsState()
+    val selectedAudioOption by downloadItem.format.audio.collectAsState()
 
     val videoFormats = listOf(null) + formats.filter { it.isVideo }
     val audioFormats =
