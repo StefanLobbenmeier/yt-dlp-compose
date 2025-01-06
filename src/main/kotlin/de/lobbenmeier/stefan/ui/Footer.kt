@@ -108,7 +108,7 @@ fun ClearDownloadQueueButton(clearDownloads: () -> Unit) {
 
 @Composable
 fun DownloadAllButton(downloadAll: () -> Unit) {
-    return Button(onClick = { downloadAll() }, enabled = false) { Text(text = "Download") }
+    return Button(onClick = downloadAll) { Text(text = "Download") }
 }
 
 @Composable

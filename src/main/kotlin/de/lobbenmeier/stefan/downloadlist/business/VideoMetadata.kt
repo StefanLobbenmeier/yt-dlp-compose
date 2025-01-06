@@ -9,7 +9,7 @@ data class VideoMetadata(
     val duration: Double?,
     val filename: String?,
     val formats: List<Format>?,
-    val requestedFormats: List<Format>?,
+    val requestedDownloads: List<Format>?,
     val thumbnail: String?,
     val thumbnails: List<Thumbnail>?,
     val title: String?,
@@ -26,8 +26,12 @@ val VideoMetadata.thumbnailWithFallBack
 val VideoMetadata.entryThumbnail
     get() = thumbnails?.firstOrNull()?.url ?: thumbnail
 
+val VideoMetadata.requestedDownloadFormats: List<Format>?
+    get() = requestedDownloads?.firstOrNull()?.requestedFormats
+
 @Serializable
 data class Format(
+    val requestedFormats: List<Format>?,
     val formatId: String,
     val filesize: Long?,
     val filesizeApprox: Long?,

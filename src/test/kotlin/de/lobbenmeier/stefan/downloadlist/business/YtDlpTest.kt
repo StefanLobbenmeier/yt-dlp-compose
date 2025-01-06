@@ -9,8 +9,6 @@ class YtDlpTest :
         test("download") {
             val ytDlp = YtDlp(homeBrewBinaries, createEmptySettings())
 
-            ytDlp
-                .createDownloadItem("https://www.youtube.com/watch?v=CBB75zjxTR4")
-                .download(null, null)
+            ytDlp.createDownloadItem("https://www.youtube.com/watch?v=CBB75zjxTR4").download()
         }
     })

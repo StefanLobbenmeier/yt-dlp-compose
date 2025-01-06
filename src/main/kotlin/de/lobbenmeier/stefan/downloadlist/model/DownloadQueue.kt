@@ -22,7 +22,7 @@ class DownloadQueue {
     fun downloadAll() {
         for (item in items) {
             if (item.getTargetFile().value == null) {
-                item.download(null, null)
+                item.download()
             }
         }
     }
