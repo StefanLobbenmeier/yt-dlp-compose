@@ -59,6 +59,11 @@ class DownloadItem(
         targetFile: MutableStateFlow<File?>,
     ) {
         CoroutineScope(Dispatchers.IO).launch {
+            if (progressFlow.value != null) {
+                // prevent starting download twice - todo recover after cancellation
+                return@launch
+            }
+
             progressFlow.emit(DownloadStarted)
             targetFile.emit(null)
             var videoMetadata: VideoMetadata? = null
