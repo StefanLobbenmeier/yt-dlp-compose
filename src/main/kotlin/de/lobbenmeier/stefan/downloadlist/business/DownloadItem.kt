@@ -36,11 +36,16 @@ class DownloadItem(
     }
 
     fun download() {
-        doDownload(
-            *selectFormats(format.video.value, format.audio.value),
-            progressFlow = getProgress(),
-            targetFile = getTargetFile(),
-        )
+        val videoMetadata = metadata.value
+        if (videoMetadata?.type == "playlist") {
+            videoMetadata.entries?.forEachIndexed { i, _ -> downloadPlaylistEntry(i) }
+        } else {
+            doDownload(
+                *selectFormats(format.video.value, format.audio.value),
+                progressFlow = getProgress(),
+                targetFile = getTargetFile(),
+            )
+        }
     }
 
     fun downloadPlaylistEntry(index: Int) {
