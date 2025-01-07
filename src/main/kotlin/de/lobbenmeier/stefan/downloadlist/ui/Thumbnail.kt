@@ -19,7 +19,7 @@ fun Thumbnail(thumbnailUrl: String?) {
             resource = { asyncPainterResource(data = thumbnailUrl) },
             contentDescription = "Profile",
             modifier = modifier,
-            onLoading = { progress -> ProgressIndicator(modifier, progress) }
+            onLoading = { progress -> ProgressIndicator(modifier, progress) },
         )
     } else {
         ProgressIndicator(modifier)
@@ -31,7 +31,7 @@ private fun ProgressIndicator(modifier: Modifier, progress: Float? = null) {
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         if (progress == null || progress < 0.3f) {
             CircularProgressIndicator()

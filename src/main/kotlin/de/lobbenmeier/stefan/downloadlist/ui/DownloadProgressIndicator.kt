@@ -17,18 +17,18 @@ import de.lobbenmeier.stefan.downloadlist.business.YtDlpDownloadProgress
 @Composable
 fun DownloadProgressIndicator(
     downloadProgress: VideoDownloadProgress,
-    modifier: Modifier = Modifier.height(20.dp)
+    modifier: Modifier = Modifier.height(20.dp),
 ) {
     if (downloadProgress is DownloadFailed) {
         return LinearProgressIndicator(
             progress = downloadProgress.progress,
             modifier = modifier.fillMaxWidth(),
-            color = Color.Red
+            color = Color.Red,
         )
     }
     LinearProgressIndicator(
         progress = downloadProgress.progress,
-        modifier = modifier.fillMaxWidth()
+        modifier = modifier.fillMaxWidth(),
     )
 }
 
@@ -41,12 +41,7 @@ fun DownloadProgressIndicatorStarted() {
 @Composable
 @Preview
 fun DownloadProgressIndicatorPreview50() {
-    DownloadProgressIndicator(
-        YtDlpDownloadProgress(
-            downloadedBytes = 100,
-            totalBytes = 200,
-        )
-    )
+    DownloadProgressIndicator(YtDlpDownloadProgress(downloadedBytes = 100, totalBytes = 200))
 }
 
 @Composable

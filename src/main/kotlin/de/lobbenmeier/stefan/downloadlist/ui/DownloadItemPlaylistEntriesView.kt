@@ -42,11 +42,11 @@ fun DownloadItemPlaylistEntriesView(downloadItem: DownloadItem) {
 
     LazyColumn(
         modifier = Modifier.height(entryHeight * minOf(metadata.entries.size, 5)),
-        userScrollEnabled = true
+        userScrollEnabled = true,
     ) {
         itemsIndexed(
             metadata.entries,
-            itemContent = { index, entry -> PlaylistEntryView(downloadItem, index, entry) }
+            itemContent = { index, entry -> PlaylistEntryView(downloadItem, index, entry) },
         )
     }
 }
@@ -55,7 +55,7 @@ fun DownloadItemPlaylistEntriesView(downloadItem: DownloadItem) {
 fun PlaylistEntryView(downloadItem: DownloadItem, index: Int, entry: VideoMetadata) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.padding(all = 4.dp).height(entryHeight)
+        modifier = Modifier.padding(all = 4.dp).height(entryHeight),
     ) {
         Thumbnail(entry.entryThumbnail)
         Spacer(Modifier.width(4.dp))
@@ -64,11 +64,7 @@ fun PlaylistEntryView(downloadItem: DownloadItem, index: Int, entry: VideoMetada
             modifier = Modifier.fillMaxHeight().weight(1f),
             verticalArrangement = Arrangement.SpaceAround,
         ) {
-            Text(
-                text = entry.title ?: "No Title",
-                fontWeight = FontWeight.Bold,
-                maxLines = 1,
-            )
+            Text(text = entry.title ?: "No Title", fontWeight = FontWeight.Bold, maxLines = 1)
 
             val progressNonFinal by downloadItem.getProgress(index).collectAsState()
             val progress = progressNonFinal

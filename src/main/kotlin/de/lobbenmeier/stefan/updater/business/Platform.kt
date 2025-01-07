@@ -28,7 +28,7 @@ enum class YtDlpNames(val filename: String) {
     python("yt-dlp"),
     osxLegacy("yt-dlp_macos_legacy"),
     osx("yt-dlp_macos"),
-    windows("yt-dlp.exe")
+    windows("yt-dlp.exe"),
 }
 
 enum class FfmpegPlatforms(val platformName: String) {
@@ -38,7 +38,7 @@ enum class FfmpegPlatforms(val platformName: String) {
     linuxArmel("linux-armel"),
     linuxArmhf("linux-armhf"),
     osx64("osx-64"),
-    windows64("windows-64")
+    windows64("windows-64"),
 }
 
 private fun detectPlatform(): Platform {
@@ -71,7 +71,7 @@ private fun detectPlatform(): Platform {
                 FfmpegPlatforms.osx64,
                 needsExecutableBit = true,
                 pathDelimiter = ":",
-                extraPaths = listOf("/opt/homebrew/bin/").map(Path::of)
+                extraPaths = listOf("/opt/homebrew/bin/").map(Path::of),
             )
         }
         else -> {

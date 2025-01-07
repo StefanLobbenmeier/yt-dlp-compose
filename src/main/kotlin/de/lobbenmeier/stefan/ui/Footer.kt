@@ -44,7 +44,7 @@ fun Footer(
     settings: Settings,
     updateSettings: (Settings) -> Unit,
     clearDownloads: () -> Unit,
-    downloadAll: () -> Unit
+    downloadAll: () -> Unit,
 ) {
     BottomAppBar(backgroundColor = Color.White) {
         Row {
@@ -68,7 +68,7 @@ fun DownloadFolderSetting(settings: Settings, updateSettings: (Settings) -> Unit
     return DirectoryPickerButton(
         description = "Download Folder",
         value = settings.downloadFolder,
-        onValueChange = { updateSettings(settings.copy(downloadFolder = it)) }
+        onValueChange = { updateSettings(settings.copy(downloadFolder = it)) },
     )
 }
 
@@ -90,7 +90,7 @@ fun SubtitlesSetting(settings: Settings, updateSettings: (Settings) -> Unit) {
     ) {
         Icon(
             embedSubtitlesEnabledIcon,
-            contentDescription = "Embed Subtitles ($embedSubtitlesEnabledString)"
+            contentDescription = "Embed Subtitles ($embedSubtitlesEnabledString)",
         )
     }
 }
@@ -116,7 +116,7 @@ fun DownloadAllButton(downloadAll: () -> Unit) {
 fun QuickSettingIconButton(
     icon: ImageVector,
     contentDescription: String,
-    dialogContent: @Composable () -> Unit
+    dialogContent: @Composable () -> Unit,
 ) {
     var quickSettingsOpen by remember { mutableStateOf(false) }
 
@@ -124,9 +124,7 @@ fun QuickSettingIconButton(
         QuickSettingsDialog(dialogContent, contentDescription, { quickSettingsOpen = false })
     }
 
-    return IconButton(
-        onClick = { quickSettingsOpen = !quickSettingsOpen },
-    ) {
+    return IconButton(onClick = { quickSettingsOpen = !quickSettingsOpen }) {
         Icon(icon, contentDescription)
     }
 }
@@ -135,7 +133,7 @@ fun QuickSettingIconButton(
 fun QuickSettingButton(
     buttonText: String,
     contentDescription: String,
-    dialogContent: @Composable () -> Unit
+    dialogContent: @Composable () -> Unit,
 ) {
     var quickSettingsOpen by remember { mutableStateOf(false) }
 
@@ -143,11 +141,7 @@ fun QuickSettingButton(
         QuickSettingsDialog(dialogContent, contentDescription, { quickSettingsOpen = false })
     }
 
-    return Button(
-        onClick = { quickSettingsOpen = !quickSettingsOpen },
-    ) {
-        Text(buttonText)
-    }
+    return Button(onClick = { quickSettingsOpen = !quickSettingsOpen }) { Text(buttonText) }
 }
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -165,7 +159,7 @@ fun QuickSettingsDialog(
             Modifier.padding(vertical = 32.dp)
                 .background(Color.White)
                 .padding(24.dp)
-                .width(textFieldWidth),
+                .width(textFieldWidth)
         ) {
             Column {
                 Row(verticalAlignment = Alignment.CenterVertically) {

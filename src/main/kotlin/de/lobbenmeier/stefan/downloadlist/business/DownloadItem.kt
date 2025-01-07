@@ -17,7 +17,7 @@ import kotlinx.coroutines.withContext
 
 class DownloadItem(
     val ytDlp: YtDlp,
-    val url: String = "https://www.youtube.com/watch?v=CBB75zjxTR4"
+    val url: String = "https://www.youtube.com/watch?v=CBB75zjxTR4",
 ) {
 
     val key = "$url ${System.currentTimeMillis()}"
@@ -138,7 +138,7 @@ class DownloadItem(
 
     private fun selectFormats(
         selectedVideoOption: Format?,
-        selectedAudioOption: Format?
+        selectedAudioOption: Format?,
     ): Array<String> {
         val selectedFormats = listOfNotNull(selectedVideoOption, selectedAudioOption).distinct()
 

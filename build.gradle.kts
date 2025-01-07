@@ -121,9 +121,7 @@ tasks {
     register<Checksum>("createChecksumsForFatJar") {
         dependsOn("shadowJar")
 
-        inputFiles.setFrom(
-            layout.buildDirectory.dir("fatJar"),
-        )
+        inputFiles.setFrom(layout.buildDirectory.dir("fatJar"))
         outputDirectory = layout.buildDirectory.dir("checksums")
         checksumAlgorithm = Checksum.Algorithm.SHA256
         appendFileNameToChecksum = true

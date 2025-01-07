@@ -6,7 +6,7 @@ enum class DownloadProgressState {
     Starting,
     Completed,
     Failed,
-    InProgress
+    InProgress,
 }
 
 interface DownloadProgress {
@@ -20,12 +20,12 @@ sealed interface UpdateDownloadProgress : DownloadProgress
 
 class CustomUpdateDownloadProgress(
     override val progress: Float,
-    override val state: DownloadProgressState = DownloadProgressState.InProgress
+    override val state: DownloadProgressState = DownloadProgressState.InProgress,
 ) : UpdateDownloadProgress
 
 sealed class CustomDownloadProgress(
     override val progress: Float,
-    override val state: DownloadProgressState
+    override val state: DownloadProgressState,
 ) : VideoDownloadProgress, UpdateDownloadProgress
 
 object DownloadStarted : CustomDownloadProgress(0f, DownloadProgressState.Starting)

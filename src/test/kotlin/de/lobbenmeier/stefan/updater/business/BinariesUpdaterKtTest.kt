@@ -32,7 +32,7 @@ class BinariesUpdaterKtTest : AnnotationSpec() {
         detectOnPath(
             "yt-dlp",
             listOf(testDirectory1, testDirectory2, testDirectory3)
-                .joinToString(platform.pathDelimiter)
+                .joinToString(platform.pathDelimiter),
         ) shouldContainAll listOf(testYtDlp1, testYtDlp3)
     }
 }

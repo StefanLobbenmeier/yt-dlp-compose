@@ -30,7 +30,7 @@ fun <T> DropdownMenu(
     ExposedDropdownMenuBox(
         expanded = expanded,
         onExpandedChange = { expanded = it },
-        modifier = modifier
+        modifier = modifier,
     ) {
         val value: String = optionFormatter(selectedOption)
         OutlinedTextField(

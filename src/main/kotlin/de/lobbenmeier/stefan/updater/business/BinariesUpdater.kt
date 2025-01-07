@@ -18,9 +18,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
-class BinariesUpdater(
-    private val binariesSettings: BinariesSettings,
-) {
+class BinariesUpdater(private val binariesSettings: BinariesSettings) {
     private val downloadDirectory = platform.binariesFolder
 
     val progress: SnapshotStateList<BinariesProgress> = mutableStateListOf()
@@ -62,7 +60,7 @@ class BinariesUpdater(
                                 .downloadRelease(
                                     platform,
                                     withProgress(ffmpegProcess),
-                                    withProgress(ffprobeProcess)
+                                    withProgress(ffprobeProcess),
                                 )
                         binaries.first()
                     }
@@ -76,11 +74,7 @@ class BinariesUpdater(
             val ytDlp = ytDlpFuture.await()
             val ffmpeg = ffmpegFuture.await()
 
-            binaries.value =
-                Binaries(
-                    ytDlp.toPath(),
-                    ffmpeg.toPath(),
-                )
+            binaries.value = Binaries(ytDlp.toPath(), ffmpeg.toPath())
         }
     }
 
@@ -103,9 +97,7 @@ class BinariesUpdater(
         return ytDlpPathAsFile.resolve(binary)
     }
 
-    private fun updateProcess(
-        name: String,
-    ): RemoteBinaryProgress {
+    private fun updateProcess(name: String): RemoteBinaryProgress {
         val progressFlow = MutableStateFlow<UpdateDownloadProgress>(DownloadStarted)
         val updateProcess = RemoteBinaryProgress(name, progressFlow)
         return updateProcess
