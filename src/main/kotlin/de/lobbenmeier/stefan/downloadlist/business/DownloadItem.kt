@@ -202,6 +202,7 @@ class DownloadItem(
             val tmpFilePath = Files.createTempFile("yt-dlp-compose", "yt-dlp-metadata.json")
             tmpFilePath.writeText(videoMetadataJson)
             val tmpFile = tmpFilePath.toFile()
+            logger.info { "Wrote metadata to $tmpFile" }
             tmpFile.deleteOnExit()
             metadataFile.value = tmpFile
         }
