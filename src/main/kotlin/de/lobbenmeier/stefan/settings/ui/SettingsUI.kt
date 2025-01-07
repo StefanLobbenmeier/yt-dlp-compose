@@ -270,6 +270,7 @@ fun authenticationSettings(settings: Settings, updateSettings: (Settings) -> Uni
     )
 }
 
+@Composable
 fun formatSettings(settings: Settings, updateSettings: (Settings) -> Unit) {
     BooleanInput("Select best Video by default", settings.selectVideo) {
         updateSettings(settings.copy(selectVideo = it))
