@@ -19,7 +19,7 @@ class YtDlp(private val binaries: Binaries, private val settings: Settings) {
     suspend fun runAsync(
         isDownloadJob: Boolean,
         vararg options: String,
-        consumer: suspend (String, LogLevel) -> Unit = { line, _ -> println("process $line") }
+        consumer: suspend (String, LogLevel) -> Unit = { line, _ -> println("process $line") },
     ) {
         val ytDlpBinary = binaries.ytDlp.pathString
         val ffmpegBinary = binaries.ffmpeg.pathString
@@ -44,7 +44,7 @@ class YtDlp(private val binaries: Binaries, private val settings: Settings) {
                     ytDlpBinary,
                     *fullOptions,
                     stdout = Redirect.Consume { it.collect { consumer(it, LogLevel.STDOUT) } },
-                    stderr = Redirect.Consume { it.collect { consumer(it, LogLevel.STDERR) } }
+                    stderr = Redirect.Consume { it.collect { consumer(it, LogLevel.STDERR) } },
                 )
             }
 
@@ -55,10 +55,7 @@ class YtDlp(private val binaries: Binaries, private val settings: Settings) {
         }
     }
 
-    private suspend fun <T> withPermit(
-        usePermit: Boolean,
-        action: suspend () -> T,
-    ): T {
+    private suspend fun <T> withPermit(usePermit: Boolean, action: suspend () -> T): T {
         return if (usePermit) {
             semaphore.withPermit { action() }
         } else {

@@ -63,5 +63,5 @@ val Settings.binariesSettings
             ytDlpSource = ytDlpSource,
             ytDlpPath = ytDlpPath,
             ffmpegSource = ffmpegSource,
-            ffmpegPath = ffmpegPath
+            ffmpegPath = ffmpegPath,
         )

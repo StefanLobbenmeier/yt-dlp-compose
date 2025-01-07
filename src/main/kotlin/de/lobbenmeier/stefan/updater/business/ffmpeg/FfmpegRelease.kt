@@ -6,11 +6,7 @@ import kotlinx.serialization.Serializable
 data class FfmpegRelease(
     val bin: Map<String, FfmpegUrls>,
     val permalink: String,
-    val version: String
+    val version: String,
 )
 
-@Serializable
-data class FfmpegUrls(
-    val ffmpeg: String,
-    val ffprobe: String,
-)
+@Serializable data class FfmpegUrls(val ffmpeg: String, val ffprobe: String)

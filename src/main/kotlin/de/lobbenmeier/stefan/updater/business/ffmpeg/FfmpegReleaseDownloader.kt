@@ -15,7 +15,7 @@ import java.nio.file.Path
 
 class FfmpegReleaseDownloader(
     val downloadDirectory: Path,
-    val ffBinariesUrl: String = "https://ffbinaries.com/api/v1/version/6.1"
+    val ffBinariesUrl: String = "https://ffbinaries.com/api/v1/version/6.1",
 ) {
     suspend fun downloadRelease(
         platform: Platform,
@@ -30,7 +30,7 @@ class FfmpegReleaseDownloader(
             platform,
             httpClient,
             onFfmpegProgress,
-            onFfprobeProgress
+            onFfprobeProgress,
         )
     }
 
@@ -54,13 +54,13 @@ class FfmpegReleaseDownloader(
                 ffmpegUrl.ffmpeg,
                 targetFolder.resolve("ffmpeg"),
                 unzipFile = true,
-                onProgress = onFfmpegProgress
+                onProgress = onFfmpegProgress,
             ),
             httpClient.downloadFile(
                 ffmpegUrl.ffprobe,
                 targetFolder.resolve("ffprobe"),
                 unzipFile = true,
-                onProgress = onFfprobeProgress
+                onProgress = onFfprobeProgress,
             ),
         )
     }

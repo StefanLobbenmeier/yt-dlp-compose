@@ -68,13 +68,13 @@ fun SettingsUI(settings: Settings, save: (Settings) -> Unit, cancel: () -> Unit)
                     "Yt-Dlp Source",
                     mutableSettings.ytDlpSource,
                     onValueChange = { mutableSettings = mutableSettings.copy(ytDlpSource = it) },
-                    options = YtDlpLocation.entries
+                    options = YtDlpLocation.entries,
                 )
                 if (mutableSettings.ytDlpSource == YtDlpLocation.DISK) {
                     FileInput(
                         "Yt-Dlp Path",
                         mutableSettings.ytDlpPath,
-                        onValueChange = { mutableSettings = mutableSettings.copy(ytDlpPath = it) }
+                        onValueChange = { mutableSettings = mutableSettings.copy(ytDlpPath = it) },
                     )
                 }
 
@@ -82,13 +82,13 @@ fun SettingsUI(settings: Settings, save: (Settings) -> Unit, cancel: () -> Unit)
                     "Ffmpeg Source",
                     mutableSettings.ffmpegSource,
                     onValueChange = { mutableSettings = mutableSettings.copy(ffmpegSource = it) },
-                    options = FfmpegLocation.entries
+                    options = FfmpegLocation.entries,
                 )
                 if (mutableSettings.ffmpegSource == FfmpegLocation.DISK) {
                     FileInput(
                         "Ffmpeg Path",
                         mutableSettings.ffmpegPath,
-                        onValueChange = { mutableSettings = mutableSettings.copy(ffmpegPath = it) }
+                        onValueChange = { mutableSettings = mutableSettings.copy(ffmpegPath = it) },
                     )
                 }
             }
@@ -99,7 +99,7 @@ fun SettingsUI(settings: Settings, save: (Settings) -> Unit, cancel: () -> Unit)
                     mutableSettings.maxConcurrentJobs,
                     onValueChange = {
                         mutableSettings = mutableSettings.copy(maxConcurrentJobs = it)
-                    }
+                    },
                 )
             }
 
@@ -107,32 +107,32 @@ fun SettingsUI(settings: Settings, save: (Settings) -> Unit, cancel: () -> Unit)
                 TextInput(
                     "Proxy",
                     mutableSettings.proxy,
-                    onValueChange = { mutableSettings = mutableSettings.copy(proxy = it) }
+                    onValueChange = { mutableSettings = mutableSettings.copy(proxy = it) },
                 )
                 NumberInput(
                     "Concurrent fragments",
                     mutableSettings.concurrentFragments,
                     onValueChange = {
                         mutableSettings = mutableSettings.copy(concurrentFragments = it)
-                    }
+                    },
                 )
                 NumberInput(
                     "Rate limit per video in KB/s",
                     mutableSettings.rateLimit,
-                    onValueChange = { mutableSettings = mutableSettings.copy(rateLimit = it) }
+                    onValueChange = { mutableSettings = mutableSettings.copy(rateLimit = it) },
                 )
             }
             Section("Authentication") {
                 authenticationSettings(
                     settings = mutableSettings,
-                    updateSettings = { mutableSettings = it }
+                    updateSettings = { mutableSettings = it },
                 )
             }
 
             Section("Formats") {
                 formatSettings(
                     settings = mutableSettings,
-                    updateSettings = { mutableSettings = it }
+                    updateSettings = { mutableSettings = it },
                 )
             }
 
@@ -142,22 +142,22 @@ fun SettingsUI(settings: Settings, save: (Settings) -> Unit, cancel: () -> Unit)
                     mutableSettings.mergeOutputFormat,
                     onValueChange = {
                         mutableSettings = mutableSettings.copy(mergeOutputFormat = it)
-                    }
+                    },
                 )
                 TextInput(
                     "Remux Output Format (Slower)",
                     mutableSettings.remuxFormat,
-                    onValueChange = { mutableSettings = mutableSettings.copy(remuxFormat = it) }
+                    onValueChange = { mutableSettings = mutableSettings.copy(remuxFormat = it) },
                 )
                 TextInput(
                     "Recode Output Format (Slowest)",
                     mutableSettings.recodeFormat,
-                    onValueChange = { mutableSettings = mutableSettings.copy(recodeFormat = it) }
+                    onValueChange = { mutableSettings = mutableSettings.copy(recodeFormat = it) },
                 )
                 TextInput(
                     "Audio Only Downloads Format",
                     mutableSettings.audioFormat,
-                    onValueChange = { mutableSettings = mutableSettings.copy(audioFormat = it) }
+                    onValueChange = { mutableSettings = mutableSettings.copy(audioFormat = it) },
                 )
             }
 
@@ -165,22 +165,22 @@ fun SettingsUI(settings: Settings, save: (Settings) -> Unit, cancel: () -> Unit)
                 BooleanInput(
                     "Embed Chapters",
                     mutableSettings.embedChapters,
-                    onValueChange = { mutableSettings = mutableSettings.copy(embedChapters = it) }
+                    onValueChange = { mutableSettings = mutableSettings.copy(embedChapters = it) },
                 )
                 BooleanInput(
                     "Embed metadata",
                     mutableSettings.embedMetadata,
-                    onValueChange = { mutableSettings = mutableSettings.copy(embedMetadata = it) }
+                    onValueChange = { mutableSettings = mutableSettings.copy(embedMetadata = it) },
                 )
                 BooleanInput(
                     "Embed subtitles",
                     mutableSettings.embedSubtitles,
-                    onValueChange = { mutableSettings = mutableSettings.copy(embedSubtitles = it) }
+                    onValueChange = { mutableSettings = mutableSettings.copy(embedSubtitles = it) },
                 )
                 BooleanInput(
                     "Embed thumbnail",
                     mutableSettings.embedThumbnail,
-                    onValueChange = { mutableSettings = mutableSettings.copy(embedThumbnail = it) }
+                    onValueChange = { mutableSettings = mutableSettings.copy(embedThumbnail = it) },
                 )
             }
 
@@ -193,14 +193,14 @@ fun SettingsUI(settings: Settings, save: (Settings) -> Unit, cancel: () -> Unit)
                             mutableSettings.copy(
                                 downloadFolder = it ?: platform.downloadsFolder.absolutePathString()
                             )
-                    }
+                    },
                 )
                 TextInput(
                     "Filename template",
                     mutableSettings.filenameTemplate,
                     onValueChange = {
                         mutableSettings = mutableSettings.copy(filenameTemplate = it)
-                    }
+                    },
                 )
                 Spacer(Modifier.height(12.dp))
                 BooleanInput(
@@ -208,21 +208,21 @@ fun SettingsUI(settings: Settings, save: (Settings) -> Unit, cancel: () -> Unit)
                     mutableSettings.saveThumbnailToFile,
                     onValueChange = {
                         mutableSettings = mutableSettings.copy(saveThumbnailToFile = it)
-                    }
+                    },
                 )
                 BooleanInput(
                     "Save metadata to separate JSON file",
                     mutableSettings.saveMetadataToJsonFile,
                     onValueChange = {
                         mutableSettings = mutableSettings.copy(saveMetadataToJsonFile = it)
-                    }
+                    },
                 )
                 BooleanInput(
                     "Keep unmerged files",
                     mutableSettings.keepUnmergedFiles,
                     onValueChange = {
                         mutableSettings = mutableSettings.copy(keepUnmergedFiles = it)
-                    }
+                    },
                 )
             }
         }
@@ -245,23 +245,14 @@ fun authenticationSettings(settings: Settings, updateSettings: (Settings) -> Uni
         "Header",
         settings.header,
         onValueChange = { updateSettings(settings.copy(header = it)) },
-        placeholder = "Bearer:yourTokenHere"
+        placeholder = "Bearer:yourTokenHere",
     )
     ChoiceInput(
         "Cookies from browser",
         settings.cookiesFromBrowser,
         onValueChange = { updateSettings(settings.copy(cookiesFromBrowser = it)) },
         options =
-            listOf(
-                "brave",
-                "chrome",
-                "chromium",
-                "edge",
-                "firefox",
-                "opera",
-                "safari",
-                "vivaldi",
-            )
+            listOf("brave", "chrome", "chromium", "edge", "firefox", "opera", "safari", "vivaldi"),
     )
     FileInput(
         "Cookies from file",
@@ -285,13 +276,7 @@ fun formatSettings(settings: Settings, updateSettings: (Settings) -> Unit) {
         "Sort formats",
         settings.formatSort,
         onValueChange = { updateSettings(settings.copy(formatSort = it)) },
-        options =
-            listOf(
-                "res:1080",
-                "res:720",
-                "res:480",
-                "res:360",
-            )
+        options = listOf("res:1080", "res:720", "res:480", "res:360"),
     )
 }
 
@@ -308,7 +293,7 @@ private fun NumberInput(description: String, value: UInt?, onValueChange: (UInt?
     TextInput(
         description,
         value?.toString() ?: "",
-        onValueChange = { onValueChange(it?.toUIntOrNull()) }
+        onValueChange = { onValueChange(it?.toUIntOrNull()) },
     )
 }
 
@@ -366,7 +351,7 @@ private fun TextInput(
             } else {
                 onValueChange(it)
             }
-        }
+        },
     )
 }
 
@@ -376,7 +361,7 @@ private fun BooleanInput(description: String, value: Boolean, onValueChange: (Bo
     Row(
         modifier = Modifier.padding(vertical = 4.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         CompositionLocalProvider(LocalMinimumInteractiveComponentEnforcement provides false) {
             Checkbox(value, onValueChange)
@@ -394,9 +379,7 @@ private fun FileInput(description: String, value: String?, onValueChange: (Strin
             title = description,
             initialDirectory = value ?: "${platform.homeFolder}/",
             platformSettings =
-                FileKitPlatformSettings(
-                    macOS = FileKitMacOSSettings(resolvesAliases = false),
-                ),
+                FileKitPlatformSettings(macOS = FileKitMacOSSettings(resolvesAliases = false)),
         ) { file ->
             if (file != null) {
                 onValueChange(file.path)
@@ -434,9 +417,7 @@ fun DirectoryPickerButton(description: String, value: String?, onValueChange: (S
             title = description,
             initialDirectory = value ?: "${platform.homeFolder}/",
             platformSettings =
-                FileKitPlatformSettings(
-                    macOS = FileKitMacOSSettings(resolvesAliases = false),
-                ),
+                FileKitPlatformSettings(macOS = FileKitMacOSSettings(resolvesAliases = false)),
         ) { file ->
             val filePath = file?.path
             if (filePath != null) {

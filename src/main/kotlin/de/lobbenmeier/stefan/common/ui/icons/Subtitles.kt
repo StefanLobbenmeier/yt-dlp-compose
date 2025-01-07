@@ -21,7 +21,7 @@ val Subtitles: ImageVector
                     defaultWidth = 24.dp,
                     defaultHeight = 24.dp,
                     viewportWidth = 960f,
-                    viewportHeight = 960f
+                    viewportHeight = 960f,
                 )
                 .apply {
                     path(
@@ -33,7 +33,7 @@ val Subtitles: ImageVector
                         strokeLineCap = StrokeCap.Butt,
                         strokeLineJoin = StrokeJoin.Miter,
                         strokeLineMiter = 1.0f,
-                        pathFillType = PathFillType.NonZero
+                        pathFillType = PathFillType.NonZero,
                     ) {
                         moveTo(240f, 640f)
                         horizontalLineToRelative(320f)

@@ -88,7 +88,7 @@ val Format.audioDescription: String
     get() {
         return listOfNotNull(
                 if (isVideo) "from video" else format ?: formatNote,
-                acodec?.let { "($acodec)" }
+                acodec?.let { "($acodec)" },
             )
             .joinToString(" ")
     }
@@ -107,5 +107,5 @@ data class Thumbnail(
     val id: String?,
     val resolution: String?,
     val url: String?,
-    val width: Int?
+    val width: Int?,
 )

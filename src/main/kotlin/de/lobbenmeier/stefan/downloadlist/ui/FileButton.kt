@@ -25,7 +25,7 @@ fun OpenFileButton(file: File?) {
                     logger.error { "Could not find file $file" }
                 }
             }
-        }
+        },
     ) {
         Icon(FeatherIcons.Play, "Open File")
     }
@@ -44,7 +44,7 @@ fun BrowseFileButton(file: File?) {
                     logger.error { "Could not find file $file" }
                 }
             }
-        }
+        },
     ) {
         Icon(FeatherIcons.Folder, "Show file in folder")
     }

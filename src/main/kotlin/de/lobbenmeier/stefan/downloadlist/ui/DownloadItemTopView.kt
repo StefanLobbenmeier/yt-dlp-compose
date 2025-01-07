@@ -53,14 +53,11 @@ fun DownloadItemTopView(downloadItem: DownloadItem, removeItem: (DownloadItem) -
         Thumbnail(thumbnail)
         Column(
             Modifier.weight(1f).padding(20.dp, 15.dp).fillMaxHeight(),
-            verticalArrangement = Arrangement.SpaceBetween
+            verticalArrangement = Arrangement.SpaceBetween,
         ) {
             Text(metadata?.title ?: downloadItem.url, fontSize = 1.1.em)
 
-            FormatSelectorOrDownloadProgress(
-                downloadItem,
-                metadata,
-            )
+            FormatSelectorOrDownloadProgress(downloadItem, metadata)
             InformationRow(metadata, downloadItem)
         }
         Divider(Modifier.fillMaxHeight().width(1.dp))
@@ -106,10 +103,7 @@ private fun VideoInformation(metadata: VideoMetadata, downloadItem: DownloadItem
         }
         Row(modifier = Modifier.weight(1f)) {
             val fileSize by downloadItem.fileSize.collectAsState(null)
-            Text(
-                "Size: ",
-                fontWeight = FontWeight.Bold,
-            )
+            Text("Size: ", fontWeight = FontWeight.Bold)
             Text(fileSizeString(fileSize))
         }
     }
@@ -125,10 +119,7 @@ private fun DownloadInformation(downloadProgress: VideoDownloadProgress) {
                     Text(durationString(downloadProgress.eta))
                 }
                 Row(modifier = Modifier.weight(1f)) {
-                    Text(
-                        "Speed: ",
-                        fontWeight = FontWeight.Bold,
-                    )
+                    Text("Speed: ", fontWeight = FontWeight.Bold)
                     val speed = downloadProgress.speed?.toDouble() ?: 0.0
                     Text(fileSizeString(speed) + "/s")
                 }
@@ -146,10 +137,7 @@ private fun DownloadInformation(downloadProgress: VideoDownloadProgress) {
 }
 
 @Composable
-private fun FormatSelectorOrDownloadProgress(
-    downloadItem: DownloadItem,
-    metadata: VideoMetadata?,
-) {
+private fun FormatSelectorOrDownloadProgress(downloadItem: DownloadItem, metadata: VideoMetadata?) {
     val downloadProgress = downloadItem.getProgress().collectAsState().value
 
     if (downloadProgress == null) FormatSelector(downloadItem, metadata)
@@ -157,10 +145,7 @@ private fun FormatSelectorOrDownloadProgress(
 }
 
 @Composable
-private fun FormatSelector(
-    downloadItem: DownloadItem,
-    metadata: VideoMetadata?,
-) {
+private fun FormatSelector(downloadItem: DownloadItem, metadata: VideoMetadata?) {
 
     if (metadata == null) {
         return LinearProgressIndicator(Modifier.fillMaxWidth())
@@ -186,14 +171,14 @@ private fun FormatSelector(
             selectedOption = selectedVideoOption,
             selectionChanged = { downloadItem.selectVideoFormat(it) },
             modifier = Modifier.weight(1f),
-            optionFormatter = { it?.videoDescription ?: "(No Video)" }
+            optionFormatter = { it?.videoDescription ?: "(No Video)" },
         )
         DropdownMenu(
             audioFormats,
             selectedOption = selectedAudioOption,
             selectionChanged = { downloadItem.selectAudioFormat(it) },
             modifier = Modifier.weight(1f),
-            optionFormatter = { it?.audioDescription ?: "(No Audio)" }
+            optionFormatter = { it?.audioDescription ?: "(No Audio)" },
         )
     }
 }

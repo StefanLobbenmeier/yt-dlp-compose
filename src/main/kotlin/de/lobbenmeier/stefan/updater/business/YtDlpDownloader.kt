@@ -6,7 +6,7 @@ import java.nio.file.Path
 
 fun createYtDlpDownloader(
     downloadDirectory: Path,
-    ytDlpSource: YtDlpLocation?
+    ytDlpSource: YtDlpLocation?,
 ): GithubReleaseDownloader {
     val repo =
         when (ytDlpSource) {

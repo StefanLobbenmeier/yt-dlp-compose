@@ -46,7 +46,7 @@ private fun MainView(
     settings: Settings,
     updateSettings: (Settings) -> Unit,
     binaries: Binaries,
-    downloadQueue: DownloadQueue
+    downloadQueue: DownloadQueue,
 ) {
     val ytDlp = remember(settings) { YtDlp(binaries, settings) }
     var settingsOpen by remember { mutableStateOf(false) }
@@ -63,7 +63,7 @@ private fun MainView(
                     settingsOpen = false
                     updateSettings(it)
                 },
-                cancel = { settingsOpen = false }
+                cancel = { settingsOpen = false },
             )
         }
     }
@@ -73,7 +73,7 @@ private fun MainView(
             topBar = {
                 Header(
                     onDownload = { downloadQueue.add(ytDlp.createDownloadItem(it)) },
-                    onSettingsButtonClicked = { settingsOpen = true }
+                    onSettingsButtonClicked = { settingsOpen = true },
                 )
             },
             bottomBar = {
@@ -81,9 +81,9 @@ private fun MainView(
                     settings,
                     updateSettings,
                     clearDownloads = downloadQueue::clear,
-                    downloadAll = downloadQueue::downloadAll
+                    downloadAll = downloadQueue::downloadAll,
                 )
-            }
+            },
         ) {
             DownloadList(downloadQueue)
         }

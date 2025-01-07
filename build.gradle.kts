@@ -9,7 +9,7 @@ plugins {
     kotlin("plugin.serialization") version kotlinVersion
     kotlin("plugin.compose") version kotlinVersion
     id("org.jetbrains.compose") version "1.7.3"
-    id("com.diffplug.spotless") version "6.25.0"
+    id("com.diffplug.spotless") version "7.0.0"
     id("com.github.johnrengelman.shadow") version "8.1.1"
     id("org.gradle.crypto.checksum") version "1.4.0"
 }
@@ -121,9 +121,7 @@ tasks {
     register<Checksum>("createChecksumsForFatJar") {
         dependsOn("shadowJar")
 
-        inputFiles.setFrom(
-            layout.buildDirectory.dir("fatJar"),
-        )
+        inputFiles.setFrom(layout.buildDirectory.dir("fatJar"))
         outputDirectory = layout.buildDirectory.dir("checksums")
         checksumAlgorithm = Checksum.Algorithm.SHA256
         appendFileNameToChecksum = true

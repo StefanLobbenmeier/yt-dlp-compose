@@ -9,5 +9,5 @@ data class LocalBinaryProgress(val name: String, val state: String) : BinariesPr
 
 data class RemoteBinaryProgress(
     val name: String,
-    val progress: MutableStateFlow<UpdateDownloadProgress>
+    val progress: MutableStateFlow<UpdateDownloadProgress>,
 ) : BinariesProgress
