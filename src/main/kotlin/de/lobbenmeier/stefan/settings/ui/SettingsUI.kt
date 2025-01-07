@@ -129,6 +129,13 @@ fun SettingsUI(settings: Settings, save: (Settings) -> Unit, cancel: () -> Unit)
                 )
             }
 
+            Section("Formats") {
+                formatSettings(
+                    settings = mutableSettings,
+                    updateSettings = { mutableSettings = it }
+                )
+            }
+
             Section("Output") {
                 TextInput(
                     "Merge Output Format (Fast)",
@@ -260,6 +267,31 @@ fun authenticationSettings(settings: Settings, updateSettings: (Settings) -> Uni
         "Cookies from file",
         settings.cookiesFile,
         onValueChange = { updateSettings(settings.copy(cookiesFile = it)) },
+    )
+}
+
+@Composable
+fun formatSettings(settings: Settings, updateSettings: (Settings) -> Unit) {
+    BooleanInput("Select best Video by default", settings.selectVideo) {
+        updateSettings(settings.copy(selectVideo = it))
+    }
+    BooleanInput("Select best Audio by default", settings.selectAudio) {
+        updateSettings(settings.copy(selectAudio = it))
+    }
+    BooleanInput("Prefer free formats (ogg, opus, webm)", settings.preferFreeFormats) {
+        updateSettings(settings.copy(preferFreeFormats = it))
+    }
+    ChoiceInput(
+        "Sort formats",
+        settings.formatSort,
+        onValueChange = { updateSettings(settings.copy(formatSort = it)) },
+        options =
+            listOf(
+                "res:1080",
+                "res:720",
+                "res:480",
+                "res:360",
+            )
     )
 }
 

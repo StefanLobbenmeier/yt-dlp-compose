@@ -24,6 +24,12 @@ data class Settings(
     val cookiesFromBrowser: String?,
     val cookiesFile: String?,
 
+    // Format
+    val selectVideo: Boolean = true,
+    val selectAudio: Boolean = true,
+    val preferFreeFormats: Boolean = false,
+    val formatSort: String?,
+
     // Output
     val mergeOutputFormat: String?,
     val remuxFormat: String?,

@@ -172,6 +172,7 @@ class DownloadItem(
                 "--dump-single-json",
                 "--no-clean-info-json",
                 "--flat-playlist",
+                *ytDlp.initialFormatSelection(),
                 url,
             ) { log, logLevel ->
                 when (logLevel) {
@@ -180,7 +181,9 @@ class DownloadItem(
                         metadata.value = videoMetadata
                         async { writeMetadataToFile(log) }
 
-                        videoMetadata.requestedDownloadFormats?.forEach(format::selectFormat)
+                        if (ytDlp.shouldSelectFormats()) {
+                            videoMetadata.requestedDownloadFormats?.forEach(format::selectFormat)
+                        }
                     }
                     LogLevel.STDERR -> {
                         logger.info { log }
@@ -201,6 +204,7 @@ class DownloadItem(
             val tmpFilePath = Files.createTempFile("yt-dlp-compose", "yt-dlp-metadata.json")
             tmpFilePath.writeText(videoMetadataJson)
             val tmpFile = tmpFilePath.toFile()
+            logger.info { "Wrote metadata to $tmpFile" }
             tmpFile.deleteOnExit()
             metadataFile.value = tmpFile
         }

@@ -65,4 +65,26 @@ class YtDlp(private val binaries: Binaries, private val settings: Settings) {
             action()
         }
     }
+
+    fun initialFormatSelection(): Array<out String> {
+        return when {
+            settings.selectAudio && settings.selectVideo -> {
+                // Default choice by yt-dlp is to download both audio and video
+                arrayOf()
+            }
+            settings.selectAudio -> {
+                arrayOf("--format", "bestaudio/bestaudio*")
+            }
+            settings.selectVideo -> {
+                arrayOf("--format", "bestvideo/bestvideo*")
+            }
+            else -> {
+                // Even with --skip-download the metadata will include requested downloads,
+                // so we have to filter them out manually, see shouldSelectFormats
+                arrayOf()
+            }
+        }
+    }
+
+    fun shouldSelectFormats(): Boolean = settings.selectAudio || settings.selectVideo
 }
