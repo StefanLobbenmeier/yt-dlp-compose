@@ -181,7 +181,9 @@ class DownloadItem(
                         metadata.value = videoMetadata
                         async { writeMetadataToFile(log) }
 
-                        videoMetadata.requestedDownloadFormats?.forEach(format::selectFormat)
+                        if (ytDlp.shouldSelectFormats()) {
+                            videoMetadata.requestedDownloadFormats?.forEach(format::selectFormat)
+                        }
                     }
                     LogLevel.STDERR -> {
                         logger.info { log }

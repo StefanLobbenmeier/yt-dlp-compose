@@ -79,8 +79,12 @@ class YtDlp(private val binaries: Binaries, private val settings: Settings) {
                 arrayOf("--format", "bestvideo/bestvideo*")
             }
             else -> {
-                arrayOf("--skip-download")
+                // Even with --skip-download the metadata will include requested downloads,
+                // so we have to filter them out manually, see shouldSelectFormats
+                arrayOf()
             }
         }
     }
+
+    fun shouldSelectFormats(): Boolean = settings.selectAudio || settings.selectVideo
 }
