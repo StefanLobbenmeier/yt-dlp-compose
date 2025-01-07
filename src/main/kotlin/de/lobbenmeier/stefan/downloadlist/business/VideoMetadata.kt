@@ -27,7 +27,7 @@ val VideoMetadata.entryThumbnail
     get() = thumbnails?.firstOrNull()?.url ?: thumbnail
 
 val VideoMetadata.requestedDownloadFormats: List<Format>?
-    get() = requestedDownloads?.firstOrNull()?.requestedFormats
+    get() = requestedDownloads?.firstOrNull()?.requestedFormats ?: requestedDownloads
 
 @Serializable
 data class Format(
