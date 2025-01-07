@@ -129,6 +129,33 @@ fun SettingsUI(settings: Settings, save: (Settings) -> Unit, cancel: () -> Unit)
                 )
             }
 
+            Section("Formats") {
+                BooleanInput("Select best Video by default", mutableSettings.selectVideo) {
+                    mutableSettings = mutableSettings.copy(selectVideo = it)
+                }
+                BooleanInput("Select best Audio by default", mutableSettings.selectAudio) {
+                    mutableSettings = mutableSettings.copy(selectAudio = it)
+                }
+                BooleanInput(
+                    "Prefer free formats (ogg, opus, webm)",
+                    mutableSettings.preferFreeFormats
+                ) {
+                    mutableSettings = mutableSettings.copy(preferFreeFormats = it)
+                }
+                ChoiceInput(
+                    "Sort formats",
+                    mutableSettings.sortFormats,
+                    onValueChange = { mutableSettings = settings.copy(sortFormats = it) },
+                    options =
+                        listOf(
+                            "res:1080",
+                            "res:720",
+                            "res:480",
+                            "res:360",
+                        )
+                )
+            }
+
             Section("Output") {
                 TextInput(
                     "Merge Output Format (Fast)",
