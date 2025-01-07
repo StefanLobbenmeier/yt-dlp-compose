@@ -172,6 +172,7 @@ class DownloadItem(
                 "--dump-single-json",
                 "--no-clean-info-json",
                 "--flat-playlist",
+                *ytDlp.initialFormatSelection(),
                 url,
             ) { log, logLevel ->
                 when (logLevel) {
