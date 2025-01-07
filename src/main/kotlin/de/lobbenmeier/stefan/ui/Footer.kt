@@ -36,6 +36,7 @@ import de.lobbenmeier.stefan.common.ui.icons.SubtitlesOff
 import de.lobbenmeier.stefan.settings.business.Settings
 import de.lobbenmeier.stefan.settings.ui.DirectoryPickerButton
 import de.lobbenmeier.stefan.settings.ui.authenticationSettings
+import de.lobbenmeier.stefan.settings.ui.formatSettings
 import de.lobbenmeier.stefan.settings.ui.textFieldWidth
 
 @Composable
@@ -96,7 +97,7 @@ fun SubtitlesSetting(settings: Settings, updateSettings: (Settings) -> Unit) {
 
 @Composable
 fun FormatSelectionSetting(settings: Settings, updateSettings: (Settings) -> Unit) {
-    return QuickSettingButton("Formats", "Formats") { Text("TODO for next PR") }
+    return QuickSettingButton("Formats", "Formats") { formatSettings(settings, updateSettings) }
 }
 
 @Composable

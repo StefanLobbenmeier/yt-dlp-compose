@@ -130,29 +130,9 @@ fun SettingsUI(settings: Settings, save: (Settings) -> Unit, cancel: () -> Unit)
             }
 
             Section("Formats") {
-                BooleanInput("Select best Video by default", mutableSettings.selectVideo) {
-                    mutableSettings = mutableSettings.copy(selectVideo = it)
-                }
-                BooleanInput("Select best Audio by default", mutableSettings.selectAudio) {
-                    mutableSettings = mutableSettings.copy(selectAudio = it)
-                }
-                BooleanInput(
-                    "Prefer free formats (ogg, opus, webm)",
-                    mutableSettings.preferFreeFormats
-                ) {
-                    mutableSettings = mutableSettings.copy(preferFreeFormats = it)
-                }
-                ChoiceInput(
-                    "Sort formats",
-                    mutableSettings.formatSort,
-                    onValueChange = { mutableSettings = settings.copy(formatSort = it) },
-                    options =
-                        listOf(
-                            "res:1080",
-                            "res:720",
-                            "res:480",
-                            "res:360",
-                        )
+                formatSettings(
+                    settings = mutableSettings,
+                    updateSettings = { mutableSettings = it }
                 )
             }
 
@@ -287,6 +267,30 @@ fun authenticationSettings(settings: Settings, updateSettings: (Settings) -> Uni
         "Cookies from file",
         settings.cookiesFile,
         onValueChange = { updateSettings(settings.copy(cookiesFile = it)) },
+    )
+}
+
+fun formatSettings(settings: Settings, updateSettings: (Settings) -> Unit) {
+    BooleanInput("Select best Video by default", settings.selectVideo) {
+        updateSettings(settings.copy(selectVideo = it))
+    }
+    BooleanInput("Select best Audio by default", settings.selectAudio) {
+        updateSettings(settings.copy(selectAudio = it))
+    }
+    BooleanInput("Prefer free formats (ogg, opus, webm)", settings.preferFreeFormats) {
+        updateSettings(settings.copy(preferFreeFormats = it))
+    }
+    ChoiceInput(
+        "Sort formats",
+        settings.formatSort,
+        onValueChange = { updateSettings(settings.copy(formatSort = it)) },
+        options =
+            listOf(
+                "res:1080",
+                "res:720",
+                "res:480",
+                "res:360",
+            )
     )
 }
 
