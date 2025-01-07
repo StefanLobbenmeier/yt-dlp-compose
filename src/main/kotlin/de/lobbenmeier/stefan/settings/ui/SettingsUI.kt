@@ -144,8 +144,8 @@ fun SettingsUI(settings: Settings, save: (Settings) -> Unit, cancel: () -> Unit)
                 }
                 ChoiceInput(
                     "Sort formats",
-                    mutableSettings.sortFormats,
-                    onValueChange = { mutableSettings = settings.copy(sortFormats = it) },
+                    mutableSettings.formatSort,
+                    onValueChange = { mutableSettings = settings.copy(formatSort = it) },
                     options =
                         listOf(
                             "res:1080",

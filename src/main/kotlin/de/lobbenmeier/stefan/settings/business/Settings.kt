@@ -28,7 +28,7 @@ data class Settings(
     val selectVideo: Boolean = true,
     val selectAudio: Boolean = true,
     val preferFreeFormats: Boolean = false,
-    val sortFormats: String?,
+    val formatSort: String?,
 
     // Output
     val mergeOutputFormat: String?,
