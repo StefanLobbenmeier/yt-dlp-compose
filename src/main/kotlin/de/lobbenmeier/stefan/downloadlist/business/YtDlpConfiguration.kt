@@ -39,7 +39,7 @@ fun Settings.toYtDlpConfiguration(): Array<String> =
 
             addArgument("--paths", downloadFolder)
             addArgument("--output", filenameTemplate)
-            addArgument("--save", saveMetadataToJsonFile)
+            addArgument("--write-info-json", saveMetadataToJsonFile)
             addArgument("--write-thumbnail", saveThumbnailToFile)
             addArgument("--keep-video", keepUnmergedFiles)
         }
