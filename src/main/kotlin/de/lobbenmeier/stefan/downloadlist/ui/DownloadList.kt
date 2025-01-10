@@ -11,7 +11,7 @@ import de.lobbenmeier.stefan.downloadlist.model.DownloadQueue
 
 @Composable
 fun DownloadList(downloadQueue: DownloadQueue) {
-    LazyColumn(modifier = Modifier.padding(8.0.dp).fillMaxSize()) {
+    LazyColumn(modifier = Modifier.padding(10.dp).fillMaxSize()) {
         items(
             downloadQueue.items.asReversed(),
             key = { it.key },
