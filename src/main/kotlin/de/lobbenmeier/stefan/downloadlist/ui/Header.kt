@@ -1,11 +1,9 @@
 package de.lobbenmeier.stefan.downloadlist.ui
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -21,6 +19,7 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -47,10 +46,7 @@ fun Header(onDownload: (url: String) -> Unit, onSettingsButtonClicked: () -> Uni
         }
     }
 
-    TopAppBar(
-        contentPadding = PaddingValues(all = 10.dp),
-        backgroundColor = MaterialTheme.colors.surface,
-    ) {
+    TopAppBar(backgroundColor = MaterialTheme.colors.surface) {
         Row(
             modifier =
                 Modifier.border(1.dp, MaterialTheme.colors.onSurface, RoundedCornerShape(4.dp))
@@ -73,9 +69,9 @@ fun Header(onDownload: (url: String) -> Unit, onSettingsButtonClicked: () -> Uni
 
             Box(
                 modifier =
-                    Modifier.aspectRatio(1f)
-                        .fillMaxHeight()
-                        .background(MaterialTheme.colors.surface)
+                    Modifier.fillMaxHeight()
+                        .aspectRatio(1f)
+                        .minimumInteractiveComponentSize()
                         .clickable(onClick = onSettingsButtonClicked),
                 contentAlignment = Alignment.Center,
             ) {
