@@ -15,8 +15,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
-import androidx.compose.material.TextField
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -55,7 +55,7 @@ fun Header(onDownload: (url: String) -> Unit, onSettingsButtonClicked: () -> Uni
             modifier =
                 Modifier.border(1.dp, MaterialTheme.colors.onSurface, RoundedCornerShape(4.dp))
         ) {
-            TextField(
+            OutlinedTextField(
                 enteredDownloadUrl,
                 singleLine = true,
                 onValueChange = { enteredDownloadUrl = it },
@@ -68,6 +68,7 @@ fun Header(onDownload: (url: String) -> Unit, onSettingsButtonClicked: () -> Uni
                 },
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                 keyboardActions = KeyboardActions(onSearch = { submitDownload() }),
+                shape = RoundedCornerShape(4.dp, 0.dp, 0.dp, 4.dp),
             )
 
             Box(
