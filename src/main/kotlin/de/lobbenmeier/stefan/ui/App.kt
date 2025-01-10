@@ -1,6 +1,8 @@
 package de.lobbenmeier.stefan.ui
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -9,6 +11,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import de.lobbenmeier.stefan.downloadlist.business.YtDlp
@@ -84,8 +87,8 @@ private fun MainView(
                     downloadAll = downloadQueue::downloadAll,
                 )
             },
-        ) {
-            DownloadList(downloadQueue)
+        ) { paddingValues ->
+            Box(modifier = Modifier.padding(paddingValues)) { DownloadList(downloadQueue) }
         }
     }
 }
