@@ -4,6 +4,7 @@ import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -46,7 +47,10 @@ fun Header(onDownload: (url: String) -> Unit, onSettingsButtonClicked: () -> Uni
         }
     }
 
-    TopAppBar(backgroundColor = MaterialTheme.colors.surface) {
+    TopAppBar(
+        backgroundColor = MaterialTheme.colors.surface,
+        contentPadding = PaddingValues(horizontal = 4.dp, vertical = 8.dp),
+    ) {
         Row(
             modifier =
                 Modifier.border(1.dp, MaterialTheme.colors.onSurface, RoundedCornerShape(4.dp))
