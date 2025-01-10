@@ -19,8 +19,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.em
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.Download
 import compose.icons.feathericons.XCircle
@@ -55,7 +55,12 @@ fun DownloadItemTopView(downloadItem: DownloadItem, removeItem: (DownloadItem) -
             Modifier.weight(1f).padding(20.dp, 15.dp).fillMaxHeight(),
             verticalArrangement = Arrangement.SpaceBetween,
         ) {
-            Text(metadata?.title ?: downloadItem.url, fontSize = 1.1.em)
+            Text(
+                metadata?.title ?: downloadItem.url,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                fontWeight = FontWeight.Bold,
+            )
 
             FormatSelectorOrDownloadProgress(downloadItem, metadata)
             InformationRow(metadata, downloadItem)
@@ -124,12 +129,15 @@ private fun DownloadInformation(downloadProgress: VideoDownloadProgress) {
                     Text(fileSizeString(speed) + "/s")
                 }
             }
+
         is DownloadStarted -> {
             Text("Starting Download...")
         }
+
         is DownloadCompleted -> {
             Text("Completed Download.")
         }
+
         is DownloadFailed -> {
             Text("Failed to download: " + downloadProgress.e)
         }

@@ -38,6 +38,7 @@ fun <T> DropdownMenu(
             readOnly = onTextInput == null,
             value = value,
             label = label?.let { { Text(text = it) } },
+            singleLine = true,
             onValueChange = onTextInput ?: {},
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
         )
