@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import de.lobbenmeier.stefan.downloadlist.business.YtDlp
+import de.lobbenmeier.stefan.downloadlist.business.setYtDlp
 import de.lobbenmeier.stefan.downloadlist.model.DownloadQueue
 import de.lobbenmeier.stefan.downloadlist.ui.DownloadList
 import de.lobbenmeier.stefan.downloadlist.ui.Header
@@ -51,7 +52,7 @@ private fun MainView(
     binaries: Binaries,
     downloadQueue: DownloadQueue,
 ) {
-    val ytDlp = remember(settings) { YtDlp(binaries, settings) }
+    val ytDlp = remember(settings) { YtDlp(binaries, settings).also(::setYtDlp) }
     var settingsOpen by remember { mutableStateOf(false) }
 
     if (settingsOpen) {

@@ -8,12 +8,22 @@ import de.lobbenmeier.stefan.updater.model.Binaries
 import kotlin.io.path.pathString
 import kotlinx.coroutines.sync.withPermit
 
+private lateinit var currentYtDlp: YtDlp
+
+fun getYtDlp(): YtDlp {
+    return currentYtDlp
+}
+
+fun setYtDlp(ytDlp: YtDlp) {
+    currentYtDlp = ytDlp
+}
+
 class YtDlp(private val binaries: Binaries, private val settings: Settings) {
 
     private val semaphore = getDynamicSemaphoreSingleton(settings.maxConcurrentJobs?.toInt() ?: 100)
 
     fun createDownloadItem(url: String): DownloadItem {
-        return DownloadItem(this, url).also { it.gatherMetadata() }
+        return DownloadItem(url).also { it.gatherMetadata() }
     }
 
     suspend fun runAsync(

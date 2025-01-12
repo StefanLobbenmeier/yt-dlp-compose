@@ -15,10 +15,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class DownloadItem(
-    val ytDlp: YtDlp,
-    val url: String = "https://www.youtube.com/watch?v=CBB75zjxTR4",
-) {
+class DownloadItem(val url: String = "https://www.youtube.com/watch?v=CBB75zjxTR4") {
 
     val key = "$url ${System.currentTimeMillis()}"
     val metadata = MutableStateFlow<VideoMetadata?>(null)
@@ -81,7 +78,7 @@ class DownloadItem(
         targetFile.emit(null)
         var videoMetadata: VideoMetadata? = null
         try {
-            ytDlp.runAsync(
+            getYtDlp().runAsync(
                 true,
                 // Print the whole object again so we get the filename
                 options = downloadOptions(*extraOptions),
@@ -167,6 +164,7 @@ class DownloadItem(
 
     fun gatherMetadata() {
         CoroutineScope(Dispatchers.IO).launch {
+            val ytDlp = getYtDlp()
             ytDlp.runAsync(
                 false,
                 "--dump-single-json",
