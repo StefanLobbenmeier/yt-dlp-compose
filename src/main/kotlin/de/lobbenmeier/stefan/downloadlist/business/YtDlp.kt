@@ -88,7 +88,7 @@ class YtDlp(private val binaries: Binaries, private val settings: Settings) {
             else -> {
                 // Even with --skip-download the metadata will include requested downloads,
                 // so we have to filter them out manually, see shouldSelectFormats
-                arrayOf()
+                arrayOf("--skip-download")
             }
         }
     }
