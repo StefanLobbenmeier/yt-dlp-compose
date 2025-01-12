@@ -59,6 +59,7 @@ class DownloadItem(val url: String = "https://www.youtube.com/watch?v=CBB75zjxTR
         doDownload(
             "--playlist-items",
             "$indexForYtDlp",
+            *getYtDlp().initialFormatSelection(),
             progressFlow = getProgress(index),
             targetFile = getTargetFile(index),
         )
