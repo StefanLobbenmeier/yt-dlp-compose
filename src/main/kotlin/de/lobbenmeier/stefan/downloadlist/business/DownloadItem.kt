@@ -145,6 +145,12 @@ class DownloadItem(val url: String = "https://www.youtube.com/watch?v=CBB75zjxTR
             return arrayOf("--skip-download")
         }
 
+        if (selectedVideoOption == null && selectedAudioOption != null) {
+            // Download only audio, otherwise you might get an mp4 file with no video
+            // Watch out for --merge-formats though, which seems to override this
+            return arrayOf("-f", selectedAudioOption.formatId, "--extract-audio")
+        }
+
         return arrayOf("-f", selectedFormats.joinToString("+") { it.formatId })
     }
 
