@@ -14,7 +14,9 @@ jobs:
     strategy:
       matrix:
         os:
-          - 'macos-latest'
+          # https://github.com/actions/runner-images?tab=readme-ov-file#available-images
+          - 'macos-13' # x64
+          - 'macos-14' # arm
           - 'windows-latest'
           - 'ubuntu-latest'
     runs-on: ${{ matrix.os }}
@@ -32,6 +34,8 @@ jobs:
 
       - name: Build .jar file
         if: ${{ matrix.os == 'ubuntu-latest' }}
+        env:
+          FAT_JAR: "true"
         run: ./gradlew shadowJar --info --build-cache
 
       - name: Build native distribution

@@ -35,7 +35,7 @@ dependencies {
 
     implementation(compose.desktop.currentOs)
 
-    if (System.getenv("CI") == "true") {
+    if (System.getenv("FAT_JAR") == "true") {
         implementation(compose.desktop.macos_x64)
         implementation(compose.desktop.macos_arm64)
         implementation(compose.desktop.windows_x64)
@@ -70,7 +70,13 @@ compose {
             mainClass = "MainKt"
 
             nativeDistributions {
-                packageName = "yt-dlp-compose"
+                val processorArchitecture = System.getProperty("os.arch")
+                packageName =
+                    when (processorArchitecture) {
+                        "aarch64" -> "yt-dlp-compose-arm64"
+                        "x86_64" -> "yt-dlp-compose-x64"
+                        else -> "yt-dlp-compose"
+                    }
                 packageVersion = "1.0.0"
 
                 targetFormats(
