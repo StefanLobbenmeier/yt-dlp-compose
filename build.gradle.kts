@@ -17,7 +17,9 @@ plugins {
 
 group = "com.example"
 
-version = "1.0-SNAPSHOT"
+val appVersion = System.getenv("VERSION") ?: "1.0.0"
+
+version = appVersion
 
 repositories {
     mavenCentral()
@@ -78,7 +80,7 @@ compose {
                         "x86_64" -> "yt-dlp-compose-x64"
                         else -> "yt-dlp-compose"
                     }
-                packageVersion = "1.0.0"
+                packageVersion = appVersion
 
                 targetFormats(
                     TargetFormat.Deb,
@@ -108,7 +110,7 @@ tasks {
             doLast {
                 val file = layout.buildDirectory.file("resources/main/version.txt").get()
                 file.asFile.ensureParentDirsCreated()
-                file.asFile.writeText(System.getenv("VERSION") ?: "A local build")
+                file.asFile.writeText(appVersion)
             }
         }
     processResources { dependsOn(createVersionFile) }

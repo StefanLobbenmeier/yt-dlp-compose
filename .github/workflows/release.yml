@@ -10,7 +10,7 @@ on:
         required: false
 
 env:
-  VERSION: ${{ inputs.version && inputs.version || format('SNAPSHOT-{0}', github.run_number) }}
+  VERSION: ${{ inputs.version && inputs.version || format('3.0.{0}', github.run_number) }}
 
 jobs:
   release-native:
