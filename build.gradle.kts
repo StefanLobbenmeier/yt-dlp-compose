@@ -9,7 +9,7 @@ plugins {
     kotlin("plugin.serialization") version kotlinVersion
     kotlin("plugin.compose") version kotlinVersion
     id("org.jetbrains.compose") version "1.7.3"
-    id("com.diffplug.spotless") version "7.0.1"
+    id("com.diffplug.spotless") version "7.0.2"
     id("com.github.johnrengelman.shadow") version "8.1.1"
     id("org.gradle.crypto.checksum") version "1.4.0"
 }
