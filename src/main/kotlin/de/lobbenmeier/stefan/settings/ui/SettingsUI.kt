@@ -40,6 +40,7 @@ import de.lobbenmeier.stefan.settings.business.FfmpegLocation
 import de.lobbenmeier.stefan.settings.business.Settings
 import de.lobbenmeier.stefan.settings.business.YtDlpLocation
 import de.lobbenmeier.stefan.updater.business.platform
+import de.lobbenmeier.stefan.version.CurrentVersionUI
 import io.github.vinceglb.filekit.compose.rememberDirectoryPickerLauncher
 import io.github.vinceglb.filekit.compose.rememberFilePickerLauncher
 import io.github.vinceglb.filekit.core.FileKitMacOSSettings
@@ -227,13 +228,15 @@ fun SettingsUI(settings: Settings, save: (Settings) -> Unit, cancel: () -> Unit)
             }
         }
 
-        Row {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            CurrentVersionUI()
+
             Spacer(Modifier.weight(1f, true))
 
             Button(onClick = cancel) { Text("Cancel") }
-
-            Spacer(Modifier.width(16.dp))
-
             Button(onClick = { save(mutableSettings) }) { Text("Apply") }
         }
     }

@@ -9,6 +9,9 @@ on:
         description: The version of the release
         required: false
 
+env:
+  VERSION: ${{ inputs.version && inputs.version || format('3.0.{0}', github.run_number) }}
+
 jobs:
   release-native:
     strategy:
@@ -62,7 +65,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           make_latest: true
-          tag_name: ${{ inputs.version && inputs.version || format('SNAPSHOT-{0}', github.run_number) }}
+          tag_name: ${{ env.VERSION }}
           files: |
             build/fatJar/*
             build/checksums/*
@@ -75,7 +78,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           make_latest: true
-          tag_name: ${{ inputs.version && inputs.version || format('SNAPSHOT-{0}', github.run_number) }}
+          tag_name: ${{ env.VERSION }}
           files: |
             build/checksums/*
             build/compose/binaries/main/*

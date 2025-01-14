@@ -1,6 +1,7 @@
 import org.gradle.crypto.checksum.Checksum
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.internal.ensureParentDirsCreated
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -16,7 +17,9 @@ plugins {
 
 group = "com.example"
 
-version = "1.0-SNAPSHOT"
+val appVersion = System.getenv("VERSION") ?: "1.0.0"
+
+version = appVersion
 
 repositories {
     mavenCentral()
@@ -77,7 +80,7 @@ compose {
                         "x86_64" -> "yt-dlp-compose-x64"
                         else -> "yt-dlp-compose"
                     }
-                packageVersion = "1.0.0"
+                packageVersion = appVersion
 
                 targetFormats(
                     TargetFormat.Deb,
@@ -101,6 +104,16 @@ spotless {
 tasks {
     withType<JavaCompile> { targetCompatibility = JavaVersion.VERSION_17.toString() }
     withType<KotlinCompile> { compilerOptions { jvmTarget.set(JvmTarget.JVM_17) } }
+
+    val createVersionFile =
+        register("createVersionFile") {
+            doLast {
+                val file = layout.buildDirectory.file("resources/main/version.txt").get()
+                file.asFile.ensureParentDirsCreated()
+                file.asFile.writeText(appVersion)
+            }
+        }
+    processResources { dependsOn(createVersionFile) }
 
     register("nativeDistribution") {
         dependsOn("packageDistributionForCurrentOS", "createChecksumsForNativeDistributions")

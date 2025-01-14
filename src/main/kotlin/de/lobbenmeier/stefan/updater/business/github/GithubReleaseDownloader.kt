@@ -18,20 +18,20 @@ class GithubReleaseDownloader(
     private val downloadDirectory: Path,
     private val githubApi: String = "https://api.github.com",
 ) {
+    private val httpClient = HttpClient { install(ContentNegotiation) { json(GithubJson) } }
+
     suspend fun downloadRelease(
         assetName: String,
         onProgress: suspend (UpdateDownloadProgress) -> Unit = {},
     ): File {
-        val httpClient = HttpClient { install(ContentNegotiation) { json(GithubJson) } }
 
-        val githubRelease = getGithubRelease(httpClient)
-        return downloadGithubReleaseToFile(githubRelease, assetName, httpClient, onProgress)
+        val githubRelease = getLatestGithubRelease()
+        return downloadGithubReleaseToFile(githubRelease, assetName, onProgress)
     }
 
     private suspend fun downloadGithubReleaseToFile(
         githubRelease: GithubRelease,
         assetName: String,
-        httpClient: HttpClient,
         onProgress: suspend (UpdateDownloadProgress) -> Unit,
     ): File {
         val version = githubRelease.tagName
@@ -44,8 +44,14 @@ class GithubReleaseDownloader(
         return httpClient.downloadFile(asset.downloadUrl, targetFile, onProgress = onProgress)
     }
 
-    private suspend fun getGithubRelease(httpClient: HttpClient): GithubRelease {
+    private suspend fun getLatestGithubRelease(): GithubRelease {
         val url = "$githubApi/repos/$owner/$repo/releases/latest"
+        val releaseResponse: HttpResponse = httpClient.get(url)
+        return releaseResponse.body()
+    }
+
+    suspend fun getGithubReleases(): List<GithubRelease> {
+        val url = "$githubApi/repos/$owner/$repo/releases"
         val releaseResponse: HttpResponse = httpClient.get(url)
         return releaseResponse.body()
     }

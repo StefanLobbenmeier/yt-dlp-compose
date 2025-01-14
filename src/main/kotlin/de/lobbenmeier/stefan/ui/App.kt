@@ -10,8 +10,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import de.lobbenmeier.stefan.downloadlist.business.YtDlp
@@ -27,6 +29,7 @@ import de.lobbenmeier.stefan.updater.business.BinariesUpdater
 import de.lobbenmeier.stefan.updater.model.Binaries
 import de.lobbenmeier.stefan.updater.model.RemoteBinaryProgress
 import de.lobbenmeier.stefan.updater.ui.Updater
+import de.lobbenmeier.stefan.version.CheckForAppUpdate
 
 @Composable
 fun App() {
@@ -89,7 +92,13 @@ private fun MainView(
                 )
             },
         ) { paddingValues ->
-            Box(modifier = Modifier.padding(paddingValues)) { DownloadList(downloadQueue) }
+            Box(
+                modifier = Modifier.padding(paddingValues),
+                contentAlignment = Alignment.BottomStart,
+            ) {
+                DownloadList(downloadQueue)
+                Box(modifier = Modifier.padding(16.dp)) { CheckForAppUpdate() }
+            }
         }
     }
 }
