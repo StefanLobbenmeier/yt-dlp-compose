@@ -102,6 +102,15 @@ tasks {
     withType<JavaCompile> { targetCompatibility = JavaVersion.VERSION_17.toString() }
     withType<KotlinCompile> { compilerOptions { jvmTarget.set(JvmTarget.JVM_17) } }
 
+    val createVersionFile =
+        register("createVersionFile") {
+            doLast {
+                val file = layout.buildDirectory.file("resources/main/version.txt").get()
+                file.asFile.writeText(System.getenv("VERSION") ?: "local build")
+            }
+        }
+    processResources { dependsOn(createVersionFile) }
+
     register("nativeDistribution") {
         dependsOn("packageDistributionForCurrentOS", "createChecksumsForNativeDistributions")
     }
