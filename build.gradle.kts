@@ -1,6 +1,7 @@
 import org.gradle.crypto.checksum.Checksum
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.internal.ensureParentDirsCreated
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -106,6 +107,7 @@ tasks {
         register("createVersionFile") {
             doLast {
                 val file = layout.buildDirectory.file("resources/main/version.txt").get()
+                file.asFile.ensureParentDirsCreated()
                 file.asFile.writeText(System.getenv("VERSION") ?: "local build")
             }
         }
