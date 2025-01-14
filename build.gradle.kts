@@ -108,7 +108,7 @@ tasks {
             doLast {
                 val file = layout.buildDirectory.file("resources/main/version.txt").get()
                 file.asFile.ensureParentDirsCreated()
-                file.asFile.writeText(System.getenv("VERSION") ?: "local build")
+                file.asFile.writeText(System.getenv("VERSION") ?: "A local build")
             }
         }
     processResources { dependsOn(createVersionFile) }

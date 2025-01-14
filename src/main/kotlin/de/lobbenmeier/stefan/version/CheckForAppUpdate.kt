@@ -3,7 +3,9 @@ package de.lobbenmeier.stefan.version
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -22,35 +24,53 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import de.lobbenmeier.stefan.updater.business.github.GithubRelease
+import de.lobbenmeier.stefan.updater.business.github.GithubReleaseDownloader
+import de.lobbenmeier.stefan.updater.business.platform
+import io.github.oshai.kotlinlogging.KotlinLogging
+
+val logger = KotlinLogging.logger {}
 
 @Composable
 fun CheckForAppUpdate() {
-    var visible by remember { mutableStateOf(false) }
+    var newerReleaseNotFinal by remember { mutableStateOf<GithubRelease?>(null) }
+    val newerRelease = newerReleaseNotFinal
 
     LaunchedEffect(Unit) {
-        // delay(1000)
-        visible = true
+        logger.info { "Checking for app update" }
+        val githubReleaseDownloader =
+            GithubReleaseDownloader("StefanLobbenmeier", "yt-dlp-compose", platform.downloadsFolder)
+        try {
+            val githubReleases = githubReleaseDownloader.getGithubReleases()
+
+            logger.info { "Found releases: $githubReleases" }
+
+            newerReleaseNotFinal = githubReleases.firstOrNull { it.tagName > currentVersion }
+        } catch (e: Exception) {
+            logger.error(e) { "Failed to check for updates" }
+        }
     }
 
     val openUri = LocalUriHandler.current::openUri
-    if (visible) {
-        Card {
+    if (newerRelease != null) {
+        Card(modifier = Modifier.width(275.dp)) {
             Column(modifier = Modifier.padding(16.dp)) {
                 Row {
                     Text(text = "Update available", style = MaterialTheme.typography.h6)
+                    Spacer(Modifier.weight(1f))
                     Icon(
                         imageVector = Icons.Default.Close,
                         "Close",
-                        modifier = Modifier.clickable { visible = false },
+                        modifier = Modifier.clickable { newerReleaseNotFinal = null },
                     )
                 }
 
-                Text("Update  is out now")
+                Text("Update ${newerRelease.tagName} is out now")
                 Text(
                     style =
                         TextStyle(textDecoration = TextDecoration.Underline, color = Color.Blue),
                     text = "Download on GitHub",
-                    modifier = Modifier.clickable { openUri("https://github.com") },
+                    modifier = Modifier.clickable { openUri(newerRelease.htmlUrl) },
                 )
             }
         }
