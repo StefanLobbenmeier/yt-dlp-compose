@@ -31,7 +31,7 @@ private suspend fun <R> coroutineScopeIO(block: suspend CoroutineScope.() -> R) 
 
 @Suppress("BlockingMethodInNonBlockingContext", "LongParameterList", "ComplexMethod")
 @JvmOverloads
-suspend fun process(
+suspend fun processFixed(
     vararg command: String,
     stdin: InputSource? = null,
     stdout: Redirect = Redirect.PRINT,

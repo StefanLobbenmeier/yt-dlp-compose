@@ -12,11 +12,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class DownloadItem(val url: String = "https://www.youtube.com/watch?v=CBB75zjxTR4")
-    : CoroutineScope by CoroutineScope(Dispatchers.IO) {
+class DownloadItem(val url: String = "https://www.youtube.com/watch?v=CBB75zjxTR4") :
+    CoroutineScope by CoroutineScope(Dispatchers.IO) {
 
     val key = "$url ${System.currentTimeMillis()}"
     val metadata = MutableStateFlow<VideoMetadata?>(null)
@@ -37,11 +36,11 @@ class DownloadItem(val url: String = "https://www.youtube.com/watch?v=CBB75zjxTR
         val videoMetadata = metadata.value
         if (videoMetadata?.type == "playlist") {
 
-            CoroutineScope(Dispatchers.IO).launch {
+            async {
                 videoMetadata.entries?.forEachIndexed { i, _ -> asyncDownloadPlaylistEntry(i) }
             }
         } else {
-            CoroutineScope(Dispatchers.IO).launch {
+            async {
                 doDownload(
                     *selectFormats(format.video.value, format.audio.value),
                     progressFlow = getProgress(),
@@ -171,7 +170,7 @@ class DownloadItem(val url: String = "https://www.youtube.com/watch?v=CBB75zjxTR
     }
 
     fun gatherMetadata() {
-        CoroutineScope(Dispatchers.IO).launch {
+        async {
             val ytDlp = getYtDlp()
             ytDlp.runAsync(
                 false,
