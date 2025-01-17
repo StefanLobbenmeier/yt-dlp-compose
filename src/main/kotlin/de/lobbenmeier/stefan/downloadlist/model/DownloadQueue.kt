@@ -2,6 +2,7 @@ package de.lobbenmeier.stefan.downloadlist.model
 
 import androidx.compose.runtime.mutableStateListOf
 import de.lobbenmeier.stefan.downloadlist.business.DownloadItem
+import kotlinx.coroutines.cancel
 
 class DownloadQueue {
 
@@ -12,6 +13,7 @@ class DownloadQueue {
     }
 
     fun remove(downloadItem: DownloadItem) {
+        downloadItem.cancel()
         items.remove(downloadItem)
     }
 
