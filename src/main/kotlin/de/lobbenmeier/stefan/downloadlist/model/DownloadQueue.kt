@@ -14,8 +14,7 @@ class DownloadQueue {
 
     fun remove(downloadItem: DownloadItem) {
         downloadItem.cancel()
-        // TODO the cancellation does not work yet, so leave the item in the list so I can see it
-        // items.remove(downloadItem)
+        items.remove(downloadItem)
     }
 
     fun clear() {
