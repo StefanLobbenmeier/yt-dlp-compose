@@ -7,6 +7,7 @@ import java.nio.file.Files
 import kotlin.io.path.writeText
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,7 +16,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 
 class DownloadItem(val url: String = "https://www.youtube.com/watch?v=CBB75zjxTR4") :
-    CoroutineScope by CoroutineScope(Dispatchers.IO) {
+    CoroutineScope by CoroutineScope(SupervisorJob()) {
 
     val key = "$url ${System.currentTimeMillis()}"
     val metadata = MutableStateFlow<VideoMetadata?>(null)
