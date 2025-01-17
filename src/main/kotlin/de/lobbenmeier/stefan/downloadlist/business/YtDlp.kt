@@ -53,8 +53,10 @@ class YtDlp(private val binaries: Binaries, private val settings: Settings) {
                 processFixed(
                     ytDlpBinary,
                     *fullOptions,
-                    stdout = Redirect.Consume { it.collect { consumer(it, LogLevel.STDOUT) } },
-                    stderr = Redirect.Consume { it.collect { consumer(it, LogLevel.STDERR) } },
+                    stdout =
+                        Redirect.Consume { it.collect { line -> consumer(line, LogLevel.STDOUT) } },
+                    stderr =
+                        Redirect.Consume { it.collect { line -> consumer(line, LogLevel.STDERR) } },
                 )
             }
 
