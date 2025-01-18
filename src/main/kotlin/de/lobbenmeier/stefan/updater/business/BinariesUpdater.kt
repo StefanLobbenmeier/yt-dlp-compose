@@ -8,9 +8,11 @@ import de.lobbenmeier.stefan.settings.business.BinariesSettings
 import de.lobbenmeier.stefan.settings.business.FfmpegLocation
 import de.lobbenmeier.stefan.settings.business.YtDlpLocation
 import de.lobbenmeier.stefan.updater.business.ffmpeg.FfmpegReleaseDownloader
+import de.lobbenmeier.stefan.updater.business.ffmpeg.getFfmpegChannelFolders
 import de.lobbenmeier.stefan.updater.model.Binaries
 import de.lobbenmeier.stefan.updater.model.BinariesProgress
 import de.lobbenmeier.stefan.updater.model.RemoteBinaryProgress
+import io.github.oshai.kotlinlogging.KotlinLogging
 import java.io.File
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -23,6 +25,7 @@ class BinariesUpdater(private val binariesSettings: BinariesSettings) {
 
     val progress: SnapshotStateList<BinariesProgress> = mutableStateListOf()
     val binaries = MutableStateFlow<Binaries?>(null)
+    val logger = KotlinLogging.logger {}
 
     init {
         downloadOrFindBinaries()
@@ -75,6 +78,8 @@ class BinariesUpdater(private val binariesSettings: BinariesSettings) {
             val ffmpeg = ffmpegFuture.await()
 
             binaries.value = Binaries(ytDlp.toPath(), ffmpeg.toPath())
+
+            cleanupOldReleases(ytDlp, ffmpeg)
         }
     }
 
@@ -107,5 +112,43 @@ class BinariesUpdater(private val binariesSettings: BinariesSettings) {
         updateProcess: RemoteBinaryProgress
     ): suspend (UpdateDownloadProgress) -> Unit {
         return { updateProcess.progress.emit(it) }
+    }
+
+    private fun cleanupOldReleases(ytDlp: File, ffmpeg: File) {
+        val ytDlpChannelFolders = getYtDlpChannelFolders(platform.binariesFolder)
+
+        deleteBinariesExceptFor(ytDlpChannelFolders, ytDlp)
+
+        val ffmpegChannelFolders = getFfmpegChannelFolders(platform.binariesFolder)
+        deleteBinariesExceptFor(ffmpegChannelFolders, ytDlp)
+    }
+
+    private fun deleteBinariesExceptFor(channelFolders: List<File>, except: File) {
+        for (channelFolder in channelFolders) {
+            if (!channelFolder.exists()) {
+                logger.info { "Channel $channelFolder did not exist yet, nothign to clean up" }
+                continue
+            }
+
+            val binaryFolders = channelFolder.listFiles()
+            val numberOfBinaries = binaryFolders?.size ?: 0
+            if (binaryFolders == null || numberOfBinaries <= 1) {
+                logger.info {
+                    "There are $numberOfBinaries of in $channelFolder, leaving that channel untouched"
+                }
+                continue
+            }
+
+            binaryFolders
+                .filterNot { except.absolutePath.startsWith(it.absolutePath) }
+                .forEach {
+                    val deleteSuccess = it.deleteRecursively()
+                    if (!deleteSuccess) {
+                        logger.warn { "Failed to delete $it" }
+                    } else {
+                        logger.info { "Deleted version that was no longer needed: $it" }
+                    }
+                }
+        }
     }
 }

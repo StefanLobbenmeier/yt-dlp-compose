@@ -18,3 +18,8 @@ fun createYtDlpDownloader(
         }
     return GithubReleaseDownloader("yt-dlp", repo, downloadDirectory)
 }
+
+fun getYtDlpChannelFolders(downloadDirectory: Path) =
+    listOf("yt-dlp", "yt-dlp-nightly-builds", "yt-dlp-master-builds").map {
+        downloadDirectory.resolve("yt-dlp").resolve(it).toFile()
+    }
