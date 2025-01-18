@@ -70,3 +70,6 @@ class FfmpegReleaseDownloader(
         return releaseResponse.body()
     }
 }
+
+fun getFfmpegChannelFolders(downloadDirectory: Path) =
+    listOf(downloadDirectory.resolve("ffbinaries").toFile())
