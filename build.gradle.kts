@@ -21,6 +21,8 @@ val appVersion = System.getenv("VERSION") ?: "1.0.0"
 
 version = appVersion
 
+val versionDirectory = layout.buildDirectory.dir("version")
+
 repositories {
     mavenCentral()
     maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
@@ -28,6 +30,8 @@ repositories {
 }
 
 kotlin { jvmToolchain(21) }
+
+sourceSets { main { output.dir(versionDirectory) } }
 
 dependencies {
     val ktorVersion = "3.0.3"
@@ -108,7 +112,7 @@ tasks {
     val createVersionFile =
         register("createVersionFile") {
             doLast {
-                val file = layout.buildDirectory.file("resources/main/version.txt").get()
+                val file = versionDirectory.get().file("version.txt")
                 file.asFile.ensureParentDirsCreated()
                 file.asFile.writeText(appVersion)
             }
