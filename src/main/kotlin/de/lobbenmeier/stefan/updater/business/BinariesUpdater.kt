@@ -1,8 +1,6 @@
 package de.lobbenmeier.stefan.updater.business
 
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.snapshots.SnapshotStateList
-import de.lobbenmeier.stefan.downloadlist.business.DownloadStarted
+import de.lobbenmeier.stefan.downloadlist.business.DownloadCompleted
 import de.lobbenmeier.stefan.downloadlist.business.UpdateDownloadProgress
 import de.lobbenmeier.stefan.settings.business.BinariesSettings
 import de.lobbenmeier.stefan.settings.business.FfmpegLocation
@@ -10,8 +8,6 @@ import de.lobbenmeier.stefan.settings.business.YtDlpLocation
 import de.lobbenmeier.stefan.updater.business.ffmpeg.FfmpegReleaseDownloader
 import de.lobbenmeier.stefan.updater.business.ffmpeg.getFfmpegChannelFolders
 import de.lobbenmeier.stefan.updater.model.Binaries
-import de.lobbenmeier.stefan.updater.model.BinariesProgress
-import de.lobbenmeier.stefan.updater.model.RemoteBinaryProgress
 import io.github.oshai.kotlinlogging.KotlinLogging
 import java.io.File
 import kotlinx.coroutines.CoroutineScope
@@ -23,32 +19,30 @@ import kotlinx.coroutines.launch
 class BinariesUpdater(private val binariesSettings: BinariesSettings) {
     private val downloadDirectory = platform.binariesFolder
 
-    val progress: SnapshotStateList<BinariesProgress> = mutableStateListOf()
     val binaries = MutableStateFlow<Binaries?>(null)
-    val logger = KotlinLogging.logger {}
+    private val logger = KotlinLogging.logger {}
 
-    init {
-        downloadOrFindBinaries()
-    }
-
-    private fun downloadOrFindBinaries() {
-
+    fun downloadOrFindBinaries(
+        ytDlpProgress: (UpdateDownloadProgress) -> Unit,
+        ffmpegProgress: (UpdateDownloadProgress) -> Unit,
+        ffprobeProgress: (UpdateDownloadProgress) -> Unit,
+    ) {
         CoroutineScope(Dispatchers.IO).launch {
             val ytDlpFuture =
                 if (
                     binariesSettings.ytDlpSource != YtDlpLocation.DISK ||
                         binariesSettings.ytDlpPath == null
                 ) {
-                    val ytDlpProcess = downloadYtDlp()
                     async {
                         createYtDlpDownloader(downloadDirectory, binariesSettings.ytDlpSource)
-                            .downloadRelease(
-                                platform.ytDlpName.filename,
-                                withProgress(ytDlpProcess),
-                            )
+                            .downloadRelease(platform.ytDlpName.filename, ytDlpProgress)
                     }
                 } else {
-                    async { findBinary(binariesSettings.ytDlpPath, platform.ytDlpName.filename) }
+                    async {
+                        findBinary(binariesSettings.ytDlpPath, platform.ytDlpName.filename).also {
+                            ytDlpProgress(DownloadCompleted)
+                        }
+                    }
                 }
 
             val ffmpegFuture =
@@ -57,18 +51,15 @@ class BinariesUpdater(private val binariesSettings: BinariesSettings) {
                         binariesSettings.ffmpegPath == null
                 ) {
                     async {
-                        val (ffmpegProcess, ffprobeProcess) = downloadFfmpeg()
                         val binaries =
                             FfmpegReleaseDownloader(downloadDirectory)
-                                .downloadRelease(
-                                    platform,
-                                    withProgress(ffmpegProcess),
-                                    withProgress(ffprobeProcess),
-                                )
+                                .downloadRelease(platform, ffmpegProgress, ffprobeProgress)
                         binaries.first()
                     }
                 } else {
                     async {
+                        ffmpegProgress(DownloadCompleted)
+                        ffprobeProgress(DownloadCompleted)
                         // yt-dlp will resolve for us
                         File(binariesSettings.ffmpegPath)
                     }
@@ -83,16 +74,6 @@ class BinariesUpdater(private val binariesSettings: BinariesSettings) {
         }
     }
 
-    private fun downloadFfmpeg(): Pair<RemoteBinaryProgress, RemoteBinaryProgress> {
-        val ffmpegProcess = updateProcess("ffmpeg")
-        val ffprobeProcess = updateProcess("ffprobe")
-        return Pair(ffmpegProcess, ffprobeProcess)
-    }
-
-    private fun downloadYtDlp(): RemoteBinaryProgress {
-        return updateProcess(platform.ytDlpName.filename)
-    }
-
     private fun findBinary(path: String, binary: String): File {
         val ytDlpPathAsFile = File(path)
         if (ytDlpPathAsFile.isFile()) {
@@ -102,25 +83,13 @@ class BinariesUpdater(private val binariesSettings: BinariesSettings) {
         return ytDlpPathAsFile.resolve(binary)
     }
 
-    private fun updateProcess(name: String): RemoteBinaryProgress {
-        val progressFlow = MutableStateFlow<UpdateDownloadProgress>(DownloadStarted)
-        val updateProcess = RemoteBinaryProgress(name, progressFlow)
-        return updateProcess
-    }
-
-    private fun withProgress(
-        updateProcess: RemoteBinaryProgress
-    ): suspend (UpdateDownloadProgress) -> Unit {
-        return { updateProcess.progress.emit(it) }
-    }
-
     private fun cleanupOldReleases(ytDlp: File, ffmpeg: File) {
         val ytDlpChannelFolders = getYtDlpChannelFolders(platform.binariesFolder)
 
         deleteBinariesExceptFor(ytDlpChannelFolders, ytDlp)
 
         val ffmpegChannelFolders = getFfmpegChannelFolders(platform.binariesFolder)
-        deleteBinariesExceptFor(ffmpegChannelFolders, ytDlp)
+        deleteBinariesExceptFor(ffmpegChannelFolders, ffmpeg)
     }
 
     private fun deleteBinariesExceptFor(channelFolders: List<File>, except: File) {
