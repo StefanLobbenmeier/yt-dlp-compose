@@ -12,12 +12,25 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import de.lobbenmeier.stefan.updater.model.BinariesProgress
+import de.lobbenmeier.stefan.updater.model.LocalBinaryProgress
 import de.lobbenmeier.stefan.updater.model.RemoteBinaryProgress
 
 @Composable
-fun Updater(updates: List<RemoteBinaryProgress>) {
+fun Updater(updates: List<BinariesProgress>) {
     Row(Modifier.padding(4.dp).fillMaxWidth(), horizontalArrangement = Arrangement.SpaceAround) {
-        updates.forEach { SmallDownloadProgress(it) }
+        Text("Updating binaries...")
+        updates.forEach {
+            when (it) {
+                is RemoteBinaryProgress -> {
+                    SmallDownloadProgress(it)
+                }
+
+                is LocalBinaryProgress -> {
+                    Text("${it.name} uses local build at ${it.path}")
+                }
+            }
+        }
     }
 }
 

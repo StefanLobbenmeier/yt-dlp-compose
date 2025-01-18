@@ -27,7 +27,6 @@ import de.lobbenmeier.stefan.settings.business.binariesSettings
 import de.lobbenmeier.stefan.settings.ui.SettingsUI
 import de.lobbenmeier.stefan.updater.business.BinariesUpdater
 import de.lobbenmeier.stefan.updater.model.Binaries
-import de.lobbenmeier.stefan.updater.model.RemoteBinaryProgress
 import de.lobbenmeier.stefan.updater.ui.Updater
 import de.lobbenmeier.stefan.version.CheckForAppUpdate
 
@@ -41,7 +40,7 @@ fun App() {
     val downloadQueue = remember { DownloadQueue() }
 
     if (binaries == null) {
-        Updater(binariesUpdater.progress.mapNotNull { it as? RemoteBinaryProgress })
+        Updater(binariesUpdater.progress)
     } else {
         MainView(settings, settingsViewModel::saveSettings, binaries, downloadQueue)
     }

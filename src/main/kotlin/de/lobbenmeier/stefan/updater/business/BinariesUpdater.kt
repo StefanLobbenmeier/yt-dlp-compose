@@ -11,6 +11,7 @@ import de.lobbenmeier.stefan.updater.business.ffmpeg.FfmpegReleaseDownloader
 import de.lobbenmeier.stefan.updater.business.ffmpeg.getFfmpegChannelFolders
 import de.lobbenmeier.stefan.updater.model.Binaries
 import de.lobbenmeier.stefan.updater.model.BinariesProgress
+import de.lobbenmeier.stefan.updater.model.LocalBinaryProgress
 import de.lobbenmeier.stefan.updater.model.RemoteBinaryProgress
 import io.github.oshai.kotlinlogging.KotlinLogging
 import java.io.File
@@ -40,6 +41,7 @@ class BinariesUpdater(private val binariesSettings: BinariesSettings) {
                         binariesSettings.ytDlpPath == null
                 ) {
                     val ytDlpProcess = downloadYtDlp()
+                    progress.add(ytDlpProcess)
                     async {
                         createYtDlpDownloader(downloadDirectory, binariesSettings.ytDlpSource)
                             .downloadRelease(
@@ -48,7 +50,11 @@ class BinariesUpdater(private val binariesSettings: BinariesSettings) {
                             )
                     }
                 } else {
-                    async { findBinary(binariesSettings.ytDlpPath, platform.ytDlpName.filename) }
+                    async {
+                        findBinary(binariesSettings.ytDlpPath, platform.ytDlpName.filename).also {
+                            progress.add(LocalBinaryProgress("yt-dlp", it))
+                        }
+                    }
                 }
 
             val ffmpegFuture =
@@ -58,6 +64,8 @@ class BinariesUpdater(private val binariesSettings: BinariesSettings) {
                 ) {
                     async {
                         val (ffmpegProcess, ffprobeProcess) = downloadFfmpeg()
+                        progress.add(ffmpegProcess)
+                        progress.add(ffprobeProcess)
                         val binaries =
                             FfmpegReleaseDownloader(downloadDirectory)
                                 .downloadRelease(
@@ -68,6 +76,7 @@ class BinariesUpdater(private val binariesSettings: BinariesSettings) {
                         binaries.first()
                     }
                 } else {
+                    progress.add(LocalBinaryProgress("ffmpeg", File(binariesSettings.ffmpegPath)))
                     async {
                         // yt-dlp will resolve for us
                         File(binariesSettings.ffmpegPath)
