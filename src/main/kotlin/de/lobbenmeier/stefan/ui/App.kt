@@ -16,35 +16,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import de.lobbenmeier.stefan.downloadlist.business.YtDlp
-import de.lobbenmeier.stefan.downloadlist.business.setYtDlp
 import de.lobbenmeier.stefan.downloadlist.model.DownloadQueue
 import de.lobbenmeier.stefan.downloadlist.ui.DownloadList
 import de.lobbenmeier.stefan.downloadlist.ui.Header
 import de.lobbenmeier.stefan.settings.business.Settings
 import de.lobbenmeier.stefan.settings.business.SettingsViewModel
-import de.lobbenmeier.stefan.settings.business.binariesSettings
 import de.lobbenmeier.stefan.settings.ui.SettingsUI
-import de.lobbenmeier.stefan.updater.business.BinariesUpdater
-import de.lobbenmeier.stefan.updater.model.Binaries
-import de.lobbenmeier.stefan.updater.ui.Updater
 import de.lobbenmeier.stefan.version.CheckForAppUpdate
 
 @Composable
 fun App() {
     val settingsViewModel = remember { SettingsViewModel() }
     val settings by settingsViewModel.settings.collectAsState()
-    val binariesUpdater =
-        remember(settings.binariesSettings) { BinariesUpdater(settings.binariesSettings) }
 
-    val binaries = binariesUpdater.binaries.collectAsState().value
     val downloadQueue = remember { DownloadQueue() }
 
-    if (binaries == null) {
-        Updater(binariesUpdater)
-    } else {
-        MainView(settings, settingsViewModel::saveSettings, binaries, downloadQueue)
-    }
+    MainView(settings, settingsViewModel::saveSettings, downloadQueue)
 }
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -52,10 +39,8 @@ fun App() {
 private fun MainView(
     settings: Settings,
     updateSettings: (Settings) -> Unit,
-    binaries: Binaries,
     downloadQueue: DownloadQueue,
 ) {
-    val ytDlp = remember(settings) { YtDlp(binaries, settings).also(::setYtDlp) }
     var settingsOpen by remember { mutableStateOf(false) }
 
     if (settingsOpen) {
@@ -79,7 +64,8 @@ private fun MainView(
         Scaffold(
             topBar = {
                 Header(
-                    onDownload = { downloadQueue.add(ytDlp.createDownloadItem(it)) },
+                    settings,
+                    onDownload = downloadQueue::add,
                     onSettingsButtonClicked = { settingsOpen = true },
                 )
             },

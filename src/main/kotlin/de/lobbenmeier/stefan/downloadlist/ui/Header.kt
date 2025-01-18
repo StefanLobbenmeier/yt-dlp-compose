@@ -22,6 +22,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,20 +32,33 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import de.lobbenmeier.stefan.common.ui.rememberClipboardText
+import de.lobbenmeier.stefan.downloadlist.business.DownloadItem
+import de.lobbenmeier.stefan.downloadlist.business.YtDlp
+import de.lobbenmeier.stefan.downloadlist.business.setYtDlp
+import de.lobbenmeier.stefan.settings.business.Settings
+import de.lobbenmeier.stefan.settings.business.binariesSettings
+import de.lobbenmeier.stefan.updater.business.BinariesUpdater
+import de.lobbenmeier.stefan.updater.ui.Updater
 
 @Composable
 @Preview
-fun Header(onDownload: (url: String) -> Unit, onSettingsButtonClicked: () -> Unit) {
-    var enteredDownloadUrl by remember { mutableStateOf("") }
-    val clipboardText = rememberClipboardText().value
-    val downloadUrl = getDownloadUrl(enteredDownloadUrl, clipboardText)
-    val downloadButtonEnabled = downloadUrl != null
-
-    val submitDownload = {
-        if (downloadUrl != null) {
-            onDownload(downloadUrl)
-            enteredDownloadUrl = ""
+fun Header(
+    settings: Settings,
+    onDownload: (downloadItem: DownloadItem) -> Unit,
+    onSettingsButtonClicked: () -> Unit,
+) {
+    val binariesUpdater =
+        remember(settings.binariesSettings) { BinariesUpdater(settings.binariesSettings) }
+    val binaries = binariesUpdater.binaries.collectAsState().value
+    val ytDlp =
+        if (binaries != null) {
+            YtDlp(binaries, settings).also(::setYtDlp)
+        } else {
+            null
         }
+
+    val submitDownload: (String) -> Unit = { downloadUrl: String ->
+        ytDlp?.createDownloadItem(downloadUrl)?.let(onDownload)
     }
 
     TopAppBar(
@@ -53,23 +67,14 @@ fun Header(onDownload: (url: String) -> Unit, onSettingsButtonClicked: () -> Uni
     ) {
         Row(
             modifier =
-                Modifier.border(1.dp, MaterialTheme.colors.onSurface, RoundedCornerShape(4.dp))
+                Modifier.border(1.dp, MaterialTheme.colors.onSurface, RoundedCornerShape(4.dp)),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            OutlinedTextField(
-                enteredDownloadUrl,
-                singleLine = true,
-                onValueChange = { enteredDownloadUrl = it },
-                placeholder = { Text(clipboardText ?: "Enter a video URL") },
-                modifier = Modifier.weight(1f),
-                trailingIcon = {
-                    IconButton(onClick = submitDownload, enabled = downloadButtonEnabled) {
-                        Icon(Icons.Default.Add, "Download")
-                    }
-                },
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                keyboardActions = KeyboardActions(onSearch = { submitDownload() }),
-                shape = RoundedCornerShape(4.dp, 0.dp, 0.dp, 4.dp),
-            )
+            if (ytDlp == null) {
+                Updater(Modifier.weight(1f), binariesUpdater)
+            } else {
+                DownloadUrlInput(Modifier.weight(1f), submitDownload)
+            }
 
             Box(
                 modifier =
@@ -83,6 +88,37 @@ fun Header(onDownload: (url: String) -> Unit, onSettingsButtonClicked: () -> Uni
             }
         }
     }
+}
+
+@Composable
+private fun DownloadUrlInput(modifier: Modifier, submitDownload: (String) -> Unit) {
+    var enteredDownloadUrl by remember { mutableStateOf("") }
+    val clipboardText = rememberClipboardText().value
+    val downloadUrl = getDownloadUrl(enteredDownloadUrl, clipboardText)
+    val downloadButtonEnabled = downloadUrl != null
+
+    val onSubmitDownload = {
+        if (downloadUrl != null) {
+            submitDownload(downloadUrl)
+            enteredDownloadUrl = ""
+        }
+    }
+
+    OutlinedTextField(
+        enteredDownloadUrl,
+        singleLine = true,
+        onValueChange = { enteredDownloadUrl = it },
+        placeholder = { Text(clipboardText ?: "Enter a video URL") },
+        modifier = modifier,
+        trailingIcon = {
+            IconButton(onClick = onSubmitDownload, enabled = downloadButtonEnabled) {
+                Icon(Icons.Default.Add, "Download")
+            }
+        },
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+        keyboardActions = KeyboardActions(onSearch = { onSubmitDownload() }),
+        shape = RoundedCornerShape(4.dp, 0.dp, 0.dp, 4.dp),
+    )
 }
 
 fun getDownloadUrl(enteredDownloadUrl: String, clipboardText: String?): String? {

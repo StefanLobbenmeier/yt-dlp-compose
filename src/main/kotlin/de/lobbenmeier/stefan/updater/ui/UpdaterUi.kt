@@ -2,8 +2,6 @@ package de.lobbenmeier.stefan.updater.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
@@ -20,7 +18,7 @@ import de.lobbenmeier.stefan.downloadlist.business.UpdateDownloadProgress
 import de.lobbenmeier.stefan.updater.business.BinariesUpdater
 
 @Composable
-fun Updater(updater: BinariesUpdater) {
+fun Updater(modifier: Modifier, updater: BinariesUpdater) {
     var ytDlpDownloadProgress by remember {
         mutableStateOf<UpdateDownloadProgress>(DownloadStarted)
     }
@@ -39,7 +37,7 @@ fun Updater(updater: BinariesUpdater) {
         )
     }
 
-    Row(Modifier.padding(4.dp).fillMaxWidth(), horizontalArrangement = Arrangement.SpaceAround) {
+    Row(modifier, horizontalArrangement = Arrangement.SpaceAround) {
         Text("Updating binaries...")
         DownloadProgress("yt-dlp", ytDlpDownloadProgress)
         DownloadProgress("ffmpeg", ffmpegDownloadProgress)
