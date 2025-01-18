@@ -36,11 +36,12 @@ fun App() {
     val settings by settingsViewModel.settings.collectAsState()
     val binariesUpdater =
         remember(settings.binariesSettings) { BinariesUpdater(settings.binariesSettings) }
+
     val binaries = binariesUpdater.binaries.collectAsState().value
     val downloadQueue = remember { DownloadQueue() }
 
     if (binaries == null) {
-        Updater(binariesUpdater.progress)
+        Updater(binariesUpdater)
     } else {
         MainView(settings, settingsViewModel::saveSettings, binaries, downloadQueue)
     }
