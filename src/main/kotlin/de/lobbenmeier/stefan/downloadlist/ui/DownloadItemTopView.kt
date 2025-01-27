@@ -66,7 +66,7 @@ fun DownloadItemTopView(downloadItem: DownloadItem, removeItem: (DownloadItem) -
             InformationRow(metadata, downloadItem)
         }
         Divider(Modifier.fillMaxHeight().width(1.dp))
-        Column(modifier = Modifier.padding(10.dp)) {
+        Column(modifier = Modifier.padding(8.dp)) {
             SmallIconButton(onClick = { downloadItem.download() }) {
                 Icon(FeatherIcons.Download, "Download")
             }
