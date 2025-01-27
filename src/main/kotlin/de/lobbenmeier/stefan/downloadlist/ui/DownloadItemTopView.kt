@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -24,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.Download
 import compose.icons.feathericons.XCircle
+import de.lobbenmeier.stefan.common.ui.SmallIconButton
 import de.lobbenmeier.stefan.downloadlist.business.DownloadCompleted
 import de.lobbenmeier.stefan.downloadlist.business.DownloadFailed
 import de.lobbenmeier.stefan.downloadlist.business.DownloadItem
@@ -66,13 +66,13 @@ fun DownloadItemTopView(downloadItem: DownloadItem, removeItem: (DownloadItem) -
             InformationRow(metadata, downloadItem)
         }
         Divider(Modifier.fillMaxHeight().width(1.dp))
-        Column {
-            IconButton(onClick = { downloadItem.download() }) {
+        Column(modifier = Modifier.padding(8.dp)) {
+            SmallIconButton(onClick = { downloadItem.download() }) {
                 Icon(FeatherIcons.Download, "Download")
             }
             val file = downloadItem.getTargetFile().collectAsState().value
             if (file == null) {
-                IconButton(onClick = { removeItem(downloadItem) }) {
+                SmallIconButton(onClick = { removeItem(downloadItem) }) {
                     Icon(FeatherIcons.XCircle, "Delete")
                 }
             } else {
