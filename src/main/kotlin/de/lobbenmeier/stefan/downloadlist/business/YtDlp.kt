@@ -1,7 +1,7 @@
 package de.lobbenmeier.stefan.downloadlist.business
 
 import com.github.pgreze.process.Redirect
-import com.github.pgreze.process.processFixed
+import com.github.pgreze.process.process
 import de.lobbenmeier.stefan.common.business.getDynamicSemaphoreSingleton
 import de.lobbenmeier.stefan.settings.business.Settings
 import de.lobbenmeier.stefan.updater.model.Binaries
@@ -50,7 +50,7 @@ class YtDlp(private val binaries: Binaries, private val settings: Settings) {
             withPermit(isDownloadJob) {
                 println("Start process: $command")
 
-                processFixed(
+                process(
                     ytDlpBinary,
                     *fullOptions,
                     stdout =
