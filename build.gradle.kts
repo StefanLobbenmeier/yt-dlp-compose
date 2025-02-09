@@ -93,6 +93,14 @@ compose {
                     TargetFormat.Msi,
                 )
 
+                windows {
+                    dirChooser = true
+                    menu = true
+                    perUserInstall = true
+                    shortcut = true
+                    upgradeUuid = "760c3be8-21cf-43fe-ba50-241d1cc25ae8"
+                }
+
                 // lwjgl3 needs sun.misc.Unsafe to be included in the bundled JRE
                 modules("jdk.unsupported")
             }
