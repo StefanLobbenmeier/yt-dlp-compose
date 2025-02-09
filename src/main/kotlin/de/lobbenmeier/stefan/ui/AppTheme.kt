@@ -12,7 +12,8 @@ private val LightColorPalette =
     lightColors(
         primary = Color(0xFF52a552), // --secondary-highlight-color: #52a552;
         primaryVariant = Color(0xFF5cb85c), // --highlight-color: #5cb85c;
-        secondary = Color(0xFF03DAC5),
+        secondary = Color(0xFF52a552), // --secondary-highlight-color: #52a552;
+        secondaryVariant = Color(0xFF5cb85c), // --highlight-color: #5cb85c;
         background = Color(0xFFEAEAEA), // --secondary-bg-color: #eaeaea;
         surface = Color.White, // --bg-color: #ffffff
         onPrimary = Color(0XFF3C3C3C), // --font-color: #3c3c3c;
@@ -25,7 +26,8 @@ private val DarkColorPalette =
     darkColors(
         primary = Color(0xFF5cb85c), // --highlight-color: #5cb85c;
         primaryVariant = Color(0xFF52a552), // --secondary-highlight-color: #52a552;
-        secondary = Color(0xFF03DAC5),
+        secondary = Color(0xFF5cb85c), // --highlight-color: #5cb85c;
+        secondaryVariant = Color(0xFF52a552), // --secondary-highlight-color: #52a552;
         background = Color(0xFF292929), // --secondary-bg-color: #292929;
         surface = Color(0xFF212121), //  --bg-color: #212121;
         onPrimary = Color.Black,
