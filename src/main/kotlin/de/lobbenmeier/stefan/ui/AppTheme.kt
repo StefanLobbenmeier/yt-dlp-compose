@@ -8,6 +8,8 @@ import androidx.compose.ui.graphics.Color
 import de.lobbenmeier.stefan.common.ui.isSystemInDarkTheme
 import de.lobbenmeier.stefan.settings.business.Appearance
 
+val errorColor = Color(0XFFb73232) // --error-color: #b73232;
+
 private val LightColorPalette =
     lightColors(
         primary = Color(0xFF52a552), // --secondary-highlight-color: #52a552;
