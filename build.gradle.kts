@@ -93,6 +93,8 @@ compose {
                     TargetFormat.Exe,
                 )
 
+                linux { shortcut = true }
+
                 windows {
                     dirChooser = true
                     menu = true
