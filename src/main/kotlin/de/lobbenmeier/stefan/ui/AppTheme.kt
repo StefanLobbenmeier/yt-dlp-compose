@@ -10,12 +10,12 @@ import de.lobbenmeier.stefan.settings.business.Appearance
 
 private val LightColorPalette =
     lightColors(
-        primary = Color(0xFF5cb85c), // --highlight-color: #5cb85c;
-        primaryVariant = Color(0xFF52a552), // --secondary-highlight-color: #52a552;
+        primary = Color(0xFF52a552), // --secondary-highlight-color: #52a552;
+        primaryVariant = Color(0xFF5cb85c), // --highlight-color: #5cb85c;
         secondary = Color(0xFF03DAC5),
         background = Color(0xFFEAEAEA), // --secondary-bg-color: #eaeaea;
         surface = Color.White, // --bg-color: #ffffff
-        onPrimary = Color.White,
+        onPrimary = Color(0XFF3C3C3C), // --font-color: #3c3c3c;
         onSecondary = Color.Black,
         onBackground = Color(0XFF3C3C3C), // --font-color: #3c3c3c;
         onSurface = Color(0xFFdcdcdc), //    --tertiary-bg-color: #dcdcdc;
