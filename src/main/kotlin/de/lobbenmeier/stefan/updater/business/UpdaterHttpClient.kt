@@ -12,10 +12,5 @@ val updaterHttpClient = HttpClient {
         retryOnException(retryOnTimeout = true, maxRetries = 100)
         exponentialDelay(maxDelayMs = 10.seconds.inWholeMilliseconds)
     }
-    //    install (HttpTimeout) {
-    //        requestTimeoutMillis = 10.seconds.inWholeMilliseconds
-    //        connectTimeoutMillis = 10.seconds.inWholeMilliseconds
-    //        socketTimeoutMillis = 10.seconds.inWholeMilliseconds
-    //    }
     install(ContentNegotiation) { json(GithubJson) }
 }
