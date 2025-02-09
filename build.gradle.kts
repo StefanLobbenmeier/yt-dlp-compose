@@ -86,7 +86,12 @@ compose {
                     }
                 packageVersion = appVersion
 
-                targetFormats(TargetFormat.Deb, TargetFormat.Dmg, TargetFormat.Exe)
+                targetFormats(
+                    TargetFormat.Deb,
+                    TargetFormat.Dmg,
+                    TargetFormat.Rpm,
+                    TargetFormat.Exe,
+                )
 
                 windows {
                     dirChooser = true
