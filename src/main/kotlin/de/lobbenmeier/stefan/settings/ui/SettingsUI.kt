@@ -36,6 +36,7 @@ import compose.icons.FeatherIcons
 import compose.icons.feathericons.File
 import compose.icons.feathericons.Folder
 import de.lobbenmeier.stefan.downloadlist.ui.DropdownMenu
+import de.lobbenmeier.stefan.settings.business.Appearance
 import de.lobbenmeier.stefan.settings.business.FfmpegLocation
 import de.lobbenmeier.stefan.settings.business.Settings
 import de.lobbenmeier.stefan.settings.business.YtDlpLocation
@@ -64,6 +65,17 @@ fun SettingsUI(settings: Settings, save: (Settings) -> Unit, cancel: () -> Unit)
             modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(32.dp),
         ) {
+            Section("Application") {
+                FixedChoiceInput(
+                    "Appearance",
+                    mutableSettings.appearance,
+                    onValueChange = {
+                        mutableSettings = mutableSettings.copy(appearance = it ?: Appearance.SYSTEM)
+                    },
+                    options = Appearance.entries,
+                )
+            }
+
             Section("Binaries") {
                 FixedChoiceInput(
                     "Yt-Dlp Source",
