@@ -31,7 +31,9 @@ fun App() {
 
     val downloadQueue = remember { DownloadQueue() }
 
-    MainView(settings, settingsViewModel::saveSettings, downloadQueue)
+    AppTheme(settings.appearance) {
+        MainView(settings, settingsViewModel::saveSettings, downloadQueue)
+    }
 }
 
 @OptIn(ExperimentalComposeUiApi::class)
