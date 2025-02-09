@@ -1,14 +1,11 @@
 package de.lobbenmeier.stefan.updater.business.github
 
-import de.lobbenmeier.stefan.common.business.GithubJson
 import de.lobbenmeier.stefan.downloadlist.business.UpdateDownloadProgress
 import de.lobbenmeier.stefan.updater.business.downloadFile
-import io.ktor.client.*
+import de.lobbenmeier.stefan.updater.business.updaterHttpClient
 import io.ktor.client.call.*
-import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
-import io.ktor.serialization.kotlinx.json.*
 import java.io.File
 import java.nio.file.Path
 
@@ -18,7 +15,7 @@ class GithubReleaseDownloader(
     private val downloadDirectory: Path,
     private val githubApi: String = "https://api.github.com",
 ) {
-    private val httpClient = HttpClient { install(ContentNegotiation) { json(GithubJson) } }
+    private val httpClient = updaterHttpClient
 
     suspend fun downloadRelease(
         assetName: String,

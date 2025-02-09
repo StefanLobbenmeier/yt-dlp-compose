@@ -1,15 +1,13 @@
 package de.lobbenmeier.stefan.updater.business.ffmpeg
 
-import de.lobbenmeier.stefan.common.business.GithubJson
 import de.lobbenmeier.stefan.downloadlist.business.UpdateDownloadProgress
 import de.lobbenmeier.stefan.updater.business.Platform
 import de.lobbenmeier.stefan.updater.business.downloadFile
+import de.lobbenmeier.stefan.updater.business.updaterHttpClient
 import io.ktor.client.*
 import io.ktor.client.call.*
-import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
-import io.ktor.serialization.kotlinx.json.*
 import java.io.File
 import java.nio.file.Path
 
@@ -22,7 +20,7 @@ class FfmpegReleaseDownloader(
         onFfmpegProgress: suspend (UpdateDownloadProgress) -> Unit,
         onFfprobeProgress: suspend (UpdateDownloadProgress) -> Unit,
     ): List<File> {
-        val httpClient = HttpClient { install(ContentNegotiation) { json(GithubJson) } }
+        val httpClient = updaterHttpClient
 
         val ffmpegRelease = getFfmpegRelease(httpClient)
         return downloadFfmpegReleaseToFile(
