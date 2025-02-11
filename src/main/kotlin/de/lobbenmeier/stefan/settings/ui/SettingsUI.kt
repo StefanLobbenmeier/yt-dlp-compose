@@ -55,7 +55,7 @@ fun SettingsUI(settings: Settings, save: (Settings) -> Unit, cancel: () -> Unit)
 
     Column(
         Modifier.padding(vertical = 32.dp)
-            .background(MaterialTheme.colors.surface)
+            .background(MaterialTheme.colors.background)
             .padding(24.dp)
             .width(textFieldWidth),
         verticalArrangement = Arrangement.spacedBy(32.dp),

@@ -156,7 +156,7 @@ fun QuickSettingsDialog(
     ) {
         Box(
             Modifier.padding(vertical = 32.dp)
-                .background(MaterialTheme.colors.surface)
+                .background(MaterialTheme.colors.background)
                 .padding(24.dp)
                 .width(textFieldWidth)
         ) {
