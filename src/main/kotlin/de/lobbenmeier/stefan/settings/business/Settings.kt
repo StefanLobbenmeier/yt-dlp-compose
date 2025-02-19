@@ -8,6 +8,7 @@ import kotlinx.serialization.Serializable
 data class Settings(
     // App Settings
     val maxConcurrentJobs: UInt?,
+    val appearance: Appearance = Appearance.SYSTEM,
 
     // Binaries Settings
     val ytDlpSource: YtDlpLocation?,

@@ -23,7 +23,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -46,7 +45,7 @@ fun Footer(
     clearDownloads: () -> Unit,
     downloadAll: () -> Unit,
 ) {
-    BottomAppBar(backgroundColor = Color.White) {
+    BottomAppBar(backgroundColor = MaterialTheme.colors.surface) {
         Row {
             Spacer(Modifier.weight(1f, true))
             DownloadFolderSetting(settings, updateSettings)
@@ -157,7 +156,7 @@ fun QuickSettingsDialog(
     ) {
         Box(
             Modifier.padding(vertical = 32.dp)
-                .background(Color.White)
+                .background(MaterialTheme.colors.background)
                 .padding(24.dp)
                 .width(textFieldWidth)
         ) {

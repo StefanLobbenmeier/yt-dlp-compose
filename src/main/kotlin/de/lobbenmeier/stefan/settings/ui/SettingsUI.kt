@@ -30,12 +30,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.File
 import compose.icons.feathericons.Folder
 import de.lobbenmeier.stefan.downloadlist.ui.DropdownMenu
+import de.lobbenmeier.stefan.settings.business.Appearance
 import de.lobbenmeier.stefan.settings.business.FfmpegLocation
 import de.lobbenmeier.stefan.settings.business.Settings
 import de.lobbenmeier.stefan.settings.business.YtDlpLocation
@@ -55,7 +55,7 @@ fun SettingsUI(settings: Settings, save: (Settings) -> Unit, cancel: () -> Unit)
 
     Column(
         Modifier.padding(vertical = 32.dp)
-            .background(Color.White)
+            .background(MaterialTheme.colors.background)
             .padding(24.dp)
             .width(textFieldWidth),
         verticalArrangement = Arrangement.spacedBy(32.dp),
@@ -64,6 +64,17 @@ fun SettingsUI(settings: Settings, save: (Settings) -> Unit, cancel: () -> Unit)
             modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(32.dp),
         ) {
+            Section("Application") {
+                FixedChoiceInput(
+                    "Appearance",
+                    mutableSettings.appearance,
+                    onValueChange = {
+                        mutableSettings = mutableSettings.copy(appearance = it ?: Appearance.SYSTEM)
+                    },
+                    options = Appearance.entries,
+                )
+            }
+
             Section("Binaries") {
                 FixedChoiceInput(
                     "Yt-Dlp Source",

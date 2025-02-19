@@ -62,6 +62,7 @@ dependencies {
     implementation("org.slf4j:slf4j-simple:2.0.16")
     implementation("dev.dirs:directories:26")
     implementation("io.github.vinceglb:filekit-compose:0.8.8")
+    implementation("com.github.tkuenneth:nativeparameterstoreaccess:0.1.3")
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.11.4")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.1")

@@ -1,7 +1,6 @@
 package de.lobbenmeier.stefan.ui
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
@@ -31,7 +30,9 @@ fun App() {
 
     val downloadQueue = remember { DownloadQueue() }
 
-    MainView(settings, settingsViewModel::saveSettings, downloadQueue)
+    AppTheme(settings.appearance) {
+        MainView(settings, settingsViewModel::saveSettings, downloadQueue)
+    }
 }
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -43,48 +44,43 @@ private fun MainView(
 ) {
     var settingsOpen by remember { mutableStateOf(false) }
 
-    if (settingsOpen) {
-        Dialog(
-            onDismissRequest = { settingsOpen = false },
-            properties =
-                DialogProperties(usePlatformInsets = false, usePlatformDefaultWidth = false),
-        ) {
-            SettingsUI(
+    Scaffold(
+        topBar = {
+            Header(
                 settings,
-                {
-                    settingsOpen = false
-                    updateSettings(it)
-                },
-                cancel = { settingsOpen = false },
+                onDownload = downloadQueue::add,
+                onSettingsButtonClicked = { settingsOpen = true },
             )
-        }
-    }
-
-    Column {
-        Scaffold(
-            topBar = {
-                Header(
-                    settings,
-                    onDownload = downloadQueue::add,
-                    onSettingsButtonClicked = { settingsOpen = true },
-                )
-            },
-            bottomBar = {
-                Footer(
-                    settings,
-                    updateSettings,
-                    clearDownloads = downloadQueue::clear,
-                    downloadAll = downloadQueue::downloadAll,
-                )
-            },
-        ) { paddingValues ->
-            Box(
-                modifier = Modifier.padding(paddingValues),
-                contentAlignment = Alignment.BottomStart,
+        },
+        bottomBar = {
+            Footer(
+                settings,
+                updateSettings,
+                clearDownloads = downloadQueue::clear,
+                downloadAll = downloadQueue::downloadAll,
+            )
+        },
+    ) { paddingValues ->
+        if (settingsOpen) {
+            Dialog(
+                onDismissRequest = { settingsOpen = false },
+                properties =
+                    DialogProperties(usePlatformInsets = false, usePlatformDefaultWidth = false),
             ) {
-                DownloadList(downloadQueue)
-                Box(modifier = Modifier.padding(16.dp)) { CheckForAppUpdate() }
+                SettingsUI(
+                    settings,
+                    {
+                        settingsOpen = false
+                        updateSettings(it)
+                    },
+                    cancel = { settingsOpen = false },
+                )
             }
+        }
+
+        Box(modifier = Modifier.padding(paddingValues), contentAlignment = Alignment.BottomStart) {
+            DownloadList(downloadQueue)
+            Box(modifier = Modifier.padding(16.dp)) { CheckForAppUpdate() }
         }
     }
 }
