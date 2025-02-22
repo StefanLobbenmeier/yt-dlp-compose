@@ -104,8 +104,18 @@ compose {
                     upgradeUuid = "760c3be8-21cf-43fe-ba50-241d1cc25ae8"
                 }
 
-                // lwjgl3 needs sun.misc.Unsafe to be included in the bundled JRE
-                modules("jdk.unsupported")
+                modules(
+                    // lwjgl3 needs sun.misc.Unsafe to be included in the bundled JRE
+                    "jdk.unsupported",
+
+                    // required by NVDA on windows
+                    "jdk.accessibility",
+
+                    // others suggested by gradle suggestedRuntimeModules
+                    "java.instrument",
+                    "java.management",
+                    "jdk.security.auth",
+                )
             }
         }
     }
