@@ -41,7 +41,7 @@ suspend fun HttpClient.downloadFile(
         val downloadFile =
             get(url) {
                 onDownload { bytesSentTotal, contentLength ->
-                    if (contentLength != null) {
+                    if (contentLength != null && contentLength > 0) {
                         val progress = bytesSentTotal.toFloat() / contentLength
                         onProgress(CustomUpdateDownloadProgress(progress))
                     }
