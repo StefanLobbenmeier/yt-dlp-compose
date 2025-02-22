@@ -46,7 +46,7 @@ import kotlin.time.Duration.Companion.seconds
 
 @Composable
 fun DownloadItemTopView(downloadItem: DownloadItem, removeItem: (DownloadItem) -> Unit) {
-    val metadata by downloadItem.metadata.collectAsState()
+    val metadata by downloadItem.metadata.collectAsState(null)
     val thumbnail = metadata?.thumbnailWithFallBack
 
     Row(Modifier.requiredHeight(140.dp)) {

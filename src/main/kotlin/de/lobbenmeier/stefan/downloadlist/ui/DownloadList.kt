@@ -19,7 +19,7 @@ fun DownloadList(downloadQueue: DownloadQueue) {
     ) {
         items(
             downloadQueue.items.asReversed(),
-            key = { it.key },
+            key = { it.uiKey },
             itemContent = { DownloadItemView(it, removeItem = downloadQueue::remove) },
         )
     }

@@ -30,7 +30,7 @@ private val entryHeight = 50.dp
 
 @Composable
 fun DownloadItemPlaylistEntriesView(downloadItem: DownloadItem) {
-    val metadata = downloadItem.metadata.collectAsState().value
+    val metadata = downloadItem.metadata.collectAsState(null).value
 
     if (metadata == null || metadata.type != "playlist") {
         return

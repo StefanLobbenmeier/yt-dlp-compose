@@ -1,5 +1,6 @@
 package de.lobbenmeier.stefan.downloadlist.business
 
+import androidx.compose.runtime.mutableStateListOf
 import de.lobbenmeier.stefan.common.business.YtDlpJson
 import io.github.oshai.kotlinlogging.KotlinLogging
 import java.io.File
@@ -12,18 +13,21 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 
 class DownloadItem(val url: String = "https://www.youtube.com/watch?v=CBB75zjxTR4") :
     CoroutineScope by CoroutineScope(SupervisorJob()) {
 
-    val key = "$url ${System.currentTimeMillis()}"
-    val metadata = MutableStateFlow<VideoMetadata?>(null)
+    private val logger = KotlinLogging.logger {}
+
+    val uiKey = "$url ${System.currentTimeMillis()}"
+    val state = MutableStateFlow<DownloadItemState>(GatheringMetadata(url, mutableStateListOf()))
+
+    val metadata = state.map { it as? MetadataAvailable }.filterNotNull().map { it.metadata }
     val format = DownloadItemFormat()
 
-    private val logger = KotlinLogging.logger {}
-    private val metadataFile = MutableStateFlow<File?>(null)
     private val targetFile = mutableMapOf<Int, MutableStateFlow<File?>>()
     private val downloadProgress = mutableMapOf<Int, MutableStateFlow<VideoDownloadProgress?>>()
 
@@ -34,9 +38,9 @@ class DownloadItem(val url: String = "https://www.youtube.com/watch?v=CBB75zjxTR
     }
 
     fun download() {
-        val videoMetadata = metadata.value
-        if (videoMetadata?.type == "playlist") {
+        val videoMetadata = (state.value as? MetadataAvailable)?.metadata ?: return
 
+        if (videoMetadata.type == "playlist") {
             async {
                 videoMetadata.entries?.forEachIndexed { i, _ -> asyncDownloadPlaylistEntry(i) }
             }
@@ -156,8 +160,8 @@ class DownloadItem(val url: String = "https://www.youtube.com/watch?v=CBB75zjxTR
     }
 
     private fun useCachedMetadata(): Array<String> {
-        return metadataFile.value?.let { arrayOf("--load-info-json", it.absolutePath) }
-            ?: emptyArray<String>()
+        val metadataFile = (state.value as? MetadataAvailable)?.metadataFile ?: return arrayOf()
+        return arrayOf("--load-info-json", metadataFile.absolutePath)
     }
 
     fun getProgress(index: Int? = null): MutableStateFlow<VideoDownloadProgress?> {
@@ -183,12 +187,25 @@ class DownloadItem(val url: String = "https://www.youtube.com/watch?v=CBB75zjxTR
             ) { log, logLevel ->
                 when (logLevel) {
                     LogLevel.STDOUT -> {
-                        val videoMetadata = YtDlpJson.decodeFromString<VideoMetadata>(log)
-                        metadata.value = videoMetadata
-                        async { writeMetadataToFile(log) }
+                        async {
+                            val videoMetadata = YtDlpJson.decodeFromString<VideoMetadata>(log)
+                            val metadataFile = writeMetadataToFile(log)
 
-                        if (ytDlp.shouldSelectFormats()) {
-                            videoMetadata.requestedDownloadFormats?.forEach(format::selectFormat)
+                            val oldState = state.value
+                            state.value =
+                                ReadyForDownload(
+                                    url = oldState.url,
+                                    logs = oldState.logs,
+                                    metadata = videoMetadata,
+                                    format = format,
+                                    metadataFile = metadataFile,
+                                )
+
+                            if (ytDlp.shouldSelectFormats()) {
+                                videoMetadata.requestedDownloadFormats?.forEach(
+                                    format::selectFormat
+                                )
+                            }
                         }
                     }
                     LogLevel.STDERR -> {
@@ -205,14 +222,19 @@ class DownloadItem(val url: String = "https://www.youtube.com/watch?v=CBB75zjxTR
 
     val fileSize = format.size
 
-    private suspend fun writeMetadataToFile(videoMetadataJson: String) {
-        withContext(Dispatchers.IO) {
-            val tmpFilePath = Files.createTempFile("yt-dlp-compose", "yt-dlp-metadata.json")
-            tmpFilePath.writeText(videoMetadataJson)
-            val tmpFile = tmpFilePath.toFile()
-            logger.info { "Wrote metadata to $tmpFile" }
-            tmpFile.deleteOnExit()
-            metadataFile.value = tmpFile
+    private suspend fun writeMetadataToFile(videoMetadataJson: String): File? {
+        return withContext(Dispatchers.IO) {
+            try {
+                val tmpFilePath = Files.createTempFile("yt-dlp-compose", "yt-dlp-metadata.json")
+                tmpFilePath.writeText(videoMetadataJson)
+                val tmpFile = tmpFilePath.toFile()
+                logger.info { "Wrote metadata to $tmpFile" }
+                tmpFile.deleteOnExit()
+                tmpFile
+            } catch (e: Exception) {
+                logger.warn(e) { "Failed to create metadata file" }
+                null
+            }
         }
     }
 }
