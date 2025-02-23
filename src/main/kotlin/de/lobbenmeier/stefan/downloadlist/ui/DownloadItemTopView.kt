@@ -49,10 +49,10 @@ fun DownloadItemTopView(downloadItem: DownloadItem, removeItem: (DownloadItem) -
     val metadata by downloadItem.metadata.collectAsState()
     val thumbnail = metadata?.thumbnailWithFallBack
 
-    Row(Modifier.requiredHeight(135.dp)) {
+    Row(Modifier.requiredHeight(140.dp)) {
         Thumbnail(thumbnail)
         Column(
-            Modifier.weight(1f).padding(20.dp, 15.dp).fillMaxHeight(),
+            Modifier.weight(1f).padding(10.dp, 15.dp).fillMaxHeight(),
             verticalArrangement = Arrangement.SpaceBetween,
         ) {
             Text(
