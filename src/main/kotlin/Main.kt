@@ -1,5 +1,6 @@
-import androidx.compose.ui.window.Window
-import androidx.compose.ui.window.application
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.WindowState
+import androidx.compose.ui.window.singleWindowApplication
 import de.lobbenmeier.stefan.ui.App
 import java.awt.Button
 import java.awt.Dialog
@@ -20,5 +21,11 @@ fun main() {
         }
     }
 
-    application { Window(onCloseRequest = ::exitApplication) { App() } }
+    singleWindowApplication(
+        title = "Open Video Downloader v3",
+        state = WindowState(width = 800.dp, height = 800.dp),
+        alwaysOnTop = false,
+    ) {
+        App()
+    }
 }
