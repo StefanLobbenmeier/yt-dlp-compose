@@ -30,6 +30,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.File
@@ -358,7 +360,7 @@ private fun TextInput(
         label = { Text(description) },
         placeholder = placeholder?.let { { Text(it) } },
         trailingIcon = trailingIcon,
-        modifier = Modifier.width(400.dp),
+        modifier = Modifier.semantics { contentDescription = description }.width(400.dp),
         onValueChange = {
             if (it.isEmpty()) {
                 onValueChange(null)
@@ -406,7 +408,7 @@ private fun FileInput(description: String, value: String?, onValueChange: (Strin
         onValueChange,
         trailingIcon = {
             IconButton(onClick = { launcher.launch() }) {
-                Icon(FeatherIcons.File, contentDescription = null)
+                Icon(FeatherIcons.File, contentDescription = "Browse for file")
             }
         },
     )
@@ -440,6 +442,6 @@ fun DirectoryPickerButton(description: String, value: String?, onValueChange: (S
         }
 
     return IconButton(onClick = { launcher.launch() }) {
-        Icon(FeatherIcons.Folder, contentDescription = description)
+        Icon(FeatherIcons.Folder, contentDescription = "Browse for directory")
     }
 }

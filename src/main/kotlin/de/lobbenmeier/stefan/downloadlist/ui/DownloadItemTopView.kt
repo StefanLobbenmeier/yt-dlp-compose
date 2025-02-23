@@ -73,7 +73,7 @@ fun DownloadItemTopView(downloadItem: DownloadItem, removeItem: (DownloadItem) -
             val file = downloadItem.getTargetFile().collectAsState().value
             if (file == null) {
                 SmallIconButton(onClick = { removeItem(downloadItem) }) {
-                    Icon(FeatherIcons.XCircle, "Delete")
+                    Icon(FeatherIcons.XCircle, "Remove Item")
                 }
             } else {
                 OpenFileButton(file)
@@ -180,6 +180,7 @@ private fun FormatSelector(downloadItem: DownloadItem, metadata: VideoMetadata?)
             selectionChanged = { downloadItem.selectVideoFormat(it) },
             modifier = Modifier.weight(1f),
             optionFormatter = { it?.videoDescription ?: "(No Video)" },
+            label = "Video Format",
         )
         DropdownMenu(
             audioFormats,
@@ -187,6 +188,7 @@ private fun FormatSelector(downloadItem: DownloadItem, metadata: VideoMetadata?)
             selectionChanged = { downloadItem.selectAudioFormat(it) },
             modifier = Modifier.weight(1f),
             optionFormatter = { it?.audioDescription ?: "(No Audio)" },
+            label = "Audio Format",
         )
     }
 }

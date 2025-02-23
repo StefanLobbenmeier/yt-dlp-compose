@@ -17,7 +17,7 @@ fun Thumbnail(thumbnailUrl: String?) {
     if (thumbnailUrl != null) {
         KamelImage(
             resource = { asyncPainterResource(data = thumbnailUrl) },
-            contentDescription = "Profile",
+            contentDescription = "Thumbnail Image",
             modifier = modifier,
             onLoading = { progress -> ProgressIndicator(modifier, progress) },
         )

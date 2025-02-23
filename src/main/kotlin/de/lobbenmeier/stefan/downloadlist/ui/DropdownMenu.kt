@@ -12,6 +12,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -23,21 +27,25 @@ fun <T> DropdownMenu(
     selectedOption: T?,
     selectionChanged: (T) -> Unit,
     onTextInput: ((String) -> Unit)? = null,
-    label: String? = null,
+    label: String,
 ) {
     var expanded by remember { mutableStateOf(false) }
 
     ExposedDropdownMenuBox(
         expanded = expanded,
         onExpandedChange = { expanded = it },
-        modifier = modifier,
+        modifier =
+            modifier.semantics {
+                role = Role.DropdownList
+                contentDescription = label
+            },
     ) {
         val value: String = optionFormatter(selectedOption)
         OutlinedTextField(
             modifier = textFieldModifier,
             readOnly = onTextInput == null,
             value = value,
-            label = label?.let { { Text(text = it) } },
+            label = { Text(text = label) },
             singleLine = true,
             onValueChange = onTextInput ?: {},
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },

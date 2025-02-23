@@ -29,7 +29,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import de.lobbenmeier.stefan.common.ui.rememberClipboardText
 import de.lobbenmeier.stefan.downloadlist.business.DownloadItem
@@ -81,7 +86,8 @@ fun Header(
                     Modifier.fillMaxHeight()
                         .aspectRatio(1f)
                         .minimumInteractiveComponentSize()
-                        .clickable(onClick = onSettingsButtonClicked),
+                        .clickable(onClick = onSettingsButtonClicked)
+                        .semantics { role = Role.Button },
                 contentAlignment = Alignment.Center,
             ) {
                 Icon(Icons.Default.Settings, "Settings")
@@ -108,8 +114,15 @@ private fun DownloadUrlInput(modifier: Modifier, submitDownload: (String) -> Uni
         enteredDownloadUrl,
         singleLine = true,
         onValueChange = { enteredDownloadUrl = it },
-        placeholder = { Text(clipboardText ?: "Enter a video URL") },
-        modifier = modifier,
+        placeholder = {
+            Text(
+                clipboardText ?: "Enter a video URL",
+                overflow = TextOverflow.Ellipsis,
+                maxLines = 1,
+                softWrap = false,
+            )
+        },
+        modifier = modifier.semantics { contentDescription = "Download URL" },
         trailingIcon = {
             IconButton(onClick = onSubmitDownload, enabled = downloadButtonEnabled) {
                 Icon(Icons.Default.Add, "Download")
