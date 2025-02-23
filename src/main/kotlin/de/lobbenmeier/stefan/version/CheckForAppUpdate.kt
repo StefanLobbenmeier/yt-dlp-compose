@@ -21,6 +21,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
@@ -70,7 +73,9 @@ fun CheckForAppUpdate() {
                     style =
                         TextStyle(textDecoration = TextDecoration.Underline, color = Color.Blue),
                     text = "Download on GitHub",
-                    modifier = Modifier.clickable { openUri(newerRelease.htmlUrl) },
+                    modifier =
+                        Modifier.clickable { openUri(newerRelease.htmlUrl) }
+                            .semantics { role = Role.Button },
                 )
             }
         }
