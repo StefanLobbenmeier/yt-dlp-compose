@@ -2,13 +2,14 @@ package de.lobbenmeier.stefan.downloadlist.business
 
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import java.io.File
+import kotlinx.coroutines.flow.MutableStateFlow
 
 sealed interface DownloadItemState {
     val url: String
     val logs: SnapshotStateList<String>
 }
 
-interface MetadataAvailable {
+sealed interface MetadataAvailable {
     val metadata: VideoMetadata
     val format: DownloadItemFormat
     val metadataFile: File?
@@ -30,7 +31,7 @@ data class ReadyForDownload(
 data class Downloading(
     override val url: String,
     override val logs: SnapshotStateList<String>,
-    val progress: SnapshotStateList<String>,
+    val progress: MutableStateFlow<VideoDownloadProgress>,
 ) : DownloadItemState
 
 data class Done(

@@ -13,7 +13,6 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 
@@ -25,9 +24,6 @@ class DownloadItem(val url: String = "https://www.youtube.com/watch?v=CBB75zjxTR
     val uiKey = "$url ${System.currentTimeMillis()}"
     val state = MutableStateFlow<DownloadItemState>(GatheringMetadata(url, mutableStateListOf()))
 
-    val metadata = state.map { it as? MetadataAvailable }.filterNotNull().map { it.metadata }
-    val format = DownloadItemFormat()
-
     private val targetFile = mutableMapOf<Int, MutableStateFlow<File?>>()
     private val downloadProgress = mutableMapOf<Int, MutableStateFlow<VideoDownloadProgress?>>()
 
@@ -38,7 +34,9 @@ class DownloadItem(val url: String = "https://www.youtube.com/watch?v=CBB75zjxTR
     }
 
     fun download() {
-        val videoMetadata = (state.value as? MetadataAvailable)?.metadata ?: return
+        val state = state.value as? MetadataAvailable
+        val videoMetadata = state?.metadata ?: return
+        val format = state.format
 
         if (videoMetadata.type == "playlist") {
             async {
@@ -192,6 +190,7 @@ class DownloadItem(val url: String = "https://www.youtube.com/watch?v=CBB75zjxTR
                             val metadataFile = writeMetadataToFile(log)
 
                             val oldState = state.value
+                            val format = DownloadItemFormat()
                             state.value =
                                 ReadyForDownload(
                                     url = oldState.url,
@@ -215,12 +214,6 @@ class DownloadItem(val url: String = "https://www.youtube.com/watch?v=CBB75zjxTR
             }
         }
     }
-
-    fun selectVideoFormat(ytDlpFormat: Format?) = format.selectVideoFormat(ytDlpFormat)
-
-    fun selectAudioFormat(ytDlpFormat: Format?) = format.selectAudioFormat(ytDlpFormat)
-
-    val fileSize = format.size
 
     private suspend fun writeMetadataToFile(videoMetadataJson: String): File? {
         return withContext(Dispatchers.IO) {

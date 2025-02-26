@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.Download
 import de.lobbenmeier.stefan.downloadlist.business.DownloadItem
+import de.lobbenmeier.stefan.downloadlist.business.MetadataAvailable
 import de.lobbenmeier.stefan.downloadlist.business.VideoMetadata
 import de.lobbenmeier.stefan.downloadlist.business.entryThumbnail
 
@@ -30,7 +31,7 @@ private val entryHeight = 50.dp
 
 @Composable
 fun DownloadItemPlaylistEntriesView(downloadItem: DownloadItem) {
-    val metadata = downloadItem.metadata.collectAsState(null).value
+    val metadata = (downloadItem.state.collectAsState().value as? MetadataAvailable)?.metadata
 
     if (metadata == null || metadata.type != "playlist") {
         return
