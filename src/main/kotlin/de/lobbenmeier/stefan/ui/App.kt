@@ -79,8 +79,8 @@ private fun MainView(
         }
 
         Box(modifier = Modifier.padding(paddingValues), contentAlignment = Alignment.BottomStart) {
-            Box(modifier = Modifier.padding(16.dp)) { CheckForAppUpdate() }
             DownloadList(downloadQueue)
+            Box(modifier = Modifier.padding(16.dp)) { CheckForAppUpdate() }
         }
     }
 }
