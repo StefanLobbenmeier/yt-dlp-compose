@@ -69,7 +69,7 @@ fun DownloadItemTopView(downloadItem: DownloadItem, removeItem: (DownloadItem) -
             )
 
             FormatSelectorOrDownloadProgress(state)
-            InformationRow(metadata, downloadItem)
+            InformationRow(state)
         }
         Divider(Modifier.fillMaxHeight().width(1.dp))
         Column(modifier = Modifier.padding(8.dp)) {
