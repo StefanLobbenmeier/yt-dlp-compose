@@ -28,12 +28,12 @@ import de.lobbenmeier.stefan.downloadlist.business.Done
 import de.lobbenmeier.stefan.downloadlist.business.DownloadCompleted
 import de.lobbenmeier.stefan.downloadlist.business.DownloadFailed
 import de.lobbenmeier.stefan.downloadlist.business.DownloadItem
-import de.lobbenmeier.stefan.downloadlist.business.DownloadItemState
 import de.lobbenmeier.stefan.downloadlist.business.DownloadStarted
 import de.lobbenmeier.stefan.downloadlist.business.Downloading
 import de.lobbenmeier.stefan.downloadlist.business.GatheringMetadata
 import de.lobbenmeier.stefan.downloadlist.business.MetadataAvailable
 import de.lobbenmeier.stefan.downloadlist.business.ReadyForDownload
+import de.lobbenmeier.stefan.downloadlist.business.SingleOrPlaylistState
 import de.lobbenmeier.stefan.downloadlist.business.VideoDownloadProgress
 import de.lobbenmeier.stefan.downloadlist.business.YtDlp
 import de.lobbenmeier.stefan.downloadlist.business.YtDlpDownloadProgress
@@ -50,8 +50,11 @@ import kotlin.math.roundToInt
 import kotlin.time.Duration.Companion.seconds
 
 @Composable
-fun DownloadItemTopView(downloadItem: DownloadItem, removeItem: (DownloadItem) -> Unit) {
-    val state by downloadItem.state.collectAsState()
+fun DownloadItemTopView(
+    downloadItem: DownloadItem,
+    removeItem: (DownloadItem) -> Unit,
+    state: SingleOrPlaylistState,
+) {
     val metadata = (state as? MetadataAvailable)?.metadata
     val thumbnail = metadata?.thumbnailWithFallBack
 
@@ -90,7 +93,7 @@ fun DownloadItemTopView(downloadItem: DownloadItem, removeItem: (DownloadItem) -
 }
 
 @Composable
-private fun InformationRow(state: DownloadItemState) {
+private fun InformationRow(state: SingleOrPlaylistState) {
     when (state) {
         is GatheringMetadata -> {
             Text("Downloading metadata...")
@@ -154,7 +157,7 @@ private fun DownloadInformation(downloadProgress: VideoDownloadProgress) {
 }
 
 @Composable
-private fun FormatSelectorOrDownloadProgress(state: DownloadItemState) {
+private fun FormatSelectorOrDownloadProgress(state: SingleOrPlaylistState) {
     when (state) {
         is GatheringMetadata -> {
             LinearProgressIndicator(Modifier.fillMaxWidth())
@@ -169,7 +172,7 @@ private fun FormatSelectorOrDownloadProgress(state: DownloadItemState) {
             DownloadProgressIndicator(downloadProgress)
         }
 
-        is Done -> {}
+        else -> {}
     }
 }
 

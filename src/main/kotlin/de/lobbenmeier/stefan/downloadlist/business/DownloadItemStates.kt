@@ -4,10 +4,12 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import java.io.File
 import kotlinx.coroutines.flow.MutableStateFlow
 
-sealed interface DownloadItemState {
+sealed interface SingleOrPlaylistState {
     val url: String
     val logs: SnapshotStateList<String>
 }
+
+sealed interface DownloadItemState : SingleOrPlaylistState {}
 
 sealed interface MetadataAvailable {
     val metadata: VideoMetadata
@@ -39,3 +41,7 @@ data class Done(
     override val logs: SnapshotStateList<String>,
     val downloadFile: File,
 ) : DownloadItemState
+
+sealed interface PlaylistState : SingleOrPlaylistState {
+    val playlistItemStates: SnapshotStateList<DownloadItemState>
+}

@@ -22,7 +22,8 @@ class DownloadItem(val url: String = "https://www.youtube.com/watch?v=CBB75zjxTR
     private val logger = KotlinLogging.logger {}
 
     val uiKey = "$url ${System.currentTimeMillis()}"
-    val state = MutableStateFlow<DownloadItemState>(GatheringMetadata(url, mutableStateListOf()))
+    val state =
+        MutableStateFlow<SingleOrPlaylistState>(GatheringMetadata(url, mutableStateListOf()))
 
     private val targetFile = mutableMapOf<Int, MutableStateFlow<File?>>()
     private val downloadProgress = mutableMapOf<Int, MutableStateFlow<VideoDownloadProgress?>>()
