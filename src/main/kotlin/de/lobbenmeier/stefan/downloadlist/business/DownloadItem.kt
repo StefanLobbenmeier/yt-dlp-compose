@@ -25,9 +25,6 @@ class DownloadItem(val url: String = "https://www.youtube.com/watch?v=CBB75zjxTR
     val state =
         MutableStateFlow<SingleOrPlaylistState>(GatheringMetadata(url, mutableStateListOf()))
 
-    private val targetFile = mutableMapOf<Int, MutableStateFlow<File?>>()
-    private val downloadProgress = mutableMapOf<Int, MutableStateFlow<VideoDownloadProgress?>>()
-
     companion object {
         private const val PROGRESS_PREFIX = "[download-progress]"
         private const val PROGRESS_TEMPLATE = "$PROGRESS_PREFIX%(progress)j"
@@ -35,9 +32,9 @@ class DownloadItem(val url: String = "https://www.youtube.com/watch?v=CBB75zjxTR
     }
 
     fun download() {
-        val state = state.value as? MetadataAvailable
-        val videoMetadata = state?.metadata ?: return
-        val format = state.format
+        val previousState = state.value as? ReadyForDownload
+        val videoMetadata = previousState?.metadata ?: return
+        val format = previousState.format
 
         if (videoMetadata.type == "playlist") {
             async {
@@ -45,10 +42,18 @@ class DownloadItem(val url: String = "https://www.youtube.com/watch?v=CBB75zjxTR
             }
         } else {
             async {
+                val downloadingState =
+                    Downloading(
+                        previousState.url,
+                        previousState.logs,
+                        MutableStateFlow(DownloadStarted),
+                    )
+                state.value = downloadingState
+
                 doDownload(
                     *selectFormats(format.video.value, format.audio.value),
-                    progressFlow = getProgress(),
-                    targetFile = getTargetFile(),
+                    onProgress = { downloadingState.progress.value = it },
+                    onDone = { state.value = Done(downloadingState.url, downloadingState.logs, it) },
                 )
             }
         }
@@ -64,23 +69,16 @@ class DownloadItem(val url: String = "https://www.youtube.com/watch?v=CBB75zjxTR
             "--playlist-items",
             "$indexForYtDlp",
             *getYtDlp().initialFormatSelection(),
-            progressFlow = getProgress(index),
-            targetFile = getTargetFile(index),
+            onProgress = { /* TODO */ },
+            onDone = { /* TODO */ },
         )
     }
 
     private suspend fun doDownload(
         vararg extraOptions: String,
-        progressFlow: MutableStateFlow<VideoDownloadProgress?>,
-        targetFile: MutableStateFlow<File?>,
+        onProgress: (VideoDownloadProgress) -> Unit,
+        onDone: (File) -> Unit,
     ) {
-        if (progressFlow.value != null) {
-            // prevent starting download twice - todo recover after cancellation
-            return
-        }
-
-        progressFlow.emit(DownloadStarted)
-        targetFile.emit(null)
         var videoMetadata: VideoMetadata? = null
         try {
             getYtDlp().runAsync(
@@ -94,7 +92,7 @@ class DownloadItem(val url: String = "https://www.youtube.com/watch?v=CBB75zjxTR
                         try {
                             val progress =
                                 YtDlpJson.decodeFromString<YtDlpDownloadProgress>(progressJson)
-                            progressFlow.emit(progress)
+                            onProgress(progress)
                         } catch (e: Exception) {
                             logger.warn(e) { "Failed to parse progressJson $progressJson" }
                         }
@@ -113,11 +111,11 @@ class DownloadItem(val url: String = "https://www.youtube.com/watch?v=CBB75zjxTR
                     }
                 }
             }
-            progressFlow.emit(DownloadCompleted)
-            videoMetadata?.filename?.let { targetFile.emit(File(it)) }
+            onProgress(DownloadCompleted)
+            videoMetadata?.filename?.let { onDone(File(it)) }
         } catch (e: Exception) {
             e.printStackTrace()
-            progressFlow.emit(DownloadFailed(e))
+            onProgress(DownloadFailed(e))
         }
     }
 
@@ -161,16 +159,6 @@ class DownloadItem(val url: String = "https://www.youtube.com/watch?v=CBB75zjxTR
     private fun useCachedMetadata(): Array<String> {
         val metadataFile = (state.value as? MetadataAvailable)?.metadataFile ?: return arrayOf()
         return arrayOf("--load-info-json", metadataFile.absolutePath)
-    }
-
-    fun getProgress(index: Int? = null): MutableStateFlow<VideoDownloadProgress?> {
-        val key = index ?: -1
-        return downloadProgress.computeIfAbsent(key) { MutableStateFlow(null) }
-    }
-
-    fun getTargetFile(index: Int? = null): MutableStateFlow<File?> {
-        val key = index ?: -1
-        return targetFile.computeIfAbsent(key) { MutableStateFlow(null) }
     }
 
     fun gatherMetadata() {
