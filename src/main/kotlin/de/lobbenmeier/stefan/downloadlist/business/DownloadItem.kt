@@ -1,6 +1,5 @@
 package de.lobbenmeier.stefan.downloadlist.business
 
-import androidx.compose.runtime.mutableStateListOf
 import de.lobbenmeier.stefan.common.business.YtDlpJson
 import io.github.oshai.kotlinlogging.KotlinLogging
 import java.io.File
@@ -12,6 +11,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
@@ -22,8 +22,8 @@ class DownloadItem(val url: String = "https://www.youtube.com/watch?v=CBB75zjxTR
     private val logger = KotlinLogging.logger {}
 
     val uiKey = "$url ${System.currentTimeMillis()}"
-    val state =
-        MutableStateFlow<SingleOrPlaylistState>(GatheringMetadata(url, mutableStateListOf()))
+    val _state = MutableStateFlow<DownloadItemState>(DownloadItemState())
+    val state = _state.asStateFlow()
 
     companion object {
         private const val PROGRESS_PREFIX = "[download-progress]"
@@ -32,9 +32,9 @@ class DownloadItem(val url: String = "https://www.youtube.com/watch?v=CBB75zjxTR
     }
 
     fun download() {
-        val previousState = state.value as? ReadyForDownload
-        val videoMetadata = previousState?.metadata ?: return
-        val format = previousState.format
+        val previousState = state.value
+        val videoMetadata = previousState.metadata?.videoMetadata ?: return
+        val format = previousState.downloadItemOptions.format
 
         if (videoMetadata.type == "playlist") {
             async {
@@ -42,18 +42,21 @@ class DownloadItem(val url: String = "https://www.youtube.com/watch?v=CBB75zjxTR
             }
         } else {
             async {
+                val download = DownloadState()
                 val downloadingState =
-                    Downloading(
-                        previousState.url,
-                        previousState.logs,
-                        MutableStateFlow(DownloadStarted),
-                    )
-                state.value = downloadingState
+                    previousState.copy(status = DownloadItemStatus.DOWNLOADING, download = download)
+                _state.value = downloadingState
 
                 doDownload(
                     *selectFormats(format.video.value, format.audio.value),
-                    onProgress = { downloadingState.progress.value = it },
-                    onDone = { state.value = Done(downloadingState.url, downloadingState.logs, it) },
+                    onProgress = { download.progress.value = it },
+                    onDone = { downloadFile ->
+                        _state.value =
+                            state.value.copy(
+                                status = DownloadItemStatus.DONE,
+                                download = download.copy(downloadFile = downloadFile),
+                            )
+                    },
                 )
             }
         }
@@ -157,7 +160,7 @@ class DownloadItem(val url: String = "https://www.youtube.com/watch?v=CBB75zjxTR
     }
 
     private fun useCachedMetadata(): Array<String> {
-        val metadataFile = (state.value as? MetadataAvailable)?.metadataFile ?: return arrayOf()
+        val metadataFile = state.value.metadata?.metadataFile ?: return arrayOf()
         return arrayOf("--load-info-json", metadataFile.absolutePath)
     }
 
@@ -178,17 +181,13 @@ class DownloadItem(val url: String = "https://www.youtube.com/watch?v=CBB75zjxTR
                             val videoMetadata = YtDlpJson.decodeFromString<VideoMetadata>(log)
                             val metadataFile = writeMetadataToFile(log)
 
-                            val oldState = state.value
-                            val format = DownloadItemFormat()
-                            state.value =
-                                ReadyForDownload(
-                                    url = oldState.url,
-                                    logs = oldState.logs,
-                                    metadata = videoMetadata,
-                                    format = format,
-                                    metadataFile = metadataFile,
+                            _state.value =
+                                state.value.copy(
+                                    status = DownloadItemStatus.READY_FOR_DOWNLOAD,
+                                    metadata = Metadata(videoMetadata, metadataFile),
                                 )
 
+                            val format = state.value.downloadItemOptions.format
                             if (ytDlp.shouldSelectFormats()) {
                                 videoMetadata.requestedDownloadFormats?.forEach(
                                     format::selectFormat

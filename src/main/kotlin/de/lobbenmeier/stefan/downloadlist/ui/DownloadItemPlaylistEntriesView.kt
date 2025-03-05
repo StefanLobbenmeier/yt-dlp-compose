@@ -23,17 +23,20 @@ import compose.icons.FeatherIcons
 import compose.icons.feathericons.Download
 import de.lobbenmeier.stefan.downloadlist.business.DownloadItem
 import de.lobbenmeier.stefan.downloadlist.business.DownloadItemState
-import de.lobbenmeier.stefan.downloadlist.business.Downloading
-import de.lobbenmeier.stefan.downloadlist.business.MetadataAvailable
-import de.lobbenmeier.stefan.downloadlist.business.PlaylistReadyForDownload
+import de.lobbenmeier.stefan.downloadlist.business.DownloadItemStatus
 import de.lobbenmeier.stefan.downloadlist.business.entryThumbnail
+import de.lobbenmeier.stefan.downloadlist.business.videoMetadata
+import java.io.File
 
 private val entryHeight = 50.dp
 
 @Composable
-fun DownloadItemPlaylistEntriesView(downloadItem: DownloadItem, state: PlaylistReadyForDownload) {
-    val metadata = state.metadata
-
+fun DownloadItemPlaylistEntriesView(
+    downloadItem: DownloadItem,
+    downloadItemState: DownloadItemState,
+) {
+    val metadata = downloadItemState.videoMetadata ?: return
+    if (metadata.type != "playlist") return
     if (metadata.entries.isNullOrEmpty()) {
         return Text(text = "Playlist is empty")
     }
@@ -43,7 +46,7 @@ fun DownloadItemPlaylistEntriesView(downloadItem: DownloadItem, state: PlaylistR
         userScrollEnabled = true,
     ) {
         itemsIndexed(
-            state.playlistItemStates,
+            downloadItemState.playlistItemStates,
             itemContent = { index, playlistItemState ->
                 PlaylistEntryView(downloadItem, index, playlistItemState)
             },
@@ -57,8 +60,7 @@ fun PlaylistEntryView(
     index: Int,
     playlistItemState: DownloadItemState,
 ) {
-    if (playlistItemState !is MetadataAvailable) return
-    val entry = playlistItemState.metadata
+    val entry = playlistItemState.videoMetadata ?: return
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -73,8 +75,11 @@ fun PlaylistEntryView(
         ) {
             Text(text = entry.title ?: "No Title", fontWeight = FontWeight.Bold, maxLines = 1)
 
-            if (playlistItemState is Downloading) {
-                val progress = playlistItemState.progress.collectAsState().value
+            if (
+                playlistItemState.status == DownloadItemStatus.DOWNLOADING &&
+                    playlistItemState.download != null
+            ) {
+                val progress = playlistItemState.download.progress.collectAsState().value
                 DownloadProgressIndicator(progress, modifier = Modifier.height(5.dp))
             }
         }
@@ -82,7 +87,7 @@ fun PlaylistEntryView(
         IconButton(onClick = { downloadItem.downloadPlaylistEntry(index) }) {
             Icon(FeatherIcons.Download, "Download")
         }
-        val targetFile = downloadItem.getTargetFile(index).collectAsState().value
+        val targetFile: File? = playlistItemState.download?.downloadFile
         if (targetFile != null) {
             BrowseFileButton(targetFile)
         }
