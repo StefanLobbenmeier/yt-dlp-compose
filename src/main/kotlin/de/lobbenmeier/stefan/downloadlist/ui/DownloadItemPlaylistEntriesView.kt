@@ -15,7 +15,6 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -23,19 +22,17 @@ import androidx.compose.ui.unit.dp
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.Download
 import de.lobbenmeier.stefan.downloadlist.business.DownloadItem
+import de.lobbenmeier.stefan.downloadlist.business.DownloadItemState
+import de.lobbenmeier.stefan.downloadlist.business.Downloading
 import de.lobbenmeier.stefan.downloadlist.business.MetadataAvailable
-import de.lobbenmeier.stefan.downloadlist.business.VideoMetadata
+import de.lobbenmeier.stefan.downloadlist.business.PlaylistReadyForDownload
 import de.lobbenmeier.stefan.downloadlist.business.entryThumbnail
 
 private val entryHeight = 50.dp
 
 @Composable
-fun DownloadItemPlaylistEntriesView(downloadItem: DownloadItem) {
-    val metadata = (downloadItem.state.collectAsState().value as? MetadataAvailable)?.metadata
-
-    if (metadata == null || metadata.type != "playlist") {
-        return
-    }
+fun DownloadItemPlaylistEntriesView(downloadItem: DownloadItem, state: PlaylistReadyForDownload) {
+    val metadata = state.metadata
 
     if (metadata.entries.isNullOrEmpty()) {
         return Text(text = "Playlist is empty")
@@ -46,14 +43,23 @@ fun DownloadItemPlaylistEntriesView(downloadItem: DownloadItem) {
         userScrollEnabled = true,
     ) {
         itemsIndexed(
-            metadata.entries,
-            itemContent = { index, entry -> PlaylistEntryView(downloadItem, index, entry) },
+            state.playlistItemStates,
+            itemContent = { index, playlistItemState ->
+                PlaylistEntryView(downloadItem, index, playlistItemState)
+            },
         )
     }
 }
 
 @Composable
-fun PlaylistEntryView(downloadItem: DownloadItem, index: Int, entry: VideoMetadata) {
+fun PlaylistEntryView(
+    downloadItem: DownloadItem,
+    index: Int,
+    playlistItemState: DownloadItemState,
+) {
+    if (playlistItemState !is MetadataAvailable) return
+    val entry = playlistItemState.metadata
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.padding(all = 4.dp).height(entryHeight),
@@ -67,9 +73,8 @@ fun PlaylistEntryView(downloadItem: DownloadItem, index: Int, entry: VideoMetada
         ) {
             Text(text = entry.title ?: "No Title", fontWeight = FontWeight.Bold, maxLines = 1)
 
-            val progressNonFinal by downloadItem.getProgress(index).collectAsState()
-            val progress = progressNonFinal
-            if (progress != null) {
+            if (playlistItemState is Downloading) {
+                val progress = playlistItemState.progress.collectAsState().value
                 DownloadProgressIndicator(progress, modifier = Modifier.height(5.dp))
             }
         }

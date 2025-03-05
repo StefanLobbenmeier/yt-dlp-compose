@@ -177,7 +177,7 @@ private fun FormatSelectorOrDownloadProgress(state: SingleOrPlaylistState) {
 }
 
 @Composable
-private fun FormatSelector(state: MetadataAvailable) {
+private fun FormatSelector(state: ReadyForDownload) {
     val metadata = state.metadata
     val format = state.format
 

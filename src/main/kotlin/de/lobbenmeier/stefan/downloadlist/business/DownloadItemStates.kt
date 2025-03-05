@@ -9,12 +9,15 @@ sealed interface SingleOrPlaylistState {
     val logs: SnapshotStateList<String>
 }
 
-sealed interface DownloadItemState : SingleOrPlaylistState {}
+sealed interface DownloadItemState : SingleOrPlaylistState
 
 sealed interface MetadataAvailable {
     val metadata: VideoMetadata
-    val format: DownloadItemFormat
     val metadataFile: File?
+}
+
+sealed interface DownloadProgressAvailable {
+    val progress: MutableStateFlow<VideoDownloadProgress>
 }
 
 data class GatheringMetadata(
@@ -26,22 +29,31 @@ data class ReadyForDownload(
     override val url: String,
     override val logs: SnapshotStateList<String>,
     override val metadata: VideoMetadata,
-    override val format: DownloadItemFormat,
+    val format: DownloadItemFormat,
     override val metadataFile: File?,
 ) : DownloadItemState, MetadataAvailable
 
 data class Downloading(
     override val url: String,
     override val logs: SnapshotStateList<String>,
-    val progress: MutableStateFlow<VideoDownloadProgress>,
-) : DownloadItemState
+    override val metadata: VideoMetadata,
+    override val metadataFile: File?,
+    override val progress: MutableStateFlow<VideoDownloadProgress>,
+) : DownloadItemState, MetadataAvailable, DownloadProgressAvailable
 
 data class Done(
     override val url: String,
     override val logs: SnapshotStateList<String>,
+    override val metadata: VideoMetadata,
+    override val metadataFile: File?,
+    override val progress: MutableStateFlow<VideoDownloadProgress>,
     val downloadFile: File,
-) : DownloadItemState
+) : DownloadItemState, MetadataAvailable, DownloadProgressAvailable
 
-sealed interface PlaylistState : SingleOrPlaylistState {
-    val playlistItemStates: SnapshotStateList<DownloadItemState>
-}
+data class PlaylistReadyForDownload(
+    override val url: String,
+    override val logs: SnapshotStateList<String>,
+    override val metadata: VideoMetadata,
+    override val metadataFile: File?,
+    val playlistItemStates: SnapshotStateList<DownloadItemState>,
+) : SingleOrPlaylistState, MetadataAvailable

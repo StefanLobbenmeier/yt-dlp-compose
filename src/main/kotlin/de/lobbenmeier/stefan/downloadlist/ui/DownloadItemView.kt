@@ -9,7 +9,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import de.lobbenmeier.stefan.downloadlist.business.DownloadItem
 import de.lobbenmeier.stefan.downloadlist.business.DownloadItemState
-import de.lobbenmeier.stefan.downloadlist.business.PlaylistState
+import de.lobbenmeier.stefan.downloadlist.business.PlaylistReadyForDownload
 
 @Composable
 fun DownloadItemView(downloadItem: DownloadItem, removeItem: (DownloadItem) -> Unit) {
@@ -21,10 +21,10 @@ fun DownloadItemView(downloadItem: DownloadItem, removeItem: (DownloadItem) -> U
                 DownloadItemTopView(downloadItem, removeItem, state)
             }
 
-            is PlaylistState -> {
+            is PlaylistReadyForDownload -> {
                 Column {
                     DownloadItemTopView(downloadItem, removeItem, state)
-                    DownloadItemPlaylistEntriesView(downloadItem)
+                    DownloadItemPlaylistEntriesView(downloadItem, state)
                 }
             }
         }
