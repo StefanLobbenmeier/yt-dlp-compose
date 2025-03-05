@@ -100,6 +100,7 @@ class DownloadItem(val url: String = "https://www.youtube.com/watch?v=CBB75zjxTR
                             logger.warn(e) { "Failed to parse progressJson $progressJson" }
                         }
                     }
+
                     log.startsWith(VIDEO_METADATA_JSON_PREFIX) -> {
                         val videoMedataJson = log.removePrefix(VIDEO_METADATA_JSON_PREFIX)
                         try {
@@ -109,6 +110,7 @@ class DownloadItem(val url: String = "https://www.youtube.com/watch?v=CBB75zjxTR
                             logger.warn(e) { "Failed to parse metadata $videoMetadata" }
                         }
                     }
+
                     else -> {
                         logger.info { log }
                     }
@@ -185,6 +187,13 @@ class DownloadItem(val url: String = "https://www.youtube.com/watch?v=CBB75zjxTR
                                 state.value.copy(
                                     status = DownloadItemStatus.READY_FOR_DOWNLOAD,
                                     metadata = Metadata(videoMetadata, metadataFile),
+                                    playlistItemStates =
+                                        videoMetadata.entries.orEmpty().map { it ->
+                                            DownloadItemState(
+                                                status = DownloadItemStatus.READY_FOR_DOWNLOAD,
+                                                metadata = Metadata(it, metadataFile),
+                                            )
+                                        },
                                 )
 
                             val format = state.value.downloadItemOptions.format
@@ -195,6 +204,7 @@ class DownloadItem(val url: String = "https://www.youtube.com/watch?v=CBB75zjxTR
                             }
                         }
                     }
+
                     LogLevel.STDERR -> {
                         logger.info { log }
                     }
