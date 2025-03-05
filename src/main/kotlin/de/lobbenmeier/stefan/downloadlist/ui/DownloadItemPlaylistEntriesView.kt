@@ -37,7 +37,7 @@ fun DownloadItemPlaylistEntriesView(
 ) {
     val metadata = downloadItemState.videoMetadata ?: return
     if (metadata.type != "playlist") return
-    if (metadata.entries.isNullOrEmpty()) {
+    if (metadata.entries.isNullOrEmpty() || downloadItemState.playlistItemStates.isNullOrEmpty()) {
         return Text(text = "Playlist is empty")
     }
 

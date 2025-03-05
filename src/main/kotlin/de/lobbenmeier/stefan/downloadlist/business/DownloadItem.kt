@@ -1,5 +1,6 @@
 package de.lobbenmeier.stefan.downloadlist.business
 
+import androidx.compose.runtime.toMutableStateList
 import de.lobbenmeier.stefan.common.business.YtDlpJson
 import io.github.oshai.kotlinlogging.KotlinLogging
 import java.io.File
@@ -68,12 +69,26 @@ class DownloadItem(val url: String = "https://www.youtube.com/watch?v=CBB75zjxTR
 
     private suspend fun DownloadItem.asyncDownloadPlaylistEntry(index: Int) {
         val indexForYtDlp = index + 1
+
+        val playlistItemStates = state.value.playlistItemStates
+        val downloadItemState = playlistItemStates.getOrNull(index) ?: return
+
+        val download = DownloadState()
+        playlistItemStates[index] =
+            downloadItemState.copy(status = DownloadItemStatus.DOWNLOADING, download = download)
+
         doDownload(
             "--playlist-items",
             "$indexForYtDlp",
             *getYtDlp().initialFormatSelection(),
-            onProgress = { /* TODO */ },
-            onDone = { /* TODO */ },
+            onProgress = { download.progress.value = it },
+            onDone = { downloadFile ->
+                playlistItemStates[index] =
+                    downloadItemState.copy(
+                        status = DownloadItemStatus.DONE,
+                        download = download.copy(downloadFile = downloadFile),
+                    )
+            },
         )
     }
 
@@ -188,12 +203,15 @@ class DownloadItem(val url: String = "https://www.youtube.com/watch?v=CBB75zjxTR
                                     status = DownloadItemStatus.READY_FOR_DOWNLOAD,
                                     metadata = Metadata(videoMetadata, metadataFile),
                                     playlistItemStates =
-                                        videoMetadata.entries.orEmpty().map { it ->
-                                            DownloadItemState(
-                                                status = DownloadItemStatus.READY_FOR_DOWNLOAD,
-                                                metadata = Metadata(it, metadataFile),
-                                            )
-                                        },
+                                        videoMetadata.entries
+                                            .orEmpty()
+                                            .map { it ->
+                                                DownloadItemState(
+                                                    status = DownloadItemStatus.READY_FOR_DOWNLOAD,
+                                                    metadata = Metadata(it, metadataFile),
+                                                )
+                                            }
+                                            .toMutableStateList(),
                                 )
 
                             val format = state.value.downloadItemOptions.format

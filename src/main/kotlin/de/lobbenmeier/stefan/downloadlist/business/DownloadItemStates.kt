@@ -10,7 +10,7 @@ data class DownloadItemState(
     val metadata: Metadata? = null,
     val downloadItemOptions: DownloadItemOptions = DownloadItemOptions(),
     val download: DownloadState? = null,
-    val playlistItemStates: List<DownloadItemState> = listOf(),
+    val playlistItemStates: SnapshotStateList<DownloadItemState> = SnapshotStateList(),
 )
 
 val DownloadItemState.videoMetadata
