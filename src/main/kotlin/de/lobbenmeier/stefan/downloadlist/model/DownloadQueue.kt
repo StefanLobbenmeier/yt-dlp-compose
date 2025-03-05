@@ -2,6 +2,7 @@ package de.lobbenmeier.stefan.downloadlist.model
 
 import androidx.compose.runtime.mutableStateListOf
 import de.lobbenmeier.stefan.downloadlist.business.DownloadItem
+import de.lobbenmeier.stefan.downloadlist.business.DownloadItemStatus
 import kotlinx.coroutines.cancel
 
 class DownloadQueue {
@@ -23,7 +24,7 @@ class DownloadQueue {
 
     fun downloadAll() {
         for (item in items) {
-            if (item.getTargetFile().value == null) {
+            if (item.state.value.status == DownloadItemStatus.READY_FOR_DOWNLOAD) {
                 item.download()
             }
         }

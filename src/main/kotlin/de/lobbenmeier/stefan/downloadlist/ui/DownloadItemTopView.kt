@@ -27,9 +27,10 @@ import de.lobbenmeier.stefan.common.ui.SmallIconButton
 import de.lobbenmeier.stefan.downloadlist.business.DownloadCompleted
 import de.lobbenmeier.stefan.downloadlist.business.DownloadFailed
 import de.lobbenmeier.stefan.downloadlist.business.DownloadItem
+import de.lobbenmeier.stefan.downloadlist.business.DownloadItemState
+import de.lobbenmeier.stefan.downloadlist.business.DownloadItemStatus
 import de.lobbenmeier.stefan.downloadlist.business.DownloadStarted
 import de.lobbenmeier.stefan.downloadlist.business.VideoDownloadProgress
-import de.lobbenmeier.stefan.downloadlist.business.VideoMetadata
 import de.lobbenmeier.stefan.downloadlist.business.YtDlp
 import de.lobbenmeier.stefan.downloadlist.business.YtDlpDownloadProgress
 import de.lobbenmeier.stefan.downloadlist.business.audioDescription
@@ -39,14 +40,19 @@ import de.lobbenmeier.stefan.downloadlist.business.isAudioOnly
 import de.lobbenmeier.stefan.downloadlist.business.isVideo
 import de.lobbenmeier.stefan.downloadlist.business.thumbnailWithFallBack
 import de.lobbenmeier.stefan.downloadlist.business.videoDescription
+import de.lobbenmeier.stefan.downloadlist.business.videoMetadata
 import de.lobbenmeier.stefan.settings.business.createEmptySettings
 import de.lobbenmeier.stefan.updater.model.homeBrewBinaries
 import kotlin.math.roundToInt
 import kotlin.time.Duration.Companion.seconds
 
 @Composable
-fun DownloadItemTopView(downloadItem: DownloadItem, removeItem: (DownloadItem) -> Unit) {
-    val metadata by downloadItem.metadata.collectAsState()
+fun DownloadItemTopView(
+    downloadItem: DownloadItem,
+    removeItem: (DownloadItem) -> Unit,
+    state: DownloadItemState,
+) {
+    val metadata = state.videoMetadata
     val thumbnail = metadata?.thumbnailWithFallBack
 
     Row(Modifier.requiredHeight(140.dp)) {
@@ -62,20 +68,20 @@ fun DownloadItemTopView(downloadItem: DownloadItem, removeItem: (DownloadItem) -
                 fontWeight = FontWeight.Bold,
             )
 
-            FormatSelectorOrDownloadProgress(downloadItem, metadata)
-            InformationRow(metadata, downloadItem)
+            FormatSelectorOrDownloadProgress(state)
+            InformationRow(state)
         }
         Divider(Modifier.fillMaxHeight().width(1.dp))
         Column(modifier = Modifier.padding(8.dp)) {
             SmallIconButton(onClick = { downloadItem.download() }) {
                 Icon(FeatherIcons.Download, "Download")
             }
-            val file = downloadItem.getTargetFile().collectAsState().value
-            if (file == null) {
-                SmallIconButton(onClick = { removeItem(downloadItem) }) {
-                    Icon(FeatherIcons.XCircle, "Remove Item")
-                }
-            } else {
+            SmallIconButton(onClick = { removeItem(downloadItem) }) {
+                Icon(FeatherIcons.XCircle, "Remove Item")
+            }
+
+            if (state.status == DownloadItemStatus.DONE) {
+                val file = state.download?.downloadFile
                 OpenFileButton(file)
                 BrowseFileButton(file)
             }
@@ -84,30 +90,33 @@ fun DownloadItemTopView(downloadItem: DownloadItem, removeItem: (DownloadItem) -
 }
 
 @Composable
-private fun InformationRow(metadata: VideoMetadata?, downloadItem: DownloadItem) {
-    if (metadata == null) {
-        return Text("Downloading metadata...")
-    }
+private fun InformationRow(state: DownloadItemState) {
+    when (state.status) {
+        DownloadItemStatus.GATHERING_METADATA -> {
+            Text("Downloading metadata...")
+        }
 
-    val downloadProgress by downloadItem.getProgress().collectAsState()
-    val finalDownloadProgress = downloadProgress
+        DownloadItemStatus.READY_FOR_DOWNLOAD -> {
+            VideoInformation(state)
+        }
 
-    if (finalDownloadProgress == null) {
-        VideoInformation(metadata, downloadItem)
-    } else {
-        DownloadInformation(finalDownloadProgress)
+        DownloadItemStatus.DOWNLOADING,
+        DownloadItemStatus.DONE -> {
+            val progress = state.download?.progress?.collectAsState()?.value ?: DownloadStarted
+            DownloadInformation(progress)
+        }
     }
 }
 
 @Composable
-private fun VideoInformation(metadata: VideoMetadata, downloadItem: DownloadItem) {
+private fun VideoInformation(state: DownloadItemState) {
     Row {
         Row(modifier = Modifier.weight(1f)) {
             Text("Duration: ", fontWeight = FontWeight.Bold)
-            Text(durationString(metadata.duration))
+            Text(durationString(state.videoMetadata?.duration))
         }
         Row(modifier = Modifier.weight(1f)) {
-            val fileSize by downloadItem.fileSize.collectAsState(null)
+            val fileSize by state.downloadItemOptions.format.size.collectAsState(null)
             Text("Size: ", fontWeight = FontWeight.Bold)
             Text(fileSizeString(fileSize))
         }
@@ -145,26 +154,35 @@ private fun DownloadInformation(downloadProgress: VideoDownloadProgress) {
 }
 
 @Composable
-private fun FormatSelectorOrDownloadProgress(downloadItem: DownloadItem, metadata: VideoMetadata?) {
-    val downloadProgress = downloadItem.getProgress().collectAsState().value
+private fun FormatSelectorOrDownloadProgress(state: DownloadItemState) {
+    when (state.status) {
+        DownloadItemStatus.GATHERING_METADATA -> {
+            LinearProgressIndicator(Modifier.fillMaxWidth())
+        }
 
-    if (downloadProgress == null) FormatSelector(downloadItem, metadata)
-    else DownloadProgressIndicator(downloadProgress)
+        DownloadItemStatus.READY_FOR_DOWNLOAD -> {
+            FormatSelector(state)
+        }
+
+        DownloadItemStatus.DOWNLOADING,
+        DownloadItemStatus.DONE -> {
+            val progress = state.download?.progress?.collectAsState()?.value ?: DownloadStarted
+            DownloadProgressIndicator(progress)
+        }
+    }
 }
 
 @Composable
-private fun FormatSelector(downloadItem: DownloadItem, metadata: VideoMetadata?) {
-
-    if (metadata == null) {
-        return LinearProgressIndicator(Modifier.fillMaxWidth())
-    }
+private fun FormatSelector(state: DownloadItemState) {
+    val metadata = state.videoMetadata
+    val format = state.downloadItemOptions.format
 
     val formats =
-        metadata.formats?.asReversed()
+        metadata?.formats?.asReversed()
             ?: return Text("No formats available, most likely because this is a playlist")
 
-    val selectedVideoOption by downloadItem.format.video.collectAsState()
-    val selectedAudioOption by downloadItem.format.audio.collectAsState()
+    val selectedVideoOption by format.video.collectAsState()
+    val selectedAudioOption by format.audio.collectAsState()
 
     val videoFormats = listOf(null) + formats.filter { it.isVideo }
     val audioFormats =
@@ -177,7 +195,7 @@ private fun FormatSelector(downloadItem: DownloadItem, metadata: VideoMetadata?)
         DropdownMenu(
             videoFormats,
             selectedOption = selectedVideoOption,
-            selectionChanged = { downloadItem.selectVideoFormat(it) },
+            selectionChanged = { format.selectVideoFormat(it) },
             modifier = Modifier.weight(1f),
             optionFormatter = { it?.videoDescription ?: "(No Video)" },
             label = "Video Format",
@@ -185,7 +203,7 @@ private fun FormatSelector(downloadItem: DownloadItem, metadata: VideoMetadata?)
         DropdownMenu(
             audioFormats,
             selectedOption = selectedAudioOption,
-            selectionChanged = { downloadItem.selectAudioFormat(it) },
+            selectionChanged = { format.selectAudioFormat(it) },
             modifier = Modifier.weight(1f),
             optionFormatter = { it?.audioDescription ?: "(No Audio)" },
             label = "Audio Format",

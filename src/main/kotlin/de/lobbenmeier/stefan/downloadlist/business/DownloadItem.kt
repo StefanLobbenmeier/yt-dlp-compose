@@ -1,5 +1,6 @@
 package de.lobbenmeier.stefan.downloadlist.business
 
+import androidx.compose.runtime.toMutableStateList
 import de.lobbenmeier.stefan.common.business.YtDlpJson
 import io.github.oshai.kotlinlogging.KotlinLogging
 import java.io.File
@@ -11,6 +12,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
@@ -18,14 +20,11 @@ import kotlinx.coroutines.withContext
 class DownloadItem(val url: String = "https://www.youtube.com/watch?v=CBB75zjxTR4") :
     CoroutineScope by CoroutineScope(SupervisorJob()) {
 
-    val key = "$url ${System.currentTimeMillis()}"
-    val metadata = MutableStateFlow<VideoMetadata?>(null)
-    val format = DownloadItemFormat()
-
     private val logger = KotlinLogging.logger {}
-    private val metadataFile = MutableStateFlow<File?>(null)
-    private val targetFile = mutableMapOf<Int, MutableStateFlow<File?>>()
-    private val downloadProgress = mutableMapOf<Int, MutableStateFlow<VideoDownloadProgress?>>()
+
+    val uiKey = "$url ${System.currentTimeMillis()}"
+    val _state = MutableStateFlow<DownloadItemState>(DownloadItemState())
+    val state = _state.asStateFlow()
 
     companion object {
         private const val PROGRESS_PREFIX = "[download-progress]"
@@ -34,18 +33,31 @@ class DownloadItem(val url: String = "https://www.youtube.com/watch?v=CBB75zjxTR
     }
 
     fun download() {
-        val videoMetadata = metadata.value
-        if (videoMetadata?.type == "playlist") {
+        val previousState = state.value
+        val videoMetadata = previousState.metadata?.videoMetadata ?: return
+        val format = previousState.downloadItemOptions.format
 
+        if (videoMetadata.type == "playlist") {
             async {
                 videoMetadata.entries?.forEachIndexed { i, _ -> asyncDownloadPlaylistEntry(i) }
             }
         } else {
             async {
+                val download = DownloadState()
+                val downloadingState =
+                    previousState.copy(status = DownloadItemStatus.DOWNLOADING, download = download)
+                _state.value = downloadingState
+
                 doDownload(
                     *selectFormats(format.video.value, format.audio.value),
-                    progressFlow = getProgress(),
-                    targetFile = getTargetFile(),
+                    onProgress = { download.progress.value = it },
+                    onDone = { downloadFile ->
+                        _state.value =
+                            state.value.copy(
+                                status = DownloadItemStatus.DONE,
+                                download = download.copy(downloadFile = downloadFile),
+                            )
+                    },
                 )
             }
         }
@@ -57,27 +69,34 @@ class DownloadItem(val url: String = "https://www.youtube.com/watch?v=CBB75zjxTR
 
     private suspend fun DownloadItem.asyncDownloadPlaylistEntry(index: Int) {
         val indexForYtDlp = index + 1
+
+        val playlistItemStates = state.value.playlistItemStates
+        val downloadItemState = playlistItemStates.getOrNull(index) ?: return
+
+        val download = DownloadState()
+        playlistItemStates[index] =
+            downloadItemState.copy(status = DownloadItemStatus.DOWNLOADING, download = download)
+
         doDownload(
             "--playlist-items",
             "$indexForYtDlp",
             *getYtDlp().initialFormatSelection(),
-            progressFlow = getProgress(index),
-            targetFile = getTargetFile(index),
+            onProgress = { download.progress.value = it },
+            onDone = { downloadFile ->
+                playlistItemStates[index] =
+                    downloadItemState.copy(
+                        status = DownloadItemStatus.DONE,
+                        download = download.copy(downloadFile = downloadFile),
+                    )
+            },
         )
     }
 
     private suspend fun doDownload(
         vararg extraOptions: String,
-        progressFlow: MutableStateFlow<VideoDownloadProgress?>,
-        targetFile: MutableStateFlow<File?>,
+        onProgress: (VideoDownloadProgress) -> Unit,
+        onDone: (File) -> Unit,
     ) {
-        if (progressFlow.value != null) {
-            // prevent starting download twice - todo recover after cancellation
-            return
-        }
-
-        progressFlow.emit(DownloadStarted)
-        targetFile.emit(null)
         var videoMetadata: VideoMetadata? = null
         try {
             getYtDlp().runAsync(
@@ -91,11 +110,12 @@ class DownloadItem(val url: String = "https://www.youtube.com/watch?v=CBB75zjxTR
                         try {
                             val progress =
                                 YtDlpJson.decodeFromString<YtDlpDownloadProgress>(progressJson)
-                            progressFlow.emit(progress)
+                            onProgress(progress)
                         } catch (e: Exception) {
                             logger.warn(e) { "Failed to parse progressJson $progressJson" }
                         }
                     }
+
                     log.startsWith(VIDEO_METADATA_JSON_PREFIX) -> {
                         val videoMedataJson = log.removePrefix(VIDEO_METADATA_JSON_PREFIX)
                         try {
@@ -105,16 +125,17 @@ class DownloadItem(val url: String = "https://www.youtube.com/watch?v=CBB75zjxTR
                             logger.warn(e) { "Failed to parse metadata $videoMetadata" }
                         }
                     }
+
                     else -> {
                         logger.info { log }
                     }
                 }
             }
-            progressFlow.emit(DownloadCompleted)
-            videoMetadata?.filename?.let { targetFile.emit(File(it)) }
+            onProgress(DownloadCompleted)
+            videoMetadata?.filename?.let { onDone(File(it)) }
         } catch (e: Exception) {
             e.printStackTrace()
-            progressFlow.emit(DownloadFailed(e))
+            onProgress(DownloadFailed(e))
         }
     }
 
@@ -156,18 +177,8 @@ class DownloadItem(val url: String = "https://www.youtube.com/watch?v=CBB75zjxTR
     }
 
     private fun useCachedMetadata(): Array<String> {
-        return metadataFile.value?.let { arrayOf("--load-info-json", it.absolutePath) }
-            ?: emptyArray<String>()
-    }
-
-    fun getProgress(index: Int? = null): MutableStateFlow<VideoDownloadProgress?> {
-        val key = index ?: -1
-        return downloadProgress.computeIfAbsent(key) { MutableStateFlow(null) }
-    }
-
-    fun getTargetFile(index: Int? = null): MutableStateFlow<File?> {
-        val key = index ?: -1
-        return targetFile.computeIfAbsent(key) { MutableStateFlow(null) }
+        val metadataFile = state.value.metadata?.metadataFile ?: return arrayOf()
+        return arrayOf("--load-info-json", metadataFile.absolutePath)
     }
 
     fun gatherMetadata() {
@@ -183,14 +194,35 @@ class DownloadItem(val url: String = "https://www.youtube.com/watch?v=CBB75zjxTR
             ) { log, logLevel ->
                 when (logLevel) {
                     LogLevel.STDOUT -> {
-                        val videoMetadata = YtDlpJson.decodeFromString<VideoMetadata>(log)
-                        metadata.value = videoMetadata
-                        async { writeMetadataToFile(log) }
+                        async {
+                            val videoMetadata = YtDlpJson.decodeFromString<VideoMetadata>(log)
+                            val metadataFile = writeMetadataToFile(log)
 
-                        if (ytDlp.shouldSelectFormats()) {
-                            videoMetadata.requestedDownloadFormats?.forEach(format::selectFormat)
+                            _state.value =
+                                state.value.copy(
+                                    status = DownloadItemStatus.READY_FOR_DOWNLOAD,
+                                    metadata = Metadata(videoMetadata, metadataFile),
+                                    playlistItemStates =
+                                        videoMetadata.entries
+                                            .orEmpty()
+                                            .map { it ->
+                                                DownloadItemState(
+                                                    status = DownloadItemStatus.READY_FOR_DOWNLOAD,
+                                                    metadata = Metadata(it, metadataFile),
+                                                )
+                                            }
+                                            .toMutableStateList(),
+                                )
+
+                            val format = state.value.downloadItemOptions.format
+                            if (ytDlp.shouldSelectFormats()) {
+                                videoMetadata.requestedDownloadFormats?.forEach(
+                                    format::selectFormat
+                                )
+                            }
                         }
                     }
+
                     LogLevel.STDERR -> {
                         logger.info { log }
                     }
@@ -199,20 +231,19 @@ class DownloadItem(val url: String = "https://www.youtube.com/watch?v=CBB75zjxTR
         }
     }
 
-    fun selectVideoFormat(ytDlpFormat: Format?) = format.selectVideoFormat(ytDlpFormat)
-
-    fun selectAudioFormat(ytDlpFormat: Format?) = format.selectAudioFormat(ytDlpFormat)
-
-    val fileSize = format.size
-
-    private suspend fun writeMetadataToFile(videoMetadataJson: String) {
-        withContext(Dispatchers.IO) {
-            val tmpFilePath = Files.createTempFile("yt-dlp-compose", "yt-dlp-metadata.json")
-            tmpFilePath.writeText(videoMetadataJson)
-            val tmpFile = tmpFilePath.toFile()
-            logger.info { "Wrote metadata to $tmpFile" }
-            tmpFile.deleteOnExit()
-            metadataFile.value = tmpFile
+    private suspend fun writeMetadataToFile(videoMetadataJson: String): File? {
+        return withContext(Dispatchers.IO) {
+            try {
+                val tmpFilePath = Files.createTempFile("yt-dlp-compose", "yt-dlp-metadata.json")
+                tmpFilePath.writeText(videoMetadataJson)
+                val tmpFile = tmpFilePath.toFile()
+                logger.info { "Wrote metadata to $tmpFile" }
+                tmpFile.deleteOnExit()
+                tmpFile
+            } catch (e: Exception) {
+                logger.warn(e) { "Failed to create metadata file" }
+                null
+            }
         }
     }
 }
