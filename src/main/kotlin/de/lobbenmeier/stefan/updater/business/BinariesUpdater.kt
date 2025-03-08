@@ -95,7 +95,7 @@ class BinariesUpdater(private val binariesSettings: BinariesSettings) {
     private fun deleteBinariesExceptFor(channelFolders: List<File>, except: File) {
         for (channelFolder in channelFolders) {
             if (!channelFolder.exists()) {
-                logger.info { "Channel $channelFolder did not exist yet, nothign to clean up" }
+                logger.info { "Channel $channelFolder did not exist yet, nothing to clean up" }
                 continue
             }
 
