@@ -164,7 +164,7 @@ fun QuickSettingsDialog(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(contentDescription, style = MaterialTheme.typography.h5)
                     Spacer(Modifier.weight(1f))
-                    IconButton(onClick = onClose) { Icon(Icons.Default.Close, contentDescription) }
+                    IconButton(onClick = onClose) { Icon(Icons.Default.Close, "Close Dialog") }
                 }
                 Column(Modifier.padding(vertical = 8.dp), content = { dialogContent() })
             }
