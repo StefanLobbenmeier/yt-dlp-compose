@@ -23,7 +23,7 @@ class DownloadItem(val url: String = "https://www.youtube.com/watch?v=CBB75zjxTR
     private val logger = KotlinLogging.logger {}
 
     val uiKey = "$url ${System.currentTimeMillis()}"
-    val _state = MutableStateFlow<DownloadItemState>(DownloadItemState())
+    val _state = MutableStateFlow<DownloadItemState>(DownloadItemState(url = url))
     val state = _state.asStateFlow()
 
     companion object {
@@ -207,6 +207,7 @@ class DownloadItem(val url: String = "https://www.youtube.com/watch?v=CBB75zjxTR
                                             .orEmpty()
                                             .map { it ->
                                                 DownloadItemState(
+                                                    url = it.webpageUrl ?: url,
                                                     status = DownloadItemStatus.READY_FOR_DOWNLOAD,
                                                     metadata = Metadata(it, metadataFile),
                                                 )
