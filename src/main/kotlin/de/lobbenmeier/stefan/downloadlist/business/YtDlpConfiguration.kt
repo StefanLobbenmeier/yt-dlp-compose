@@ -19,7 +19,7 @@ fun Settings.toYtDlpConfiguration(): Array<String> =
 
             addArgument("--proxy", proxy)
             addArgument("--concurrent-fragments", concurrentFragments)
-            addArgument("--rate-limit", rateLimit)
+            addArgument("--rate-limit", rateLimit?.kilobytesToBytes())
             addArgument("--add-headers", header)
             addArgument("--cookies-from-browser", cookiesFromBrowser)
             addArgument("--cookies", cookiesFile)
@@ -44,3 +44,5 @@ fun Settings.toYtDlpConfiguration(): Array<String> =
             addArgument("--keep-video", keepUnmergedFiles)
         }
         .toTypedArray()
+
+private fun UInt.kilobytesToBytes() = this.times(1024u)
