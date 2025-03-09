@@ -45,4 +45,4 @@ fun Settings.toYtDlpConfiguration(): Array<String> =
         }
         .toTypedArray()
 
-private fun UInt.kilobytesToBytes() = this.times(1024u)
+fun UInt.kilobytesToBytes() = this.times(1024u)
