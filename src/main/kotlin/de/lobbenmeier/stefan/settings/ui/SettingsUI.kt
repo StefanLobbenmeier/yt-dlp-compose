@@ -373,7 +373,7 @@ private fun TextInput(
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-private fun BooleanInput(description: String, value: Boolean, onValueChange: (Boolean) -> Unit) {
+fun BooleanInput(description: String, value: Boolean, onValueChange: (Boolean) -> Unit) {
     Row(
         modifier = Modifier.padding(vertical = 4.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),

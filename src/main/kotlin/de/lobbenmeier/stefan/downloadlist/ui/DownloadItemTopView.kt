@@ -16,12 +16,16 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.Download
+import compose.icons.feathericons.Info
 import compose.icons.feathericons.XCircle
 import de.lobbenmeier.stefan.common.ui.SmallIconButton
 import de.lobbenmeier.stefan.downloadlist.business.DownloadCompleted
@@ -72,7 +76,19 @@ fun DownloadItemTopView(
             InformationRow(state)
         }
         Divider(Modifier.fillMaxHeight().width(1.dp))
-        Column(modifier = Modifier.padding(8.dp)) {
+        Column(
+            modifier = Modifier.padding(8.dp).fillMaxHeight(),
+            verticalArrangement = Arrangement.SpaceEvenly,
+        ) {
+            var informationDialogOpen by remember { mutableStateOf(false) }
+
+            if (informationDialogOpen) {
+                InformationDialog(state, onClose = { informationDialogOpen = false })
+            }
+
+            SmallIconButton(onClick = { informationDialogOpen = true }) {
+                Icon(FeatherIcons.Info, "Information and Logs")
+            }
             SmallIconButton(onClick = { downloadItem.download() }) {
                 Icon(FeatherIcons.Download, "Download")
             }

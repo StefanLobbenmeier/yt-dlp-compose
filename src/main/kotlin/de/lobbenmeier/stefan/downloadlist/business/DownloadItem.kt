@@ -23,7 +23,7 @@ class DownloadItem(val url: String = "https://www.youtube.com/watch?v=CBB75zjxTR
     private val logger = KotlinLogging.logger {}
 
     val uiKey = "$url ${System.currentTimeMillis()}"
-    val _state = MutableStateFlow<DownloadItemState>(DownloadItemState())
+    val _state = MutableStateFlow<DownloadItemState>(DownloadItemState(url = url))
     val state = _state.asStateFlow()
 
     companion object {
@@ -50,6 +50,7 @@ class DownloadItem(val url: String = "https://www.youtube.com/watch?v=CBB75zjxTR
 
                 doDownload(
                     *selectFormats(format.video.value, format.audio.value),
+                    onLog = { downloadingState.logs.add(it) },
                     onProgress = { download.progress.value = it },
                     onDone = { downloadFile ->
                         _state.value =
@@ -81,6 +82,7 @@ class DownloadItem(val url: String = "https://www.youtube.com/watch?v=CBB75zjxTR
             "--playlist-items",
             "$indexForYtDlp",
             *getYtDlp().initialFormatSelection(),
+            onLog = { downloadItemState.logs.add(it) },
             onProgress = { download.progress.value = it },
             onDone = { downloadFile ->
                 playlistItemStates[index] =
@@ -94,6 +96,7 @@ class DownloadItem(val url: String = "https://www.youtube.com/watch?v=CBB75zjxTR
 
     private suspend fun doDownload(
         vararg extraOptions: String,
+        onLog: (String) -> Unit,
         onProgress: (VideoDownloadProgress) -> Unit,
         onDone: (File) -> Unit,
     ) {
@@ -127,6 +130,7 @@ class DownloadItem(val url: String = "https://www.youtube.com/watch?v=CBB75zjxTR
                     }
 
                     else -> {
+                        onLog(log)
                         logger.info { log }
                     }
                 }
@@ -207,6 +211,7 @@ class DownloadItem(val url: String = "https://www.youtube.com/watch?v=CBB75zjxTR
                                             .orEmpty()
                                             .map { it ->
                                                 DownloadItemState(
+                                                    url = it.webpageUrl ?: url,
                                                     status = DownloadItemStatus.READY_FOR_DOWNLOAD,
                                                     metadata = Metadata(it, metadataFile),
                                                 )
@@ -225,6 +230,7 @@ class DownloadItem(val url: String = "https://www.youtube.com/watch?v=CBB75zjxTR
 
                     LogLevel.STDERR -> {
                         logger.info { log }
+                        state.value.logs.add(log)
                     }
                 }
             }

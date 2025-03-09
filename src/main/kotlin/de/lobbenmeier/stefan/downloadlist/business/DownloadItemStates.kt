@@ -5,6 +5,7 @@ import java.io.File
 import kotlinx.coroutines.flow.MutableStateFlow
 
 data class DownloadItemState(
+    val url: String,
     val status: DownloadItemStatus = DownloadItemStatus.GATHERING_METADATA,
     val logs: SnapshotStateList<String> = SnapshotStateList(),
     val metadata: Metadata? = null,
