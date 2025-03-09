@@ -14,7 +14,10 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -24,6 +27,7 @@ import androidx.compose.ui.window.DialogProperties
 import de.lobbenmeier.stefan.common.ui.LogTextField
 import de.lobbenmeier.stefan.downloadlist.business.DownloadItemState
 import de.lobbenmeier.stefan.downloadlist.business.videoMetadata
+import de.lobbenmeier.stefan.settings.ui.BooleanInput
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -43,7 +47,10 @@ fun InformationDialog(state: DownloadItemState, onClose: () -> Unit) {
             Column {
                 Text("Logs", style = MaterialTheme.typography.h5)
 
-                Logs(state)
+                var showDebugLogs by remember { mutableStateOf(false) }
+                BooleanInput("Show debug logs", showDebugLogs, { showDebugLogs = it })
+
+                Logs(state, showDebugLogs)
             }
         }
     }
@@ -51,8 +58,11 @@ fun InformationDialog(state: DownloadItemState, onClose: () -> Unit) {
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun Logs(state: DownloadItemState) {
-    val logs = remember { state.logs }.joinToString("\n")
+private fun Logs(state: DownloadItemState, showDebugLogs: Boolean) {
+    val logs =
+        remember { state.logs }
+            .let { if (!showDebugLogs) it.filter { !it.startsWith("[debug]") } else it }
+            .joinToString("\n")
 
     Column { LogTextField(value = logs) }
 }
