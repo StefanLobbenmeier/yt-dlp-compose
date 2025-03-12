@@ -12,6 +12,7 @@ data class DownloadItemState(
     val downloadItemOptions: DownloadItemOptions = DownloadItemOptions(),
     val download: DownloadState? = null,
     val playlistItemStates: SnapshotStateList<DownloadItemState> = SnapshotStateList(),
+    val errorMessage: String? = null,
 )
 
 val DownloadItemState.videoMetadata
@@ -22,6 +23,7 @@ enum class DownloadItemStatus {
     READY_FOR_DOWNLOAD,
     DOWNLOADING,
     DONE,
+    ERROR,
 }
 
 data class Metadata(val videoMetadata: VideoMetadata, val metadataFile: File?)

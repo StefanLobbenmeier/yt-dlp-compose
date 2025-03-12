@@ -43,16 +43,26 @@ fun InformationDialog(state: DownloadItemState, onClose: () -> Unit) {
                 Spacer(Modifier.weight(1f))
                 IconButton(onClick = onClose) { Icon(Icons.Default.Close, "Close dialog") }
             }
-
-            Column {
-                Text("Logs", style = MaterialTheme.typography.h5)
-
-                var showDebugLogs by remember { mutableStateOf(false) }
-                BooleanInput("Show debug logs", showDebugLogs, { showDebugLogs = it })
-
-                Logs(state, showDebugLogs)
-            }
+            LogsSection(state)
         }
+    }
+}
+
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+fun LogsDialog(state: DownloadItemState, onClose: () -> Unit) {
+    return InformationDialog(state, onClose)
+}
+
+@Composable
+private fun LogsSection(state: DownloadItemState) {
+    Column {
+        Text("Logs", style = MaterialTheme.typography.h5)
+
+        var showDebugLogs by remember { mutableStateOf(false) }
+        BooleanInput("Show debug logs", showDebugLogs, { showDebugLogs = it })
+
+        Logs(state, showDebugLogs)
     }
 }
 
