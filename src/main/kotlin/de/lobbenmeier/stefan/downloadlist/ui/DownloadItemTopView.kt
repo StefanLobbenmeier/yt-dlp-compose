@@ -121,6 +121,8 @@ private fun InformationRow(state: DownloadItemState) {
             val progress = state.download?.progress?.collectAsState()?.value ?: DownloadStarted
             DownloadInformation(progress)
         }
+
+        DownloadItemStatus.ERROR -> TODO()
     }
 }
 
@@ -185,6 +187,8 @@ private fun FormatSelectorOrDownloadProgress(state: DownloadItemState) {
             val progress = state.download?.progress?.collectAsState()?.value ?: DownloadStarted
             DownloadProgressIndicator(progress)
         }
+
+        DownloadItemStatus.ERROR -> TODO()
     }
 }
 

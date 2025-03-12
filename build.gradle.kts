@@ -15,7 +15,7 @@ plugins {
     id("org.gradle.crypto.checksum") version "1.4.0"
 }
 
-group = "com.example"
+group = "de.lobbenmeier.stefan"
 
 val appVersion = System.getenv("VERSION") ?: "1.0.0"
 

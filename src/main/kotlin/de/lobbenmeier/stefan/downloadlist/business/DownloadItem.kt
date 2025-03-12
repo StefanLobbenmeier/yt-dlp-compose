@@ -138,8 +138,13 @@ class DownloadItem(val url: String = "https://www.youtube.com/watch?v=CBB75zjxTR
             onProgress(DownloadCompleted)
             videoMetadata?.filename?.let { onDone(File(it)) }
         } catch (e: Exception) {
-            e.printStackTrace()
+            logger.error(e) { "Failed to download video $url" }
             onProgress(DownloadFailed(e))
+
+            val message = _state.value.logs.lastOrNull { it.startsWith("ERROR:") } ?: e.message
+
+            _state.value =
+                _state.value.copy(status = DownloadItemStatus.ERROR, errorMessage = message)
         }
     }
 
@@ -186,7 +191,11 @@ class DownloadItem(val url: String = "https://www.youtube.com/watch?v=CBB75zjxTR
     }
 
     fun gatherMetadata() {
-        async {
+        async { doGatherMetadata() }
+    }
+
+    suspend fun doGatherMetadata() {
+        try {
             val ytDlp = getYtDlp()
             ytDlp.runAsync(
                 false,
@@ -234,6 +243,12 @@ class DownloadItem(val url: String = "https://www.youtube.com/watch?v=CBB75zjxTR
                     }
                 }
             }
+        } catch (e: Exception) {
+            logger.error(e) { "Failed to gather metadata" }
+            val message = _state.value.logs.lastOrNull { it.startsWith("ERROR:") } ?: e.message
+
+            _state.value =
+                _state.value.copy(status = DownloadItemStatus.ERROR, errorMessage = message)
         }
     }
 
