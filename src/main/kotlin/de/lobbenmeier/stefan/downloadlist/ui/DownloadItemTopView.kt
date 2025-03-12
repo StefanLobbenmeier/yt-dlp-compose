@@ -9,9 +9,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.Button
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.LinearProgressIndicator
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -122,7 +124,9 @@ private fun InformationRow(state: DownloadItemState) {
             DownloadInformation(progress)
         }
 
-        DownloadItemStatus.ERROR -> TODO()
+        DownloadItemStatus.ERROR -> {
+            ViewLogsButton(state)
+        }
     }
 }
 
@@ -172,6 +176,17 @@ private fun DownloadInformation(downloadProgress: VideoDownloadProgress) {
 }
 
 @Composable
+fun ViewLogsButton(state: DownloadItemState) {
+    var logsDialogopen by remember { mutableStateOf(false) }
+
+    if (logsDialogopen) {
+        LogsDialog(state, onClose = { logsDialogopen = false })
+    }
+
+    Button(onClick = { logsDialogopen = true }) { Text("Show logs") }
+}
+
+@Composable
 private fun FormatSelectorOrDownloadProgress(state: DownloadItemState) {
     when (state.status) {
         DownloadItemStatus.GATHERING_METADATA -> {
@@ -188,7 +203,9 @@ private fun FormatSelectorOrDownloadProgress(state: DownloadItemState) {
             DownloadProgressIndicator(progress)
         }
 
-        DownloadItemStatus.ERROR -> TODO()
+        DownloadItemStatus.ERROR -> {
+            ErrorMessageView(state)
+        }
     }
 }
 
@@ -229,6 +246,16 @@ private fun FormatSelector(state: DownloadItemState) {
             label = "Audio Format",
         )
     }
+}
+
+@Composable
+private fun ErrorMessageView(state: DownloadItemState) {
+    Text(
+        state.errorMessage ?: "Unknown error",
+        color = MaterialTheme.colors.error,
+        maxLines = 2,
+        overflow = TextOverflow.Ellipsis,
+    )
 }
 
 private fun durationString(i: Double?): String {

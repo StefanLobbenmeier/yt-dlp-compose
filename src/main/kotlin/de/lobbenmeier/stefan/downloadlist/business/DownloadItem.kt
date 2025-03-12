@@ -17,6 +17,8 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 
+private const val ERROR_PREFIX = "ERROR: "
+
 class DownloadItem(val url: String = "https://www.youtube.com/watch?v=CBB75zjxTR4") :
     CoroutineScope by CoroutineScope(SupervisorJob()) {
 
@@ -141,10 +143,13 @@ class DownloadItem(val url: String = "https://www.youtube.com/watch?v=CBB75zjxTR
             logger.error(e) { "Failed to download video $url" }
             onProgress(DownloadFailed(e))
 
-            val message = _state.value.logs.lastOrNull { it.startsWith("ERROR:") } ?: e.message
+            val message = _state.value.logs.lastOrNull { it.startsWith(ERROR_PREFIX) } ?: e.message
 
             _state.value =
-                _state.value.copy(status = DownloadItemStatus.ERROR, errorMessage = message)
+                _state.value.copy(
+                    status = DownloadItemStatus.ERROR,
+                    errorMessage = message?.removePrefix(ERROR_PREFIX),
+                )
         }
     }
 
@@ -245,10 +250,13 @@ class DownloadItem(val url: String = "https://www.youtube.com/watch?v=CBB75zjxTR
             }
         } catch (e: Exception) {
             logger.error(e) { "Failed to gather metadata" }
-            val message = _state.value.logs.lastOrNull { it.startsWith("ERROR:") } ?: e.message
+            val message = _state.value.logs.lastOrNull { it.startsWith(ERROR_PREFIX) } ?: e.message
 
             _state.value =
-                _state.value.copy(status = DownloadItemStatus.ERROR, errorMessage = message)
+                _state.value.copy(
+                    status = DownloadItemStatus.ERROR,
+                    errorMessage = message?.removePrefix(ERROR_PREFIX),
+                )
         }
     }
 
