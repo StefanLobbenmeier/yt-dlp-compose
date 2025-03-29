@@ -47,6 +47,7 @@ import io.github.vinceglb.filekit.compose.rememberDirectoryPickerLauncher
 import io.github.vinceglb.filekit.compose.rememberFilePickerLauncher
 import io.github.vinceglb.filekit.core.FileKitMacOSSettings
 import io.github.vinceglb.filekit.core.FileKitPlatformSettings
+import java.io.File
 import kotlin.io.path.absolutePathString
 
 val textFieldWidth = 350.dp
@@ -393,7 +394,7 @@ private fun FileInput(description: String, value: String?, onValueChange: (Strin
     val launcher =
         rememberFilePickerLauncher(
             title = description,
-            initialDirectory = value ?: "${platform.homeFolder}/",
+            initialDirectory = getValidInitialDirectoryOrNull(value),
             platformSettings =
                 FileKitPlatformSettings(macOS = FileKitMacOSSettings(resolvesAliases = false)),
         ) { file ->
@@ -431,7 +432,7 @@ fun DirectoryPickerButton(description: String, value: String?, onValueChange: (S
     val launcher =
         rememberDirectoryPickerLauncher(
             title = description,
-            initialDirectory = value ?: "${platform.homeFolder}/",
+            initialDirectory = getValidInitialDirectoryOrNull(value),
             platformSettings =
                 FileKitPlatformSettings(macOS = FileKitMacOSSettings(resolvesAliases = false)),
         ) { file ->
@@ -444,4 +445,24 @@ fun DirectoryPickerButton(description: String, value: String?, onValueChange: (S
     return IconButton(onClick = { launcher.launch() }) {
         Icon(FeatherIcons.Folder, contentDescription = "Browse for directory")
     }
+}
+
+private fun getValidInitialDirectoryOrNull(value: String?): String? {
+    if (value != null) {
+        val file = File(value)
+        if (file.exists()) {
+            return value
+        }
+        // going up one level is reasonable,
+        // but do not go too far recursively to not end up in nirvana
+        val parentFile = file.parentFile
+        if (parentFile.exists()) {
+            return parentFile.absolutePath
+        }
+    }
+    val homeFolder = platform.homeFolder
+    if (homeFolder.toFile().exists()) {
+        return homeFolder.toAbsolutePath().toString()
+    }
+    return null
 }
