@@ -2,6 +2,7 @@ package de.lobbenmeier.stefan.downloadlist.ui
 
 import androidx.compose.material.Icon
 import androidx.compose.runtime.Composable
+import com.github.pgreze.process.process
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.Folder
 import compose.icons.feathericons.Play
@@ -12,6 +13,9 @@ import de.lobbenmeier.stefan.updater.business.platform
 import io.github.oshai.kotlinlogging.KotlinLogging
 import java.awt.Desktop
 import java.io.File
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 val logger = KotlinLogging.logger {}
 
@@ -58,11 +62,14 @@ private fun Platform.openFile(file: File) {
         return Desktop.getDesktop().open(file)
     }
 
-    when (platformType) {
-        PlatformType.WINDOWS -> TODO()
-        PlatformType.MAC_OS -> TODO()
-        PlatformType.LINUX -> TODO()
-    }
+    val command =
+        when (platformType) {
+            PlatformType.WINDOWS -> arrayOf("explorer.exe", file.absolutePath)
+            PlatformType.MAC_OS -> arrayOf("open", file.absolutePath)
+            PlatformType.LINUX -> arrayOf("xdg-open", file.absolutePath)
+        }
+
+    CoroutineScope(Dispatchers.IO).launch { process(*command) }
 }
 
 private fun Platform.browseDirectory(file: File) {
@@ -70,9 +77,12 @@ private fun Platform.browseDirectory(file: File) {
         return Desktop.getDesktop().browseFileDirectory(file.absoluteFile)
     }
 
-    when (platformType) {
-        PlatformType.WINDOWS -> TODO()
-        PlatformType.MAC_OS -> TODO()
-        PlatformType.LINUX -> TODO()
-    }
+    val command =
+        when (platformType) {
+            PlatformType.WINDOWS -> arrayOf("explorer.exe", "/select,", file.absolutePath)
+            PlatformType.MAC_OS -> arrayOf("open", "-r,", file.absolutePath)
+            PlatformType.LINUX -> arrayOf("xdg-open", file.parentFile.absolutePath)
+        }
+
+    CoroutineScope(Dispatchers.IO).launch { process(*command) }
 }
