@@ -451,7 +451,7 @@ private fun getValidInitialDirectoryOrNull(value: String?): String? {
     if (value != null) {
         val file = File(value)
         if (file.exists()) {
-            return value
+            return file.absolutePath
         }
         // going up one level is reasonable,
         // but do not go too far recursively to not end up in nirvana
@@ -460,9 +460,9 @@ private fun getValidInitialDirectoryOrNull(value: String?): String? {
             return parentFile.absolutePath
         }
     }
-    val homeFolder = platform.homeFolder
-    if (homeFolder.toFile().exists()) {
-        return homeFolder.toAbsolutePath().toString()
+    val homeFolder = platform.homeFolder.toFile()
+    if (homeFolder.exists()) {
+        return homeFolder.absolutePath
     }
     return null
 }
