@@ -58,6 +58,7 @@ private fun detectPlatform(): Platform {
     return when {
         name.contains("Windows") -> {
             Platform(
+                PlatformType.WINDOWS,
                 displayName,
                 YtDlpNames.windows,
                 FfmpegPlatforms.windows64,
@@ -73,6 +74,7 @@ private fun detectPlatform(): Platform {
                     YtDlpNames.osx
                 }
             Platform(
+                PlatformType.MAC_OS,
                 displayName,
                 ytDlpName,
                 FfmpegPlatforms.osx64,
@@ -90,6 +92,7 @@ private fun detectPlatform(): Platform {
                 }
 
             Platform(
+                PlatformType.LINUX,
                 displayName,
                 YtDlpNames.python,
                 ffmpegPlatform,
