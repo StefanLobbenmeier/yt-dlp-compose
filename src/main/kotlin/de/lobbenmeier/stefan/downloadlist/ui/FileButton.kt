@@ -7,6 +7,7 @@ import compose.icons.feathericons.Folder
 import compose.icons.feathericons.Play
 import de.lobbenmeier.stefan.common.ui.SmallIconButton
 import de.lobbenmeier.stefan.updater.business.Platform
+import de.lobbenmeier.stefan.updater.business.PlatformType
 import de.lobbenmeier.stefan.updater.business.platform
 import io.github.oshai.kotlinlogging.KotlinLogging
 import java.awt.Desktop
@@ -53,9 +54,17 @@ fun BrowseFileButton(file: File?) {
 }
 
 private fun Platform.openFile(file: File) {
-    Desktop.getDesktop().open(file)
+    when (platformType) {
+        PlatformType.WINDOWS -> TODO()
+        PlatformType.MAC_OS -> Desktop.getDesktop().open(file)
+        PlatformType.LINUX -> TODO()
+    }
 }
 
 private fun Platform.browseDirectory(file: File) {
-    Desktop.getDesktop().browseFileDirectory(file.absoluteFile)
+    when (platformType) {
+        PlatformType.WINDOWS -> TODO()
+        PlatformType.MAC_OS -> Desktop.getDesktop().browseFileDirectory(file.absoluteFile)
+        PlatformType.LINUX -> TODO()
+    }
 }

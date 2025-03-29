@@ -7,6 +7,7 @@ val Directories = ProjectDirectories.fromPath("yt-dlp-compose")
 val platform = detectPlatform()
 
 data class Platform(
+    val platformType: PlatformType,
     val name: String,
     val ytDlpName: YtDlpNames,
     val ffmpegPlatform: FfmpegPlatforms,
@@ -22,6 +23,12 @@ data class Platform(
     val ytDlpBinary = binariesFolder.resolve(ytDlpName.filename).toFile()
     val ffmpegBinary = binariesFolder.resolve("ffmpeg").toFile()
     val ffprobeBinary = binariesFolder.resolve("ffprobe").toFile()
+}
+
+enum class PlatformType {
+    WINDOWS,
+    MAC_OS,
+    LINUX,
 }
 
 enum class YtDlpNames(val filename: String) {
