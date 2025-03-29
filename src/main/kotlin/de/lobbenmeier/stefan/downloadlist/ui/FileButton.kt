@@ -6,6 +6,8 @@ import compose.icons.FeatherIcons
 import compose.icons.feathericons.Folder
 import compose.icons.feathericons.Play
 import de.lobbenmeier.stefan.common.ui.SmallIconButton
+import de.lobbenmeier.stefan.updater.business.Platform
+import de.lobbenmeier.stefan.updater.business.platform
 import io.github.oshai.kotlinlogging.KotlinLogging
 import java.awt.Desktop
 import java.io.File
@@ -20,7 +22,7 @@ fun OpenFileButton(file: File?) {
         onClick = {
             if (file != null) {
                 if (file.exists()) {
-                    Desktop.getDesktop().open(file)
+                    platform.openFile(file)
                 } else {
                     logger.error { "Could not find file $file" }
                 }
@@ -39,7 +41,7 @@ fun BrowseFileButton(file: File?) {
         onClick = {
             if (file != null) {
                 if (file.exists()) {
-                    Desktop.getDesktop().browseFileDirectory(file.absoluteFile)
+                    platform.browseDirectory(file)
                 } else {
                     logger.error { "Could not find file $file" }
                 }
@@ -48,4 +50,12 @@ fun BrowseFileButton(file: File?) {
     ) {
         Icon(FeatherIcons.Folder, "Show file in folder")
     }
+}
+
+private fun Platform.openFile(file: File) {
+    Desktop.getDesktop().open(file)
+}
+
+private fun Platform.browseDirectory(file: File) {
+    Desktop.getDesktop().browseFileDirectory(file.absoluteFile)
 }
