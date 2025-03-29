@@ -54,17 +54,25 @@ fun BrowseFileButton(file: File?) {
 }
 
 private fun Platform.openFile(file: File) {
+    if (Desktop.getDesktop().isSupported(Desktop.Action.OPEN)) {
+        return Desktop.getDesktop().open(file)
+    }
+
     when (platformType) {
         PlatformType.WINDOWS -> TODO()
-        PlatformType.MAC_OS -> Desktop.getDesktop().open(file)
+        PlatformType.MAC_OS -> TODO()
         PlatformType.LINUX -> TODO()
     }
 }
 
 private fun Platform.browseDirectory(file: File) {
+    if (Desktop.getDesktop().isSupported(Desktop.Action.BROWSE_FILE_DIR)) {
+        return Desktop.getDesktop().browseFileDirectory(file.absoluteFile)
+    }
+
     when (platformType) {
         PlatformType.WINDOWS -> TODO()
-        PlatformType.MAC_OS -> Desktop.getDesktop().browseFileDirectory(file.absoluteFile)
+        PlatformType.MAC_OS -> TODO()
         PlatformType.LINUX -> TODO()
     }
 }
