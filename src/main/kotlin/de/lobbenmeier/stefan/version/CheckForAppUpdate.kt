@@ -19,7 +19,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
@@ -27,6 +26,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import de.lobbenmeier.stefan.ui.linkColour
 import de.lobbenmeier.stefan.updater.business.github.GithubRelease
 import de.lobbenmeier.stefan.updater.business.github.GithubReleaseDownloader
 import de.lobbenmeier.stefan.updater.business.platform
@@ -71,7 +71,7 @@ fun CheckForAppUpdate() {
                 Text("Update ${newerRelease.tagName} is out now")
                 Text(
                     style =
-                        TextStyle(textDecoration = TextDecoration.Underline, color = Color.Blue),
+                        TextStyle(textDecoration = TextDecoration.Underline, color = linkColour()),
                     text = "Download on GitHub",
                     modifier =
                         Modifier.clickable { openUri(newerRelease.htmlUrl) }

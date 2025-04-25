@@ -48,3 +48,5 @@ fun AppTheme(appearance: Appearance, content: @Composable () -> Unit) {
 
     MaterialTheme(colors = colors, content = content)
 }
+
+fun linkColour(): Color = if (MaterialTheme.colors.isLight) Color(0xFF1A66FF) else Color(0xFF1A66FF)
