@@ -91,9 +91,13 @@ fun DownloadItemTopView(
             SmallIconButton(onClick = { informationDialogOpen = true }) {
                 Icon(FeatherIcons.Info, "Information and Logs")
             }
-            SmallIconButton(onClick = { downloadItem.download() }) {
-                Icon(FeatherIcons.Download, "Download")
+
+            if (state.status != DownloadItemStatus.DONE) {
+                SmallIconButton(onClick = { downloadItem.download() }) {
+                    Icon(FeatherIcons.Download, "Download")
+                }
             }
+
             SmallIconButton(onClick = { removeItem(downloadItem) }) {
                 Icon(FeatherIcons.XCircle, "Remove Item")
             }
