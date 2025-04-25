@@ -80,7 +80,7 @@ private fun Platform.browseDirectory(file: File) {
     val command =
         when (platformType) {
             PlatformType.WINDOWS -> arrayOf("explorer.exe", "/select,", file.absolutePath)
-            PlatformType.MAC_OS -> arrayOf("open", "-r,", file.absolutePath)
+            PlatformType.MAC_OS -> arrayOf("open", "-R", file.absolutePath)
             PlatformType.LINUX -> arrayOf("xdg-open", file.parentFile.absolutePath)
         }
 
