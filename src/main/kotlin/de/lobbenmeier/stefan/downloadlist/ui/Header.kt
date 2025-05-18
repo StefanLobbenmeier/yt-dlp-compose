@@ -17,9 +17,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -36,6 +33,9 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import compose.icons.FeatherIcons
+import compose.icons.feathericons.Plus
+import compose.icons.feathericons.Settings
 import de.lobbenmeier.stefan.common.ui.rememberClipboardText
 import de.lobbenmeier.stefan.downloadlist.business.DownloadItem
 import de.lobbenmeier.stefan.downloadlist.business.YtDlp
@@ -90,7 +90,7 @@ fun Header(
                         .semantics { role = Role.Button },
                 contentAlignment = Alignment.Center,
             ) {
-                Icon(Icons.Default.Settings, "Settings")
+                Icon(FeatherIcons.Settings, "Settings")
             }
         }
     }
@@ -125,7 +125,7 @@ private fun DownloadUrlInput(modifier: Modifier, submitDownload: (String) -> Uni
         modifier = modifier.semantics { contentDescription = "Download URL" },
         trailingIcon = {
             IconButton(onClick = onSubmitDownload, enabled = downloadButtonEnabled) {
-                Icon(Icons.Default.Add, "Download")
+                Icon(FeatherIcons.Plus, "Download")
             }
         },
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
