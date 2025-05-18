@@ -10,8 +10,6 @@ import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -26,6 +24,8 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import compose.icons.FeatherIcons
+import compose.icons.feathericons.X
 import de.lobbenmeier.stefan.ui.linkColour
 import de.lobbenmeier.stefan.updater.business.github.GithubRelease
 import de.lobbenmeier.stefan.updater.business.github.GithubReleaseDownloader
@@ -62,7 +62,7 @@ fun CheckForAppUpdate() {
                     Text(text = "Update available", style = MaterialTheme.typography.h6)
                     Spacer(Modifier.weight(1f))
                     Icon(
-                        imageVector = Icons.Default.Close,
+                        imageVector = FeatherIcons.X,
                         "Close",
                         modifier = Modifier.clickable { newerReleaseNotFinal = null },
                     )

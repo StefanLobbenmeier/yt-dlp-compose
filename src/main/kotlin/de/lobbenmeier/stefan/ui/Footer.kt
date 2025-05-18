@@ -13,8 +13,6 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -30,6 +28,7 @@ import androidx.compose.ui.window.DialogProperties
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.Key
 import compose.icons.feathericons.Trash
+import compose.icons.feathericons.X
 import de.lobbenmeier.stefan.common.ui.icons.Subtitles
 import de.lobbenmeier.stefan.common.ui.icons.SubtitlesOff
 import de.lobbenmeier.stefan.settings.business.Settings
@@ -164,7 +163,7 @@ fun QuickSettingsDialog(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(contentDescription, style = MaterialTheme.typography.h5)
                     Spacer(Modifier.weight(1f))
-                    IconButton(onClick = onClose) { Icon(Icons.Default.Close, "Close Dialog") }
+                    IconButton(onClick = onClose) { Icon(FeatherIcons.X, "Close Dialog") }
                 }
                 Column(Modifier.padding(vertical = 8.dp), content = { dialogContent() })
             }

@@ -11,8 +11,6 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -24,6 +22,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import compose.icons.FeatherIcons
+import compose.icons.feathericons.X
 import de.lobbenmeier.stefan.common.ui.LogTextField
 import de.lobbenmeier.stefan.downloadlist.business.DownloadItemState
 import de.lobbenmeier.stefan.downloadlist.business.videoMetadata
@@ -41,7 +41,7 @@ fun InformationDialog(state: DownloadItemState, onClose: () -> Unit) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(state.videoMetadata?.title ?: state.url, style = MaterialTheme.typography.h5)
                 Spacer(Modifier.weight(1f))
-                IconButton(onClick = onClose) { Icon(Icons.Default.Close, "Close dialog") }
+                IconButton(onClick = onClose) { Icon(FeatherIcons.X, "Close dialog") }
             }
             LogsSection(state)
         }
