@@ -68,7 +68,6 @@ jobs:
           tag_name: ${{ env.VERSION }}
           files: |
             build/fatJar/*
-            build/checksums/*
             build/compose/binaries/main/*
             build/compose/binaries/main/*/*
           generate_release_notes: true
@@ -80,7 +79,6 @@ jobs:
           make_latest: true
           tag_name: ${{ env.VERSION }}
           files: |
-            build/checksums/*
             build/compose/binaries/main/*
             build/compose/binaries/main/*/*
           generate_release_notes: true
