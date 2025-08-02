@@ -160,7 +160,6 @@ class DownloadItem(val url: String = "https://www.youtube.com/watch?v=CBB75zjxTR
             // Required because of the print
             "--no-simulate",
             "--no-quiet",
-            *useCachedMetadata(),
 
             // --no-clean-info-json allows you to reuse json for playlists
             "--no-clean-info-json",
