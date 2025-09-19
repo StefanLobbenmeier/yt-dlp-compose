@@ -34,7 +34,7 @@ kotlin { jvmToolchain(21) }
 sourceSets { main { output.dir(versionDirectory) } }
 
 dependencies {
-    val ktorVersion = "3.2.3"
+    val ktorVersion = "3.3.0"
     val kotestVersion = "6.0.3"
     val kotlinProcessVersion = "1.5.1"
     val kotlinxSerializationVersion = "1.9.0"
