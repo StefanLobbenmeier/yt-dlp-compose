@@ -32,11 +32,14 @@ class YtDlp(private val binaries: Binaries, private val settings: Settings) {
         consumer: suspend (String, LogLevel) -> Unit = { line, _ -> println("process $line") },
     ) {
         val ytDlpBinary = binaries.ytDlp.pathString
-        val ffmpegBinary = binaries.ffmpeg.pathString
+        val ffmpegBinaryOption = arrayOf("--ffmpeg-location", binaries.ffmpeg.pathString)
+        val denoBinaryOption =
+            binaries.deno?.let { arrayOf("--js-runtimes", "deno:${binaries.deno.pathString}") }
+                ?: arrayOf()
         val fullOptions =
             arrayOf(
-                "--ffmpeg-location",
-                ffmpegBinary,
+                *ffmpegBinaryOption,
+                *denoBinaryOption,
                 "-v",
                 "--compat-opt",
                 "manifest-filesize-approx",
