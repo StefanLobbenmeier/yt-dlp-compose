@@ -38,6 +38,7 @@ import compose.icons.feathericons.File
 import compose.icons.feathericons.Folder
 import de.lobbenmeier.stefan.downloadlist.ui.DropdownMenu
 import de.lobbenmeier.stefan.settings.business.Appearance
+import de.lobbenmeier.stefan.settings.business.DenoLocation
 import de.lobbenmeier.stefan.settings.business.FfmpegLocation
 import de.lobbenmeier.stefan.settings.business.Settings
 import de.lobbenmeier.stefan.settings.business.YtDlpLocation
@@ -104,6 +105,22 @@ fun SettingsUI(settings: Settings, save: (Settings) -> Unit, cancel: () -> Unit)
                         "Ffmpeg Path",
                         mutableSettings.ffmpegPath,
                         onValueChange = { mutableSettings = mutableSettings.copy(ffmpegPath = it) },
+                    )
+                }
+
+                FixedChoiceInput(
+                    "Deno Source",
+                    mutableSettings.denoSource,
+                    onValueChange = {
+                        mutableSettings = mutableSettings.copy(denoSource = it ?: DenoLocation.NONE)
+                    },
+                    options = DenoLocation.entries,
+                )
+                if (mutableSettings.denoSource == DenoLocation.DISK) {
+                    FileInput(
+                        "Deno Path",
+                        mutableSettings.denoPath,
+                        onValueChange = { mutableSettings = mutableSettings.copy(denoPath = it) },
                     )
                 }
             }

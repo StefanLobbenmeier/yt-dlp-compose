@@ -20,16 +20,18 @@ class GithubReleaseDownloader(
     suspend fun downloadRelease(
         assetName: String,
         onProgress: suspend (UpdateDownloadProgress) -> Unit = {},
+        unzipFile: Boolean = false,
     ): File {
 
         val githubRelease = getLatestGithubRelease()
-        return downloadGithubReleaseToFile(githubRelease, assetName, onProgress)
+        return downloadGithubReleaseToFile(githubRelease, assetName, onProgress, unzipFile)
     }
 
     private suspend fun downloadGithubReleaseToFile(
         githubRelease: GithubRelease,
         assetName: String,
         onProgress: suspend (UpdateDownloadProgress) -> Unit,
+        unzipFile: Boolean,
     ): File {
         val version = githubRelease.tagName
         val asset = githubRelease.assets.first { it.name == assetName }
@@ -38,7 +40,12 @@ class GithubReleaseDownloader(
         targetFolder.toFile().mkdirs()
         val targetFile = targetFolder.resolve(version).toFile()
 
-        return httpClient.downloadFile(asset.downloadUrl, targetFile, onProgress = onProgress)
+        return httpClient.downloadFile(
+            asset.downloadUrl,
+            targetFile,
+            onProgress = onProgress,
+            unzipFile = unzipFile,
+        )
     }
 
     private suspend fun getLatestGithubRelease(): GithubRelease {

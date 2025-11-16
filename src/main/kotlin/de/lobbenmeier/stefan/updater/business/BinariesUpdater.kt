@@ -3,6 +3,7 @@ package de.lobbenmeier.stefan.updater.business
 import de.lobbenmeier.stefan.downloadlist.business.DownloadCompleted
 import de.lobbenmeier.stefan.downloadlist.business.UpdateDownloadProgress
 import de.lobbenmeier.stefan.settings.business.BinariesSettings
+import de.lobbenmeier.stefan.settings.business.DenoLocation
 import de.lobbenmeier.stefan.settings.business.FfmpegLocation
 import de.lobbenmeier.stefan.settings.business.YtDlpLocation
 import de.lobbenmeier.stefan.updater.business.ffmpeg.FfmpegReleaseDownloader
@@ -26,6 +27,7 @@ class BinariesUpdater(private val binariesSettings: BinariesSettings) {
         ytDlpProgress: (UpdateDownloadProgress) -> Unit,
         ffmpegProgress: (UpdateDownloadProgress) -> Unit,
         ffprobeProgress: (UpdateDownloadProgress) -> Unit,
+        denoProgress: (UpdateDownloadProgress) -> Unit,
     ) {
         CoroutineScope(Dispatchers.IO).launch {
             val ytDlpFuture =
@@ -65,12 +67,42 @@ class BinariesUpdater(private val binariesSettings: BinariesSettings) {
                     }
                 }
 
+            val denoFuture =
+                when {
+                    binariesSettings.denoSource == DenoLocation.NONE -> {
+                        null
+                    }
+
+                    binariesSettings.denoSource == DenoLocation.STABLE ||
+                        (binariesSettings.denoSource == DenoLocation.DISK &&
+                            binariesSettings.denoPath == null) -> {
+                        async {
+                            createDenoDownloader(downloadDirectory)
+                                .downloadRelease(
+                                    platform.denoName.zipFileName,
+                                    ytDlpProgress,
+                                    unzipFile = true,
+                                )
+                        }
+                    }
+
+                    else -> {
+                        if (binariesSettings.denoPath == null) null
+                        else
+                            async {
+                                findBinary(binariesSettings.denoPath, platform.denoName.filename)
+                                    .also { ytDlpProgress(DownloadCompleted) }
+                            }
+                    }
+                }
+
             val ytDlp = ytDlpFuture.await()
             val ffmpeg = ffmpegFuture.await()
+            val deno = denoFuture?.await()
 
-            binaries.value = Binaries(ytDlp.toPath(), ffmpeg.toPath())
+            binaries.value = Binaries(ytDlp.toPath(), ffmpeg.toPath(), deno?.toPath())
 
-            cleanupOldReleases(ytDlp, ffmpeg)
+            cleanupOldReleases(ytDlp, ffmpeg, deno)
         }
     }
 
@@ -83,13 +115,17 @@ class BinariesUpdater(private val binariesSettings: BinariesSettings) {
         return ytDlpPathAsFile.resolve(binary)
     }
 
-    private fun cleanupOldReleases(ytDlp: File, ffmpeg: File) {
+    private fun cleanupOldReleases(ytDlp: File, ffmpeg: File, deno: File?) {
         val ytDlpChannelFolders = getYtDlpChannelFolders(platform.binariesFolder)
-
         deleteBinariesExceptFor(ytDlpChannelFolders, ytDlp)
 
         val ffmpegChannelFolders = getFfmpegChannelFolders(platform.binariesFolder)
         deleteBinariesExceptFor(ffmpegChannelFolders, ffmpeg)
+
+        if (deno != null) {
+            val denoFolders = getDenoChannelFolders(platform.binariesFolder)
+            deleteBinariesExceptFor(denoFolders, deno)
+        }
     }
 
     private fun deleteBinariesExceptFor(channelFolders: List<File>, except: File) {
