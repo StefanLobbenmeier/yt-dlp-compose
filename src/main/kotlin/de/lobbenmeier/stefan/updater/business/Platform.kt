@@ -11,6 +11,7 @@ data class Platform(
     val name: String,
     val ytDlpName: YtDlpNames,
     val ffmpegPlatform: FfmpegPlatforms,
+    val denoName: DenoName,
     val needsExecutableBit: Boolean,
     val pathDelimiter: String,
     val extraPaths: List<Path> = emptyList(),
@@ -38,6 +39,14 @@ enum class YtDlpNames(val filename: String) {
     windows("yt-dlp.exe"),
 }
 
+enum class DenoName(val filename: String, val zipFileName: String) {
+    macos_arm("deno", "deno-aarch64-apple-darwin.zip"),
+    linux_arm("deno", "deno-aarch64-unknown-linux-gnu.zip"),
+    macos_x86("deno", "deno-x86_64-apple-darwin.zip"),
+    linux_x86("deno", "deno-x86_64-unknown-linux-gnu.zip"),
+    windows("deno.exe", "deno-x86_64-pc-windows-msvc.zip"),
+}
+
 enum class FfmpegPlatforms(val platformName: String) {
     linux32("linux-32"),
     linux64("linux-64"),
@@ -62,22 +71,18 @@ private fun detectPlatform(): Platform {
                 displayName,
                 YtDlpNames.windows,
                 FfmpegPlatforms.windows64,
+                DenoName.windows,
                 needsExecutableBit = false,
                 pathDelimiter = ";",
             )
         }
         name.contains("Mac") -> {
-            val ytDlpName =
-                if (version < "10.15") {
-                    YtDlpNames.osxLegacy
-                } else {
-                    YtDlpNames.osx
-                }
             Platform(
                 PlatformType.MAC_OS,
                 displayName,
-                ytDlpName,
+                if (version < "10.15") YtDlpNames.osxLegacy else YtDlpNames.osx,
                 FfmpegPlatforms.osx64,
+                if (arch == "aarch64") DenoName.macos_arm else DenoName.macos_x86,
                 needsExecutableBit = true,
                 pathDelimiter = ":",
                 extraPaths = listOf("/opt/homebrew/bin/").map(Path::of),
@@ -91,11 +96,18 @@ private fun detectPlatform(): Platform {
                     else -> FfmpegPlatforms.linux64
                 }
 
+            val denoName =
+                when {
+                    arch.contains("arm") -> DenoName.linux_arm
+                    else -> DenoName.linux_x86
+                }
+
             Platform(
                 PlatformType.LINUX,
                 displayName,
                 YtDlpNames.python,
                 ffmpegPlatform,
+                denoName,
                 needsExecutableBit = true,
                 pathDelimiter = ":",
             )

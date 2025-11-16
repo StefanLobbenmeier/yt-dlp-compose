@@ -28,12 +28,14 @@ fun Updater(modifier: Modifier, updater: BinariesUpdater) {
     var ffprobeDownloadProgress by remember {
         mutableStateOf<UpdateDownloadProgress>(DownloadStarted)
     }
+    var denoProgress by remember { mutableStateOf<UpdateDownloadProgress>(DownloadStarted) }
 
     LaunchedEffect(updater) {
         updater.downloadOrFindBinaries(
             ytDlpProgress = { ytDlpDownloadProgress = it },
             ffmpegProgress = { ffmpegDownloadProgress = it },
             ffprobeProgress = { ffprobeDownloadProgress = it },
+            denoProgress = { denoProgress = it },
         )
     }
 
@@ -42,6 +44,7 @@ fun Updater(modifier: Modifier, updater: BinariesUpdater) {
         DownloadProgress("yt-dlp", ytDlpDownloadProgress)
         DownloadProgress("ffmpeg", ffmpegDownloadProgress)
         DownloadProgress("ffprobe", ffprobeDownloadProgress)
+        DownloadProgress("deno", denoProgress)
     }
 }
 

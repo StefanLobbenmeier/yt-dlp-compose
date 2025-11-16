@@ -15,6 +15,8 @@ data class Settings(
     val ytDlpPath: String?,
     val ffmpegSource: FfmpegLocation?,
     val ffmpegPath: String?,
+    val denoSource: DenoLocation = DenoLocation.NONE,
+    val denoPath: String?,
     //        val appearance: Theme,
 
     // Network & Authentication
@@ -56,6 +58,8 @@ data class BinariesSettings(
     val ytDlpPath: String?,
     val ffmpegSource: FfmpegLocation?,
     val ffmpegPath: String?,
+    val denoSource: DenoLocation?,
+    val denoPath: String?,
 )
 
 val Settings.binariesSettings
@@ -65,4 +69,6 @@ val Settings.binariesSettings
             ytDlpPath = ytDlpPath,
             ffmpegSource = ffmpegSource,
             ffmpegPath = ffmpegPath,
+            denoSource = denoSource,
+            denoPath = denoPath,
         )
