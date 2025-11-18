@@ -35,7 +35,7 @@ sourceSets { main { output.dir(versionDirectory) } }
 
 dependencies {
     val ktorVersion = "3.3.2"
-    val kotestVersion = "6.0.4"
+    val kotestVersion = "6.0.5"
     val kotlinProcessVersion = "1.5.1"
     val kotlinxSerializationVersion = "1.9.0"
     val kamelVersion = "1.0.8"
