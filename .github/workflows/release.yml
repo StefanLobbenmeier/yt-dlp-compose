@@ -18,8 +18,8 @@ jobs:
       matrix:
         os:
           # https://github.com/actions/runner-images?tab=readme-ov-file#available-images
-          - 'macos-13' # x64
-          - 'macos-14' # arm
+          - 'macos-latest-large' # x64
+          - 'macos-latest' # arm
           - 'windows-latest'
           - 'ubuntu-latest'
     runs-on: ${{ matrix.os }}
