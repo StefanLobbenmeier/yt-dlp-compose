@@ -81,4 +81,4 @@ jobs:
           files: |
             build/compose/binaries/main/*
             build/compose/binaries/main/*/*
-          generate_release_notes: true
+          generate_release_notes: false # only the linux job will generate notes
