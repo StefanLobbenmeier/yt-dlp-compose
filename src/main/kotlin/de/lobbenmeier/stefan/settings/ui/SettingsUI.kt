@@ -168,6 +168,13 @@ fun SettingsUI(settings: Settings, save: (Settings) -> Unit, cancel: () -> Unit)
                 )
             }
 
+            Section("Subtitles") {
+                subtitleSettings(
+                    settings = mutableSettings,
+                    updateSettings = { mutableSettings = it },
+                )
+            }
+
             Section("Output") {
                 TextInput(
                     "Merge Output Format (Fast)",
@@ -311,6 +318,28 @@ fun formatSettings(settings: Settings, updateSettings: (Settings) -> Unit) {
         settings.formatSort,
         onValueChange = { updateSettings(settings.copy(formatSort = it)) },
         options = listOf("res:1080", "res:720", "res:480", "res:360"),
+    )
+}
+
+@Composable
+fun subtitleSettings(settings: Settings, updateSettings: (Settings) -> Unit) {
+    BooleanInput("Write subtitle file", settings.writeSubtitles) {
+        updateSettings(settings.copy(writeSubtitles = it))
+    }
+    BooleanInput("Write automatically generated subtitle file", settings.writeAutomaticSubtitles) {
+        updateSettings(settings.copy(writeAutomaticSubtitles = it))
+    }
+    ChoiceInput(
+        "Subtitle format",
+        settings.subtitleFormat,
+        onValueChange = { updateSettings(settings.copy(subtitleFormat = it)) },
+        options = listOf("best", "srt/best", "vtt/best"),
+    )
+    ChoiceInput(
+        "Subtitle languages",
+        settings.subtitleLanguages,
+        onValueChange = { updateSettings(settings.copy(subtitleLanguages = it)) },
+        options = listOf("all", "en", "de", "fr", "es", "it", "nl", "pt", "ru", "zh"),
     )
 }
 

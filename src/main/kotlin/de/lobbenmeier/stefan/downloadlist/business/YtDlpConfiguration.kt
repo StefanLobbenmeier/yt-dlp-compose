@@ -32,6 +32,11 @@ fun Settings.toYtDlpConfiguration(): Array<String> =
             addArgument("--prefer-free-formats", preferFreeFormats)
             addArgument("--format-sort", formatSort)
 
+            addArgument("--write-subs", writeSubtitles)
+            addArgument("--write-auto-subs", writeAutomaticSubtitles)
+            addArgument("--sub-format", subtitleFormat)
+            addArgument("--sub-langs", subtitleLanguages)
+
             addArgument("--embed-subs", embedSubtitles)
             addArgument("--embed-metadata", embedMetadata)
             addArgument("--embed-thumbnail", embedThumbnail)

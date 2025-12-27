@@ -39,6 +39,12 @@ data class Settings(
     val recodeFormat: String?,
     val audioFormat: String?,
 
+    // Subtitles
+    val writeSubtitles: Boolean = false,
+    val writeAutomaticSubtitles: Boolean = false,
+    val subtitleFormat: String?,
+    val subtitleLanguages: String?,
+
     // embed
     val embedSubtitles: Boolean = false,
     val embedMetadata: Boolean = false,
