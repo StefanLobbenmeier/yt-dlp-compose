@@ -38,7 +38,7 @@ dependencies {
     val kotestVersion = "6.0.7"
     val kotlinProcessVersion = "1.5.1"
     val kotlinxSerializationVersion = "1.9.0"
-    val kamelVersion = "1.0.8"
+    val kamelVersion = "1.0.9"
 
     implementation(compose.desktop.currentOs)
 
