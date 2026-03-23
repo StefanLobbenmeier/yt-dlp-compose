@@ -11,7 +11,7 @@ plugins {
     kotlin("plugin.compose") version kotlinVersion
     id("org.jetbrains.compose") version "1.10.3"
     id("com.diffplug.spotless") version "8.4.0"
-    id("com.gradleup.shadow") version "9.3.0"
+    id("com.gradleup.shadow") version "9.4.0"
     id("org.gradle.crypto.checksum") version "1.4.0"
 }
 
