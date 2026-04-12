@@ -62,7 +62,7 @@ jobs:
 
       - name: Release Linux+Jar
         if: ${{ matrix.os == 'ubuntu-latest' }}
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           make_latest: true
           tag_name: ${{ env.VERSION }}
@@ -74,7 +74,7 @@ jobs:
 
       - name: Release Non-Linux
         if: ${{ matrix.os != 'ubuntu-latest' }}
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           make_latest: true
           tag_name: ${{ env.VERSION }}
