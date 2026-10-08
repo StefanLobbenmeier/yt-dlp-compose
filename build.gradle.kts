@@ -1,5 +1,5 @@
+import dev.nucleusframework.desktop.application.dsl.TargetFormat
 import org.gradle.crypto.checksum.Checksum
-import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.internal.ensureParentDirsCreated
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
@@ -9,7 +9,10 @@ plugins {
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.serialization") version kotlinVersion
     kotlin("plugin.compose") version kotlinVersion
-    id("org.jetbrains.compose") version "1.12.1"
+    id("org.jetbrains.compose.hot-reload") version "1.2.0"
+    // Nucleus owns desktop tasks. The Compose Gradle plugin makes IntelliJ inject a
+    // second application block when running main(), which conflicts with Nucleus.
+    id("dev.nucleusframework") version "2.5.18"
     id("com.diffplug.spotless") version "8.6.0"
     id("com.gradleup.shadow") version "9.6.1"
     id("org.gradle.crypto.checksum") version "1.4.0"
@@ -21,6 +24,10 @@ val appVersion = System.getenv("VERSION") ?: "1.0.0"
 
 version = appVersion
 
+val nativeFormats = listOf(TargetFormat.Deb, TargetFormat.Dmg, TargetFormat.Rpm, TargetFormat.Exe)
+val nativeInstallerTasks =
+    nativeFormats.filter { it.isCompatibleWithCurrentOS }.map { "packageGraalvm${it.name}" }
+
 val versionDirectory = layout.buildDirectory.dir("version")
 
 repositories {
@@ -29,7 +36,7 @@ repositories {
     google()
 }
 
-kotlin { jvmToolchain(21) }
+kotlin { jvmToolchain(25) }
 
 sourceSets { main { output.dir(versionDirectory) } }
 
@@ -40,14 +47,20 @@ dependencies {
     val kotlinxSerializationVersion = "1.11.0"
     val kamelVersion = "1.0.9"
 
-    implementation(compose.desktop.currentOs)
+    implementation(nucleus.desktop.currentOs)
+    val nucleusVersion = "2.5.18"
+    implementation("dev.nucleusframework:nucleus.nucleus-application:$nucleusVersion")
+    implementation("dev.nucleusframework:nucleus.decorated-window-tao:$nucleusVersion")
+    implementation("dev.nucleusframework:nucleus.darkmode-detector:$nucleusVersion")
+    implementation("dev.nucleusframework:nucleus.system-color:$nucleusVersion")
+    implementation("dev.nucleusframework:nucleus.graalvm-runtime:$nucleusVersion")
 
     if (System.getenv("FAT_JAR") == "true") {
-        implementation(compose.desktop.macos_x64)
-        implementation(compose.desktop.macos_arm64)
-        implementation(compose.desktop.windows_x64)
-        implementation(compose.desktop.linux_x64)
-        implementation(compose.desktop.linux_arm64)
+        val composeVersion = "1.12.1"
+        listOf("macos-x64", "macos-arm64", "windows-x64", "linux-x64", "linux-arm64").forEach {
+            target ->
+            implementation("org.jetbrains.compose.desktop:desktop-jvm-$target:$composeVersion")
+        }
     }
 
     implementation("io.ktor:ktor-client-core:$ktorVersion")
@@ -61,8 +74,7 @@ dependencies {
     implementation("io.github.oshai:kotlin-logging-jvm:8.0.4")
     implementation("org.slf4j:slf4j-simple:2.0.20")
     implementation("dev.dirs:directories:26")
-    implementation("io.github.vinceglb:filekit-compose:0.8.8")
-    implementation("com.github.tkuenneth:nativeparameterstoreaccess:0.1.3")
+    implementation("io.github.vinceglb:filekit-dialogs:0.15.0")
 
     testImplementation("org.junit.jupiter:junit-jupiter:6.1.3")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.11.0")
@@ -72,51 +84,56 @@ dependencies {
 
 tasks { test { useJUnitPlatform() } }
 
-compose {
-    desktop {
-        application {
-            mainClass = "MainKt"
+nucleus {
+    application {
+        mainClass = "MainKt"
 
-            nativeDistributions {
-                val processorArchitecture = System.getProperty("os.arch")
-                packageName =
-                    when (processorArchitecture) {
-                        "aarch64" -> "yt-dlp-compose-arm64"
-                        "x86_64" -> "yt-dlp-compose-x64"
-                        else -> "yt-dlp-compose"
-                    }
-                packageVersion = appVersion
+        graalvm {
+            isEnabled = true
+            imageName = "yt-dlp-compose"
+            toolchain { version = "25" }
+        }
 
-                targetFormats(
-                    TargetFormat.Deb,
-                    TargetFormat.Dmg,
-                    TargetFormat.Rpm,
-                    TargetFormat.Exe,
-                )
-
-                linux { shortcut = true }
-
-                windows {
-                    dirChooser = true
-                    menu = true
-                    perUserInstall = true
-                    shortcut = true
-                    upgradeUuid = "760c3be8-21cf-43fe-ba50-241d1cc25ae8"
+        nativeDistributions {
+            appName = "Open Video Downloader"
+            homepage = "https://github.com/StefanLobbenmeier/yt-dlp-compose"
+            description = "Download videos and playlists with yt-dlp"
+            vendor = "Stefan Lobbenmeier"
+            artifactName = "\${name}-\${version}-\${os}-\${arch}.\${ext}"
+            macOS { bundleID = "de.lobbenmeier.stefan.ytdlpcompose" }
+            val processorArchitecture = System.getProperty("os.arch")
+            packageName =
+                when (processorArchitecture) {
+                    "aarch64" -> "yt-dlp-compose-arm64"
+                    "x86_64" -> "yt-dlp-compose-x64"
+                    else -> "yt-dlp-compose"
                 }
+            packageVersion = appVersion
 
-                modules(
-                    // lwjgl3 needs sun.misc.Unsafe to be included in the bundled JRE
-                    "jdk.unsupported",
+            targetFormats(*nativeFormats.toTypedArray())
 
-                    // required by NVDA on windows
-                    "jdk.accessibility",
+            linux { shortcut = true }
 
-                    // others suggested by gradle suggestedRuntimeModules
-                    "java.instrument",
-                    "java.management",
-                    "jdk.security.auth",
-                )
+            windows {
+                dirChooser = true
+                menu = true
+                perUserInstall = true
+                shortcut = true
+                upgradeUuid = "760c3be8-21cf-43fe-ba50-241d1cc25ae8"
             }
+
+            modules(
+                // lwjgl3 needs sun.misc.Unsafe to be included in the bundled JRE
+                "jdk.unsupported",
+
+                // required by NVDA on windows
+                "jdk.accessibility",
+
+                // others suggested by gradle suggestedRuntimeModules
+                "java.instrument",
+                "java.management",
+                "jdk.security.auth",
+            )
         }
     }
 }
@@ -141,16 +158,21 @@ tasks {
     processResources { dependsOn(createVersionFile) }
 
     register("nativeDistribution") {
-        dependsOn("packageDistributionForCurrentOS", "createChecksumsForNativeDistributions")
+        dependsOn(nativeInstallerTasks, "createChecksumsForNativeDistributions")
     }
     register<Checksum>("createChecksumsForNativeDistributions") {
-        dependsOn("packageDistributionForCurrentOS")
+        dependsOn(nativeInstallerTasks)
 
         inputFiles.setFrom(
-            layout.buildDirectory.dir("compose/binaries/main/deb"),
-            layout.buildDirectory.dir("compose/binaries/main/rpm"),
-            layout.buildDirectory.dir("compose/binaries/main/dmg"),
-            layout.buildDirectory.dir("compose/binaries/main/exe"),
+            nativeFormats.map { format ->
+                fileTree(
+                    layout.buildDirectory.dir(
+                        "compose/binaries/main/graalvm-${format.outputDirName}"
+                    )
+                ) {
+                    include("*${format.fileExt}")
+                }
+            }
         )
         outputDirectory = layout.buildDirectory.dir("checksums")
         checksumAlgorithm = Checksum.Algorithm.SHA256
@@ -170,4 +192,14 @@ tasks {
         checksumAlgorithm = Checksum.Algorithm.SHA256
         appendFileNameToChecksum = true
     }
+}
+
+// Explicit graphical regression check; kept separate from headless unit tests.
+tasks.register<JavaExec>("desktopDialogSmoke") {
+    dependsOn(tasks.testClasses)
+    classpath = sourceSets.test.get().runtimeClasspath
+    mainClass.set("de.lobbenmeier.stefan.common.ui.DesktopDialogSmokeKt")
+    systemProperty("nucleus.tao.fatalErrorDialog", "false")
+    jvmArgs("--enable-native-access=ALL-UNNAMED")
+    if (System.getProperty("os.name").contains("Mac")) jvmArgs("-XstartOnFirstThread")
 }

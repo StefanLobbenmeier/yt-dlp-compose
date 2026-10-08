@@ -11,7 +11,6 @@ import de.lobbenmeier.stefan.updater.business.Platform
 import de.lobbenmeier.stefan.updater.business.PlatformType
 import de.lobbenmeier.stefan.updater.business.platform
 import io.github.oshai.kotlinlogging.KotlinLogging
-import java.awt.Desktop
 import java.io.File
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -58,10 +57,6 @@ fun BrowseFileButton(file: File?) {
 }
 
 private fun Platform.openFile(file: File) {
-    if (Desktop.getDesktop().isSupported(Desktop.Action.OPEN)) {
-        return Desktop.getDesktop().open(file)
-    }
-
     val command =
         when (platformType) {
             PlatformType.WINDOWS -> arrayOf("explorer.exe", file.absolutePath)
@@ -73,10 +68,6 @@ private fun Platform.openFile(file: File) {
 }
 
 private fun Platform.browseDirectory(file: File) {
-    if (Desktop.getDesktop().isSupported(Desktop.Action.BROWSE_FILE_DIR)) {
-        return Desktop.getDesktop().browseFileDirectory(file.absoluteFile)
-    }
-
     val command =
         when (platformType) {
             PlatformType.WINDOWS -> arrayOf("explorer.exe", "/select,", file.absolutePath)

@@ -1,12 +1,11 @@
 package de.lobbenmeier.stefan.downloadlist.ui
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -20,8 +19,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.X
 import de.lobbenmeier.stefan.common.ui.LogTextField
@@ -33,18 +30,18 @@ import de.lobbenmeier.stefan.settings.ui.BooleanInput
 @Composable
 fun InformationDialog(state: DownloadItemState, onClose: () -> Unit) {
 
-    Dialog(
-        onDismissRequest = onClose,
-        properties = DialogProperties(usePlatformInsets = false, usePlatformDefaultWidth = false),
-    ) {
-        Column(Modifier.background(MaterialTheme.colors.background).width(600.dp).padding(24.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(state.videoMetadata?.title ?: state.url, style = MaterialTheme.typography.h5)
-                Spacer(Modifier.weight(1f))
-                IconButton(onClick = onClose) { Icon(FeatherIcons.X, "Close dialog") }
-            }
-            LogsSection(state)
+    Column(Modifier.fillMaxSize().padding(24.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                state.videoMetadata?.title ?: state.url,
+                modifier = Modifier.weight(1f),
+                maxLines = 2,
+                style = MaterialTheme.typography.h5,
+            )
+            Spacer(Modifier.weight(1f))
+            IconButton(onClick = onClose) { Icon(FeatherIcons.X, "Close dialog") }
         }
+        LogsSection(state)
     }
 }
 
@@ -74,5 +71,5 @@ private fun Logs(state: DownloadItemState, showDebugLogs: Boolean) {
             .let { if (!showDebugLogs) it.filter { !it.startsWith("[debug]") } else it }
             .joinToString("\n")
 
-    Column { LogTextField(value = logs) }
+    LogTextField(value = logs, modifier = Modifier.fillMaxSize())
 }

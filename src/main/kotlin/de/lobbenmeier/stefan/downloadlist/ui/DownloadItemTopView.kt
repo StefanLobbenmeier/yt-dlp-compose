@@ -18,8 +18,6 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -30,6 +28,7 @@ import compose.icons.feathericons.Download
 import compose.icons.feathericons.Info
 import compose.icons.feathericons.XCircle
 import de.lobbenmeier.stefan.common.ui.SmallIconButton
+import de.lobbenmeier.stefan.common.ui.rememberDesktopDialogLauncher
 import de.lobbenmeier.stefan.downloadlist.business.DownloadCompleted
 import de.lobbenmeier.stefan.downloadlist.business.DownloadFailed
 import de.lobbenmeier.stefan.downloadlist.business.DownloadItem
@@ -82,13 +81,12 @@ fun DownloadItemTopView(
             modifier = Modifier.padding(8.dp).fillMaxHeight(),
             verticalArrangement = Arrangement.SpaceEvenly,
         ) {
-            var informationDialogOpen by remember { mutableStateOf(false) }
+            val openInformation =
+                rememberDesktopDialogLauncher("Download information", 680.dp, 560.dp) { close ->
+                    InformationDialog(state, onClose = close)
+                }
 
-            if (informationDialogOpen) {
-                InformationDialog(state, onClose = { informationDialogOpen = false })
-            }
-
-            SmallIconButton(onClick = { informationDialogOpen = true }) {
+            SmallIconButton(onClick = openInformation) {
                 Icon(FeatherIcons.Info, "Information and Logs")
             }
 
@@ -181,13 +179,12 @@ private fun DownloadInformation(downloadProgress: VideoDownloadProgress) {
 
 @Composable
 fun ViewLogsButton(state: DownloadItemState) {
-    var logsDialogopen by remember { mutableStateOf(false) }
+    val openLogs =
+        rememberDesktopDialogLauncher("Download logs", 680.dp, 560.dp) { close ->
+            LogsDialog(state, onClose = close)
+        }
 
-    if (logsDialogopen) {
-        LogsDialog(state, onClose = { logsDialogopen = false })
-    }
-
-    Button(onClick = { logsDialogopen = true }) { Text("Show logs") }
+    Button(onClick = openLogs) { Text("Show logs") }
 }
 
 @Composable
