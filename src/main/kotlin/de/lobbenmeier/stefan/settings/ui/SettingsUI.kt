@@ -1,6 +1,5 @@
 package de.lobbenmeier.stefan.settings.ui
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -8,11 +7,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.Checkbox
 import androidx.compose.material.ExperimentalMaterialApi
@@ -37,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.File
 import compose.icons.feathericons.Folder
+import de.lobbenmeier.stefan.common.ui.DesktopScrollableColumn
 import de.lobbenmeier.stefan.downloadlist.ui.DropdownMenu
 import de.lobbenmeier.stefan.settings.business.Appearance
 import de.lobbenmeier.stefan.settings.business.DenoLocation
@@ -56,21 +55,16 @@ import java.io.File
 import kotlin.io.path.absolutePathString
 import kotlinx.coroutines.launch
 
-val textFieldWidth = 350.dp
-
 @Composable
 fun SettingsUI(settings: Settings, save: (Settings) -> Unit, cancel: () -> Unit) {
     var mutableSettings by remember { mutableStateOf(settings) }
 
     Column(
-        Modifier.padding(vertical = 32.dp)
-            .background(MaterialTheme.colors.background)
-            .padding(24.dp)
-            .width(textFieldWidth),
+        Modifier.fillMaxSize().padding(24.dp),
         verticalArrangement = Arrangement.spacedBy(32.dp),
     ) {
-        Column(
-            modifier = Modifier.weight(1f).verticalScroll(rememberScrollState()),
+        DesktopScrollableColumn(
+            modifier = Modifier.weight(1f),
             verticalArrangement = Arrangement.spacedBy(32.dp),
         ) {
             Section("Application") {
@@ -377,7 +371,7 @@ private fun <T> FixedChoiceInput(
         selectedOption = value,
         selectionChanged = { onValueChange(it) },
         label = description,
-        textFieldModifier = Modifier.width(textFieldWidth),
+        textFieldModifier = Modifier.fillMaxWidth(),
     )
 }
 
@@ -395,7 +389,7 @@ private fun ChoiceInput(
         selectionChanged = { if (it == nullOption) onValueChange(null) else onValueChange(it) },
         onTextInput = { if (it == nullOption) onValueChange(null) else onValueChange(it) },
         label = description,
-        textFieldModifier = Modifier.width(textFieldWidth),
+        textFieldModifier = Modifier.fillMaxWidth(),
     )
 }
 
@@ -412,7 +406,7 @@ private fun TextInput(
         label = { Text(description) },
         placeholder = placeholder?.let { { Text(it) } },
         trailingIcon = trailingIcon,
-        modifier = Modifier.semantics { contentDescription = description }.width(400.dp),
+        modifier = Modifier.semantics { contentDescription = description }.fillMaxWidth(),
         onValueChange = {
             if (it.isEmpty()) {
                 onValueChange(null)

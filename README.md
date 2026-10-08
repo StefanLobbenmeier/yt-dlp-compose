@@ -2,7 +2,7 @@
 
 A desktop video and playlist downloader powered by yt-dlp, ffmpeg, Compose, and [Nucleus](https://nucleusframework.dev/en/).
 
-The application uses Nucleus's Tao window backend, platform window controls and context menus, native file and directory pickers, and reactive system appearance and accent colors. Settings and download information open in resizable desktop dialogs; Escape closes them. Download behavior and existing settings are preserved.
+The application uses Nucleus's Tao window backend, platform window controls and context menus, native file and directory pickers, and reactive system appearance and accent colors. Settings and download information open in resizable desktop dialogs; Escape closes them. Settings, download lists, playlists, and logs include draggable Compose desktop scrollbars. These are rendered by Compose rather than OS scrollbar widgets. Download behavior and existing settings are preserved.
 
 ## Development
 
@@ -12,6 +12,10 @@ Install JDK 25, then run:
 ./gradlew run
 ./gradlew build
 ```
+
+In IntelliJ, reload the Gradle project and launch the Gradle `run` task. Nucleus owns the desktop launch and packaging tasks; only Kotlin's Compose compiler plugin is needed alongside it.
+
+On a graphical desktop, `./gradlew desktopDialogSmoke` checks that a single request opens a Tao dialog from inside a layout subcomposition, and that its light/dark text colors are independent of the opening button.
 
 ## GraalVM distribution
 

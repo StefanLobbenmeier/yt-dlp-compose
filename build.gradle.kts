@@ -9,7 +9,8 @@ plugins {
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.serialization") version kotlinVersion
     kotlin("plugin.compose") version kotlinVersion
-    id("org.jetbrains.compose") version "1.12.1"
+    // Nucleus owns desktop tasks. The Compose Gradle plugin makes IntelliJ inject a
+    // second application block when running main(), which conflicts with Nucleus.
     id("dev.nucleusframework") version "2.5.18"
     id("com.diffplug.spotless") version "8.6.0"
     id("com.gradleup.shadow") version "9.6.1"
@@ -45,7 +46,7 @@ dependencies {
     val kotlinxSerializationVersion = "1.11.0"
     val kamelVersion = "1.0.9"
 
-    implementation(compose.desktop.currentOs)
+    implementation(nucleus.desktop.currentOs)
     val nucleusVersion = "2.5.18"
     implementation("dev.nucleusframework:nucleus.nucleus-application:$nucleusVersion")
     implementation("dev.nucleusframework:nucleus.decorated-window-tao:$nucleusVersion")
@@ -54,11 +55,11 @@ dependencies {
     implementation("dev.nucleusframework:nucleus.graalvm-runtime:$nucleusVersion")
 
     if (System.getenv("FAT_JAR") == "true") {
-        implementation(compose.desktop.macos_x64)
-        implementation(compose.desktop.macos_arm64)
-        implementation(compose.desktop.windows_x64)
-        implementation(compose.desktop.linux_x64)
-        implementation(compose.desktop.linux_arm64)
+        val composeVersion = "1.12.1"
+        listOf("macos-x64", "macos-arm64", "windows-x64", "linux-x64", "linux-arm64").forEach {
+            target ->
+            implementation("org.jetbrains.compose.desktop:desktop-jvm-$target:$composeVersion")
+        }
     }
 
     implementation("io.ktor:ktor-client-core:$ktorVersion")
@@ -190,4 +191,14 @@ tasks {
         checksumAlgorithm = Checksum.Algorithm.SHA256
         appendFileNameToChecksum = true
     }
+}
+
+// Explicit graphical regression check; kept separate from headless unit tests.
+tasks.register<JavaExec>("desktopDialogSmoke") {
+    dependsOn(tasks.testClasses)
+    classpath = sourceSets.test.get().runtimeClasspath
+    mainClass.set("de.lobbenmeier.stefan.common.ui.DesktopDialogSmokeKt")
+    systemProperty("nucleus.tao.fatalErrorDialog", "false")
+    jvmArgs("--enable-native-access=ALL-UNNAMED")
+    if (System.getProperty("os.name").contains("Mac")) jvmArgs("-XstartOnFirstThread")
 }

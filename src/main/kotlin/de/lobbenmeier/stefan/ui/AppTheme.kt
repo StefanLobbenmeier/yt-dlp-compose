@@ -17,53 +17,57 @@ import de.lobbenmeier.stefan.settings.business.Appearance
 import dev.nucleusframework.systemcolor.systemAccentColor
 import dev.nucleusframework.window.NucleusDecoratedWindowTheme
 
-val errorColor = Color(0XFFb73232) // --error-color: #b73232;
+/** Keep accent-colored labels and filled buttons readable for any OS accent. */
+internal fun desktopColors(dark: Boolean, systemAccent: Color): androidx.compose.material.Colors {
+    val base =
+        if (dark) darkColors(background = Color(0xFF202020), surface = Color(0xFF202020))
+        else lightColors(background = Color(0xFFF3F3F3), surface = Color.White)
+    val accent =
+        accessibleAccent(systemAccent.copy(alpha = 1f), base.background, base.surface, dark)
+    val onAccent =
+        if (contrastRatio(accent, Color.Black) >= contrastRatio(accent, Color.White)) Color.Black
+        else Color.White
+    return base.copy(
+        primary = accent,
+        primaryVariant = accent,
+        secondary = accent,
+        secondaryVariant = accent,
+        onPrimary = onAccent,
+        onSecondary = onAccent,
+    )
+}
 
-private val LightColorPalette
-    get() =
-        lightColors(
-            primary = Color(0xFF52a552), // --secondary-highlight-color: #52a552;
-            primaryVariant = Color(0xFF5cb85c), // --highlight-color: #5cb85c;
-            secondary = Color(0xFF52a552), // --secondary-highlight-color: #52a552;
-            secondaryVariant = Color(0xFF5cb85c), // --highlight-color: #5cb85c;
-            background = Color(0xFFF3F3F3), // --secondary-bg-color: #eaeaea;
-            surface = Color.White, // --bg-color: #ffffff
-            onPrimary = Color.Black,
-            onSecondary = Color.Black,
-            onBackground = Color.Black,
-            onSurface = Color.Black,
-        )
+internal fun contrastRatio(first: Color, second: Color): Float {
+    val a = first.luminance()
+    val b = second.luminance()
+    return (maxOf(a, b) + 0.05f) / (minOf(a, b) + 0.05f)
+}
 
-private val DarkColorPalette
-    get() =
-        darkColors(
-            background = Color(0xFF202020),
-            surface = Color(0xFF202020), // Color(0xFF292929),
-            primary = Color(0xFF5cb85c),
-            primaryVariant = Color(0xFF52a552), // --secondary-highlight-color: #52a552;
-            secondary = Color(0xFF5cb85c), // --highlight-color: #5cb85c;
-            secondaryVariant = Color(0xFF52a552), // --secondary-highlight-color: #52a552;
-            onPrimary = Color.Black,
-            onSecondary = Color.White,
-            onBackground = Color.White,
-            onSurface = Color.White,
-        )
+private fun accessibleAccent(
+    accent: Color,
+    background: Color,
+    surface: Color,
+    dark: Boolean,
+): Color {
+    fun readable(color: Color) =
+        contrastRatio(color, background) >= 4.5f && contrastRatio(color, surface) >= 4.5f
+    if (readable(accent)) return accent
+    val target = if (dark) Color.White else Color.Black
+    var low = 0f
+    var high = 1f
+    repeat(20) {
+        val middle = (low + high) / 2
+        if (readable(androidx.compose.ui.graphics.lerp(accent, target, middle))) high = middle
+        else low = middle
+    }
+    return androidx.compose.ui.graphics.lerp(accent, target, high)
+}
 
 @Composable
 fun AppTheme(appearance: Appearance, content: @Composable () -> Unit) {
     val darkTheme =
         appearance == Appearance.DARK || (appearance == Appearance.SYSTEM && isSystemInDarkTheme())
-    val accent = systemAccentColor() ?: Color(0xFF3584E4)
-    val onAccent = if (accent.luminance() > 0.45f) Color.Black else Color.White
-    val colors =
-        (if (darkTheme) DarkColorPalette else LightColorPalette).copy(
-            primary = accent,
-            primaryVariant = accent,
-            secondary = accent,
-            secondaryVariant = accent,
-            onPrimary = onAccent,
-            onSecondary = onAccent,
-        )
+    val colors = desktopColors(darkTheme, systemAccentColor() ?: Color(0xFF3584E4))
 
     NucleusDecoratedWindowTheme(isDark = darkTheme) {
         MaterialTheme(
@@ -87,5 +91,4 @@ fun AppTheme(appearance: Appearance, content: @Composable () -> Unit) {
     }
 }
 
-@Composable
-fun linkColour(): Color = if (MaterialTheme.colors.isLight) Color(0xFF1A66FF) else Color(0xFF1A66FF)
+@Composable fun linkColour(): Color = MaterialTheme.colors.primary

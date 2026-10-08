@@ -1,12 +1,10 @@
 package de.lobbenmeier.stefan.ui
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.BottomAppBar
 import androidx.compose.material.Button
 import androidx.compose.material.Icon
@@ -15,8 +13,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -27,14 +23,14 @@ import compose.icons.FeatherIcons
 import compose.icons.feathericons.Key
 import compose.icons.feathericons.Trash
 import compose.icons.feathericons.X
-import de.lobbenmeier.stefan.common.ui.DesktopDialog
+import de.lobbenmeier.stefan.common.ui.DesktopScrollableColumn
 import de.lobbenmeier.stefan.common.ui.icons.Subtitles
 import de.lobbenmeier.stefan.common.ui.icons.SubtitlesOff
+import de.lobbenmeier.stefan.common.ui.rememberDesktopDialogLauncher
 import de.lobbenmeier.stefan.settings.business.Settings
 import de.lobbenmeier.stefan.settings.ui.DirectoryPickerButton
 import de.lobbenmeier.stefan.settings.ui.authenticationSettings
 import de.lobbenmeier.stefan.settings.ui.formatSettings
-import de.lobbenmeier.stefan.settings.ui.textFieldWidth
 
 @Composable
 fun Footer(
@@ -115,15 +111,12 @@ fun QuickSettingIconButton(
     contentDescription: String,
     dialogContent: @Composable () -> Unit,
 ) {
-    var quickSettingsOpen by remember { mutableStateOf(false) }
+    val openDialog =
+        rememberDesktopDialogLauncher(contentDescription, 480.dp, 480.dp) { close ->
+            QuickSettingsDialog(dialogContent, contentDescription, close)
+        }
 
-    if (quickSettingsOpen) {
-        QuickSettingsDialog(dialogContent, contentDescription, { quickSettingsOpen = false })
-    }
-
-    return IconButton(onClick = { quickSettingsOpen = !quickSettingsOpen }) {
-        Icon(icon, contentDescription)
-    }
+    return IconButton(onClick = openDialog) { Icon(icon, contentDescription) }
 }
 
 @Composable
@@ -132,13 +125,12 @@ fun QuickSettingButton(
     contentDescription: String,
     dialogContent: @Composable () -> Unit,
 ) {
-    var quickSettingsOpen by remember { mutableStateOf(false) }
+    val openDialog =
+        rememberDesktopDialogLauncher(contentDescription, 480.dp, 480.dp) { close ->
+            QuickSettingsDialog(dialogContent, contentDescription, close)
+        }
 
-    if (quickSettingsOpen) {
-        QuickSettingsDialog(dialogContent, contentDescription, { quickSettingsOpen = false })
-    }
-
-    return Button(onClick = { quickSettingsOpen = !quickSettingsOpen }) { Text(buttonText) }
+    return Button(onClick = openDialog) { Text(buttonText) }
 }
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -148,21 +140,14 @@ fun QuickSettingsDialog(
     contentDescription: String,
     onClose: () -> Unit,
 ) {
-    DesktopDialog(title = contentDescription, onClose = onClose, width = 480.dp, height = 480.dp) {
-        Box(
-            Modifier.padding(vertical = 32.dp)
-                .background(MaterialTheme.colors.background)
-                .padding(24.dp)
-                .width(textFieldWidth)
-        ) {
-            Column {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(contentDescription, style = MaterialTheme.typography.h5)
-                    Spacer(Modifier.weight(1f))
-                    IconButton(onClick = onClose) { Icon(FeatherIcons.X, "Close Dialog") }
-                }
-                Column(Modifier.padding(vertical = 8.dp), content = { dialogContent() })
+    DesktopScrollableColumn(Modifier.fillMaxSize().padding(24.dp)) {
+        Column {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(contentDescription, style = MaterialTheme.typography.h5)
+                Spacer(Modifier.weight(1f))
+                IconButton(onClick = onClose) { Icon(FeatherIcons.X, "Close Dialog") }
             }
+            Column(Modifier.padding(vertical = 8.dp), content = { dialogContent() })
         }
     }
 }

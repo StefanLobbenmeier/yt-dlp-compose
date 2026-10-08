@@ -4,6 +4,7 @@ import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material.LinearProgressIndicator
+import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -12,7 +13,6 @@ import de.lobbenmeier.stefan.downloadlist.business.DownloadFailed
 import de.lobbenmeier.stefan.downloadlist.business.DownloadStarted
 import de.lobbenmeier.stefan.downloadlist.business.VideoDownloadProgress
 import de.lobbenmeier.stefan.downloadlist.business.YtDlpDownloadProgress
-import de.lobbenmeier.stefan.ui.errorColor
 
 @Composable
 fun DownloadProgressIndicator(
@@ -23,7 +23,7 @@ fun DownloadProgressIndicator(
         return LinearProgressIndicator(
             progress = downloadProgress.progress,
             modifier = modifier.fillMaxWidth(),
-            color = errorColor,
+            color = MaterialTheme.colors.error,
         )
     }
     LinearProgressIndicator(

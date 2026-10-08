@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -21,6 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.Download
+import de.lobbenmeier.stefan.common.ui.DesktopLazyColumn
 import de.lobbenmeier.stefan.downloadlist.business.DownloadItem
 import de.lobbenmeier.stefan.downloadlist.business.DownloadItemState
 import de.lobbenmeier.stefan.downloadlist.business.DownloadItemStatus
@@ -41,10 +41,7 @@ fun DownloadItemPlaylistEntriesView(
         return Text(text = "Playlist is empty")
     }
 
-    LazyColumn(
-        modifier = Modifier.height(entryHeight * minOf(metadata.entries.size, 5)),
-        userScrollEnabled = true,
-    ) {
+    DesktopLazyColumn(modifier = Modifier.height(entryHeight * minOf(metadata.entries.size, 5))) {
         itemsIndexed(
             downloadItemState.playlistItemStates,
             itemContent = { index, playlistItemState ->
