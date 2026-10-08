@@ -13,8 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
+import de.lobbenmeier.stefan.common.ui.DesktopDialog
 import de.lobbenmeier.stefan.downloadlist.model.DownloadQueue
 import de.lobbenmeier.stefan.downloadlist.ui.DownloadList
 import de.lobbenmeier.stefan.downloadlist.ui.Header
@@ -24,15 +23,12 @@ import de.lobbenmeier.stefan.settings.ui.SettingsUI
 import de.lobbenmeier.stefan.version.CheckForAppUpdate
 
 @Composable
-fun App() {
-    val settingsViewModel = remember { SettingsViewModel() }
+fun App(settingsViewModel: SettingsViewModel) {
     val settings by settingsViewModel.settings.collectAsState()
 
     val downloadQueue = remember { DownloadQueue() }
 
-    AppTheme(settings.appearance) {
-        MainView(settings, settingsViewModel::saveSettings, downloadQueue)
-    }
+    MainView(settings, settingsViewModel::saveSettings, downloadQueue)
 }
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -62,10 +58,11 @@ private fun MainView(
         },
     ) { paddingValues ->
         if (settingsOpen) {
-            Dialog(
-                onDismissRequest = { settingsOpen = false },
-                properties =
-                    DialogProperties(usePlatformInsets = false, usePlatformDefaultWidth = false),
+            DesktopDialog(
+                title = "Settings",
+                onClose = { settingsOpen = false },
+                width = 480.dp,
+                height = 720.dp,
             ) {
                 SettingsUI(
                     settings,

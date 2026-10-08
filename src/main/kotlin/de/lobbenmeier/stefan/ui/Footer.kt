@@ -23,12 +23,11 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.Key
 import compose.icons.feathericons.Trash
 import compose.icons.feathericons.X
+import de.lobbenmeier.stefan.common.ui.DesktopDialog
 import de.lobbenmeier.stefan.common.ui.icons.Subtitles
 import de.lobbenmeier.stefan.common.ui.icons.SubtitlesOff
 import de.lobbenmeier.stefan.settings.business.Settings
@@ -149,10 +148,7 @@ fun QuickSettingsDialog(
     contentDescription: String,
     onClose: () -> Unit,
 ) {
-    Dialog(
-        onDismissRequest = onClose,
-        properties = DialogProperties(usePlatformInsets = false, usePlatformDefaultWidth = false),
-    ) {
+    DesktopDialog(title = contentDescription, onClose = onClose, width = 480.dp, height = 480.dp) {
         Box(
             Modifier.padding(vertical = 32.dp)
                 .background(MaterialTheme.colors.background)

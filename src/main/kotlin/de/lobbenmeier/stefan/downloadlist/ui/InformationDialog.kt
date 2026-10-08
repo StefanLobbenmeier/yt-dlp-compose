@@ -20,10 +20,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.X
+import de.lobbenmeier.stefan.common.ui.DesktopDialog
 import de.lobbenmeier.stefan.common.ui.LogTextField
 import de.lobbenmeier.stefan.downloadlist.business.DownloadItemState
 import de.lobbenmeier.stefan.downloadlist.business.videoMetadata
@@ -33,9 +32,11 @@ import de.lobbenmeier.stefan.settings.ui.BooleanInput
 @Composable
 fun InformationDialog(state: DownloadItemState, onClose: () -> Unit) {
 
-    Dialog(
-        onDismissRequest = onClose,
-        properties = DialogProperties(usePlatformInsets = false, usePlatformDefaultWidth = false),
+    DesktopDialog(
+        title = "Download information",
+        onClose = onClose,
+        width = 680.dp,
+        height = 560.dp,
     ) {
         Column(Modifier.background(MaterialTheme.colors.background).width(600.dp).padding(24.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {

@@ -27,6 +27,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,12 +45,16 @@ import de.lobbenmeier.stefan.settings.business.Settings
 import de.lobbenmeier.stefan.settings.business.YtDlpLocation
 import de.lobbenmeier.stefan.updater.business.platform
 import de.lobbenmeier.stefan.version.CurrentVersionUI
-import io.github.vinceglb.filekit.compose.rememberDirectoryPickerLauncher
-import io.github.vinceglb.filekit.compose.rememberFilePickerLauncher
-import io.github.vinceglb.filekit.core.FileKitMacOSSettings
-import io.github.vinceglb.filekit.core.FileKitPlatformSettings
+import io.github.vinceglb.filekit.FileKit
+import io.github.vinceglb.filekit.PlatformFile
+import io.github.vinceglb.filekit.dialogs.FileKitDialogSettings
+import io.github.vinceglb.filekit.dialogs.FileKitMacOSSettings
+import io.github.vinceglb.filekit.dialogs.openDirectoryPicker
+import io.github.vinceglb.filekit.dialogs.openFilePicker
+import io.github.vinceglb.filekit.path
 import java.io.File
 import kotlin.io.path.absolutePathString
+import kotlinx.coroutines.launch
 
 val textFieldWidth = 350.dp
 
@@ -437,24 +442,30 @@ fun BooleanInput(description: String, value: Boolean, onValueChange: (Boolean) -
 
 @Composable
 private fun FileInput(description: String, value: String?, onValueChange: (String?) -> Unit) {
-    val launcher =
-        rememberFilePickerLauncher(
-            title = description,
-            initialDirectory = getValidInitialDirectoryOrNull(value),
-            platformSettings =
-                FileKitPlatformSettings(macOS = FileKitMacOSSettings(resolvesAliases = false)),
-        ) { file ->
-            if (file != null) {
-                onValueChange(file.path)
-            }
-        }
+    val scope = rememberCoroutineScope()
 
     TextInput(
         description,
         value,
         onValueChange,
         trailingIcon = {
-            IconButton(onClick = { launcher.launch() }) {
+            IconButton(
+                onClick = {
+                    scope.launch {
+                        FileKit.openFilePicker(
+                                dialogSettings =
+                                    FileKitDialogSettings(
+                                        title = description,
+                                        macOS = FileKitMacOSSettings(resolvesAliases = false),
+                                    ),
+                                directory =
+                                    getValidInitialDirectoryOrNull(value)?.let(::PlatformFile),
+                            )
+                            ?.path
+                            ?.let(onValueChange)
+                    }
+                }
+            ) {
                 Icon(FeatherIcons.File, contentDescription = "Browse for file")
             }
         },
@@ -475,20 +486,24 @@ private fun DirectoryInput(description: String, value: String?, onValueChange: (
 
 @Composable
 fun DirectoryPickerButton(description: String, value: String?, onValueChange: (String) -> Unit) {
-    val launcher =
-        rememberDirectoryPickerLauncher(
-            title = description,
-            initialDirectory = getValidInitialDirectoryOrNull(value),
-            platformSettings =
-                FileKitPlatformSettings(macOS = FileKitMacOSSettings(resolvesAliases = false)),
-        ) { file ->
-            val filePath = file?.path
-            if (filePath != null) {
-                onValueChange(filePath)
+    val scope = rememberCoroutineScope()
+
+    return IconButton(
+        onClick = {
+            scope.launch {
+                FileKit.openDirectoryPicker(
+                        dialogSettings =
+                            FileKitDialogSettings(
+                                title = description,
+                                macOS = FileKitMacOSSettings(resolvesAliases = false),
+                            ),
+                        directory = getValidInitialDirectoryOrNull(value)?.let(::PlatformFile),
+                    )
+                    ?.path
+                    ?.let(onValueChange)
             }
         }
-
-    return IconButton(onClick = { launcher.launch() }) {
+    ) {
         Icon(FeatherIcons.Folder, contentDescription = "Browse for directory")
     }
 }
@@ -496,13 +511,13 @@ fun DirectoryPickerButton(description: String, value: String?, onValueChange: (S
 private fun getValidInitialDirectoryOrNull(value: String?): String? {
     if (value != null) {
         val file = File(value)
-        if (file.exists()) {
+        if (file.isDirectory) {
             return file.absolutePath
         }
         // going up one level is reasonable,
         // but do not go too far recursively to not end up in nirvana
         val parentFile = file.parentFile
-        if (parentFile.exists()) {
+        if (parentFile?.isDirectory == true) {
             return parentFile.absolutePath
         }
     }
