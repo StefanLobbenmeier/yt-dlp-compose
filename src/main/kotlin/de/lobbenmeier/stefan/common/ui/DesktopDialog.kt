@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalContext
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.currentCompositionLocalContext
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateListOf
@@ -26,16 +27,34 @@ import androidx.compose.ui.window.rememberDialogState
 import dev.nucleusframework.application.DecoratedDialog
 import dev.nucleusframework.window.DialogTitleBar
 import dev.nucleusframework.window.NucleusDecoratedWindowTheme
+import kotlinx.coroutines.channels.Channel
 
 class DesktopDialogController {
     internal val dialogs = mutableStateListOf<DesktopDialogRequest>()
+    private val requests = Channel<DialogAction>(Channel.UNLIMITED)
 
     internal fun open(request: DesktopDialogRequest) {
-        if (dialogs.none { it.id === request.id }) dialogs.add(request)
+        requests.trySend(DialogAction.Open(request)).getOrThrow()
     }
 
     internal fun close(id: Any) {
-        dialogs.removeAll { it.id === id }
+        requests.trySend(DialogAction.Close(id)).getOrThrow()
+    }
+
+    internal suspend fun processRequests() {
+        for (action in requests) {
+            when (action) {
+                is DialogAction.Open ->
+                    if (dialogs.none { it.id === action.request.id }) dialogs.add(action.request)
+                is DialogAction.Close -> dialogs.removeAll { it.id === action.id }
+            }
+        }
+    }
+
+    private sealed interface DialogAction {
+        data class Open(val request: DesktopDialogRequest) : DialogAction
+
+        data class Close(val id: Any) : DialogAction
     }
 }
 
@@ -78,6 +97,9 @@ fun rememberDesktopDialogLauncher(
 /** Compose this beside the main window in nucleusApplication, rather than inside a layout. */
 @Composable
 fun DesktopDialogs(controller: DesktopDialogController) {
+    // Each Tao window has its own scene/recomposer. Pointer callbacks must wake
+    // the application host independently of the originating scene's frame snapshot.
+    LaunchedEffect(controller) { controller.processRequests() }
     controller.dialogs.forEach { request ->
         key(request.id) {
             // Preserve the owning window for native parent/modality handling.

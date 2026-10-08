@@ -9,6 +9,7 @@ plugins {
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.serialization") version kotlinVersion
     kotlin("plugin.compose") version kotlinVersion
+    id("org.jetbrains.compose.hot-reload") version "1.2.0"
     // Nucleus owns desktop tasks. The Compose Gradle plugin makes IntelliJ inject a
     // second application block when running main(), which conflicts with Nucleus.
     id("dev.nucleusframework") version "2.5.18"

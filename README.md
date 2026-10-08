@@ -15,7 +15,9 @@ Install JDK 25, then run:
 
 In IntelliJ, reload the Gradle project and launch the Gradle `run` task. Nucleus owns the desktop launch and packaging tasks; only Kotlin's Compose compiler plugin is needed alongside it.
 
-On a graphical desktop, `./gradlew desktopDialogSmoke` checks that a single request opens a Tao dialog from inside a layout subcomposition, and that its light/dark text colors are independent of the opening button.
+On a graphical desktop, `./gradlew desktopDialogSmoke` sends one pointer click to the actual Settings control after the windows settle. It checks that the dialog opens even when the caller's snapshot has not been committed, and that its light/dark text colors are independent of the opening button.
+
+For Hot Reload, install JetBrains Runtime 25 and run `./gradlew hotRunAsync`. The MCP server starts with `./gradlew --quiet --console=plain hotMcpServer`. These tasks enable the Compose and Hot Reload Gradle plugins; `-PhotReload=true` also enables them for IDE Gradle import. Nucleus 2.5.18 publishes Tao window geometry to Hot Reload, but does not handle MCP semantic-tree or click requests, so these inspection tools currently time out with the Tao backend.
 
 ## GraalVM distribution
 
